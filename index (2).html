@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E9F8E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bayān Kids">
+<title>Bayān Kids – Arabo, Ahadith e Corano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Baloo+2:wght@500;700;800&family=Noto+Naskh+Arabic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF8EC; --card:#FFFFFF; --ink:#2B2D42; --muted:#6B7080;
+  --teal:#0E9F8E; --teal-d:#0B7F72; --purple:#7C5CFF; --orange:#FF9F1C; --pink:#FF5D8F;
+  --green:#2BB673; --red:#E63946; --yellow:#FFD23F; --sky:#4CC9F0;
+  --r:22px; --shadow:0 6px 0 rgba(0,0,0,.08), 0 10px 24px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Baloo 2",system-ui,sans-serif;font-size:17px}
+body{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+button{font-family:inherit;font-size:inherit;color:inherit;border:0;cursor:pointer;background:none}
+.ar{font-family:"Noto Naskh Arabic","Amiri Quran",serif;direction:rtl}
+.quran{font-family:"Amiri Quran","Noto Naskh Arabic",serif;direction:rtl}
+header{position:sticky;top:0;z-index:20;background:var(--teal);color:#fff;
+  padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 0 var(--teal-d)}
+header h1{font-size:21px;margin:0;flex:1;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.2);font-size:22px;color:#fff;display:none}
+.back.show{display:block}
+.stars{background:#fff;color:var(--ink);border-radius:999px;padding:4px 12px;font-weight:800;display:flex;gap:4px;align-items:center}
+.stars.pop{animation:pop .5s}
+@keyframes pop{50%{transform:scale(1.35)}}
+main{max-width:860px;margin:0 auto;padding:16px}
+.hello{display:flex;gap:12px;align-items:center;margin:4px 0 16px}
+.hello .owl{width:86px;flex:none}
+.bubble{background:#fff;border-radius:18px;padding:12px 14px;box-shadow:var(--shadow);position:relative;font-weight:600;line-height:1.35}
+.bubble:before{content:"";position:absolute;left:-10px;top:22px;border:10px solid transparent;border-right-color:#fff;border-left:0}
+.grid{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:560px){.grid{grid-template-columns:1fr 1fr}}
+@media(min-width:820px){.grid.g3{grid-template-columns:1fr 1fr 1fr}}
+.tile{border-radius:var(--r);padding:18px;color:#fff;text-align:left;box-shadow:var(--shadow);display:flex;gap:14px;align-items:center;min-height:110px;transition:transform .1s}
+.tile:active{transform:translateY(3px)}
+.tile .em{font-size:48px;line-height:1}
+.tile b{display:block;font-size:22px;line-height:1.1}
+.tile small{opacity:.92;font-size:15px;line-height:1.25;display:block;margin-top:4px}
+.c-teal{background:var(--teal)}.c-purple{background:var(--purple)}.c-orange{background:var(--orange)}.c-pink{background:var(--pink)}.c-green{background:var(--green)}.c-sky{background:var(--sky)}
+.card{background:var(--card);border-radius:var(--r);padding:14px;box-shadow:var(--shadow)}
+.list{display:grid;gap:12px}
+@media(min-width:560px){.list{grid-template-columns:1fr 1fr}}
+.row{display:flex;align-items:center;gap:12px;text-align:left;width:100%}
+.num{width:42px;height:42px;border-radius:14px;background:#EAF7F5;color:var(--teal-d);font-weight:800;display:grid;place-items:center;flex:none}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font-size:18px;line-height:1.1}
+.row .t small{color:var(--muted)}
+.row .arn{font-size:24px;color:var(--teal-d)}
+.bar{height:8px;background:#EEE;border-radius:9px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);border-radius:9px}
+.sec-title{font-size:22px;font-weight:800;margin:6px 0 12px}
+.note{background:#FFF1D6;border-radius:14px;padding:10px 12px;font-size:15px;line-height:1.35;margin:10px 0}
+.note.err{background:#FFE1E4}
+.btn{border-radius:16px;padding:12px 16px;font-weight:800;box-shadow:0 4px 0 rgba(0,0,0,.15);background:var(--teal);color:#fff;font-size:18px}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.btn.sec{background:#fff;color:var(--ink)}
+.btn.big{padding:16px 22px;font-size:21px}
+.btn.green{background:var(--green)}.btn.red{background:var(--red)}.btn.purple{background:var(--purple)}.btn.orange{background:var(--orange)}
+.btn[disabled]{opacity:.45}
+/* Owl */
+.owl svg{width:100%;height:auto;display:block}
+.owl .happy{display:none}
+.owl.happy .pupil{display:none}.owl.happy .happy{display:block}
+.owl.talk .beak{animation:talk .22s infinite alternate;transform-origin:60px 66px}
+@keyframes talk{to{transform:scaleY(1.45)}}
+.owl.listen .mic{display:block}
+.owl .mic{display:none;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.owl.sad .pupil{transform:translateY(3px)}
+/* Lesson */
+.teacher{display:flex;gap:12px;align-items:center}
+.teacher .owl{width:96px;flex:none}
+.teacher .bubble{flex:1;font-size:18px;min-height:56px}
+.ayah{margin-top:14px;text-align:center}
+.ayah .meta{color:var(--muted);font-weight:700;font-size:15px;display:flex;justify-content:space-between}
+.ayah .txt{font-size:34px;line-height:2.05;padding:10px 4px;word-spacing:4px}
+.ayah .txt.ar{font-size:30px;line-height:1.9}
+.ayah .w{border-radius:10px;padding:0 3px;transition:background .3s}
+.w.ok{background:#D5F5E3}.w.close{background:#FFE9C2}.w.bad{background:#FFD6DA;text-decoration:underline wavy var(--red)}
+.ayah .tr{color:var(--muted);font-style:italic;font-size:15px}
+.ayah .it{font-size:17px;margin-top:6px}
+.dots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:12px 0 4px}
+.dots i{width:22px;height:22px;border-radius:50%;background:#E6E6E6;display:block;transition:background .3s}
+.dots i.on{background:var(--green)}
+.dots i.cur{box-shadow:0 0 0 3px var(--yellow)}
+.heard{min-height:24px;text-align:center;color:var(--muted);font-size:16px;margin:6px 0}
+.heard .ar{font-size:20px;color:var(--ink)}
+.controls{display:flex;gap:10px;justify-content:center;align-items:center;margin:12px 0;flex-wrap:wrap}
+.controls .sq{width:58px;height:58px;border-radius:18px;font-size:24px;padding:0}
+.extra{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:7px 13px;border-radius:999px;background:#F0F0F0;font-weight:700;font-size:16px}
+.chip.on{background:var(--teal);color:#fff}
+.set-row{margin:12px 0}
+.set-row>label{display:block;font-weight:800;margin-bottom:6px}
+details.settings{margin-top:14px}
+details.settings summary{font-weight:800;cursor:pointer;padding:6px 0;font-size:18px}
+select{font:inherit;padding:8px 10px;border-radius:12px;border:2px solid #E2E2E2;background:#fff;width:100%}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;font-weight:600}
+.switch input{width:24px;height:24px;accent-color:var(--teal)}
+.ayah-nav{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ayah-nav button{width:40px;height:40px;border-radius:12px;background:#F0F0F0;font-weight:800}
+.ayah-nav button.done{background:#D5F5E3;color:#137a46}
+.ayah-nav button.cur{outline:3px solid var(--orange)}
+/* Games */
+.letters{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;direction:rtl}
+@media(min-width:560px){.letters{grid-template-columns:repeat(7,1fr)}}
+.letter{aspect-ratio:1;border-radius:18px;font-size:38px;background:#fff;box-shadow:var(--shadow);font-family:"Noto Naskh Arabic",serif;display:grid;place-items:center;position:relative}
+.letter.seen:after{content:"⭐";position:absolute;top:2px;right:6px;font-size:13px}
+.big-letter{text-align:center}
+.big-letter .L{font-size:110px;line-height:1.2;font-family:"Noto Naskh Arabic",serif;color:var(--purple)}
+.forms{display:flex;justify-content:center;gap:10px;direction:rtl;flex-wrap:wrap}
+.forms span{background:#F4F0FF;border-radius:12px;padding:4px 10px;font-size:34px;font-family:"Noto Naskh Arabic",serif;min-width:60px}
+.forms small{display:block;font-size:12px;color:var(--muted);font-family:"Baloo 2"}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.opt{background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:16px 8px;font-size:40px;min-height:96px}
+.opt.word{font-size:30px}
+.opt.right{background:#D5F5E3}.opt.wrong{background:#FFD6DA;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.q-emoji{font-size:96px;text-align:center;line-height:1.1}
+.progress-txt{text-align:center;font-weight:800;color:var(--muted)}
+.mem{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(min-width:560px){.mem{grid-template-columns:repeat(4,1fr)}}
+.mcard{aspect-ratio:3/4;border-radius:18px;background:var(--purple);color:#fff;font-size:30px;box-shadow:var(--shadow);display:grid;place-items:center;padding:4px}
+.mcard .face{display:none}
+.mcard.open,.mcard.done{background:#fff;color:var(--ink)}
+.mcard.open .face,.mcard.done .face{display:block}
+.mcard.open .backf,.mcard.done .backf{display:none}
+.mcard.done{background:#D5F5E3}
+.mcard .face.ar{font-size:26px}
+.mcard .face.em{font-size:46px}
+/* Hadith */
+.h-ar{font-size:24px;line-height:1.7;text-align:right}
+.h-it{color:var(--muted);font-size:15px;margin-top:2px}
+.src{font-size:13px;color:var(--teal-d);font-weight:700;margin-top:6px}
+.puzzle .slots{min-height:64px;border:3px dashed #DDD;border-radius:16px;padding:8px;display:flex;flex-wrap:wrap;gap:8px;direction:rtl;margin:10px 0}
+.puzzle .pool{display:flex;flex-wrap:wrap;gap:8px;direction:rtl;justify-content:center}
+.wchip{background:#fff;border-radius:14px;box-shadow:0 3px 0 rgba(0,0,0,.12);padding:6px 12px;font-size:24px;font-family:"Noto Naskh Arabic",serif}
+.wchip.bad{background:#FFD6DA;animation:shake .4s}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.confetti i{position:absolute;top:-20px;font-size:26px;animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.hidden{display:none!important}
+input[type=range]{width:100%;accent-color:var(--purple);height:30px}
+.slider{margin:8px 0}.slider label{display:flex;justify-content:space-between;font-weight:700}
+.recitem{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #F0F0F0}
+.recitem .t{flex:1;min-width:0;font-weight:700;font-size:15px}.recitem small{display:block;color:var(--muted);font-weight:500}
+.recitem button{width:44px;height:44px;border-radius:14px;background:#F0F0F0;font-size:20px}
+.steps{margin:6px 0 0 0;padding-left:20px;line-height:1.45}
+.lvl{height:14px;background:#EEE;border-radius:9px;overflow:hidden;margin:8px auto 0;max-width:260px}
+.lvl i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--yellow),var(--red));transition:width .08s}
+.rec-badge{display:inline-flex;align-items:center;gap:6px;color:var(--red);font-weight:800;font-size:15px}
+.rec-badge:before{content:"";width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulse 1s infinite}
+.w.focus{outline:3px solid var(--orange);background:#FFF1D6}
+.wtag{display:inline-block;background:#FFD6DA;border-radius:8px;padding:0 6px;margin:2px;font-family:"Noto Naskh Arabic",serif;font-size:20px}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #F0F0F0;font-weight:600}
+.chk b{font-size:20px}
+input.name{font:inherit;font-size:18px;padding:10px 12px;border-radius:14px;border:2px solid #E2E2E2;width:100%}
+.center{text-align:center}
+.mt{margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <button class="back" id="back" aria-label="Indietro">←</button>
+  <h1 id="title">Bayān Kids</h1>
+  <div class="stars" id="stars">⭐ <span id="starN">0</span></div>
+</header>
+<main id="app"></main>
+<div class="confetti" id="confetti"></div>
+
+<template id="owlTpl">
+<svg viewBox="0 0 120 120" aria-hidden="true">
+  <path d="M22 44 L28 12 L48 32Z" fill="#7A4E2D"/><path d="M98 44 L92 12 L72 32Z" fill="#7A4E2D"/>
+  <ellipse cx="60" cy="70" rx="44" ry="46" fill="#8B5E3C"/>
+  <ellipse cx="60" cy="84" rx="28" ry="28" fill="#F1D7B0"/>
+  <path d="M40 80 q6 6 12 0 M56 92 q6 6 12 0 M70 80 q6 6 12 0" stroke="#D9B98C" stroke-width="2" fill="none"/>
+  <circle cx="43" cy="52" r="15" fill="#fff"/><circle cx="77" cy="52" r="15" fill="#fff"/>
+  <circle class="pupil" cx="43" cy="53" r="6.5" fill="#222"/><circle class="pupil" cx="77" cy="53" r="6.5" fill="#222"/>
+  <path class="happy" d="M33 54 q10 -10 20 0 M67 54 q10 -10 20 0" stroke="#222" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <g fill="none" stroke="#2B2D42" stroke-width="3"><circle cx="43" cy="52" r="17"/><circle cx="77" cy="52" r="17"/><path d="M60 50 h0.1"/></g>
+  <path class="beak" d="M53 66 L67 66 L60 78Z" fill="#FF9F1C"/>
+  <path d="M20 78 q-8 14 6 26 q4 -14 -6 -26Z M100 78 q8 14 -6 26 q-4 -14 6 -26Z" fill="#6E4426"/>
+  <g class="mic"><circle cx="104" cy="22" r="14" fill="#E63946"/><rect x="100" y="13" width="8" height="13" rx="4" fill="#fff"/><path d="M97 22 q7 9 14 0 M104 29 v4" stroke="#fff" stroke-width="2" fill="none"/></g>
+</svg>
+</template>
+
+<script>
+/* ================= DATI ================= */
+const QURAN = [
+{"n": 1, "name": "الفاتحة", "tr": "Al-Fatihah", "start": 0, "c": 7},
+{"n": 114, "name": "الناس", "tr": "An-Nas", "start": 6230, "c": 6},
+{"n": 113, "name": "الفلق", "tr": "Al-Falaq", "start": 6225, "c": 5},
+{"n": 112, "name": "الإخلاص", "tr": "Al-Ikhlas", "start": 6221, "c": 4},
+{"n": 111, "name": "المسد", "tr": "Al-Masad", "start": 6216, "c": 5},
+{"n": 110, "name": "النصر", "tr": "An-Nasr", "start": 6213, "c": 3},
+{"n": 109, "name": "الكافرون", "tr": "Al-Kafirun", "start": 6207, "c": 6},
+{"n": 108, "name": "الكوثر", "tr": "Al-Kawthar", "start": 6204, "c": 3},
+{"n": 107, "name": "الماعون", "tr": "Al-Ma'un", "start": 6197, "c": 7},
+{"n": 106, "name": "قريش", "tr": "Quraysh", "start": 6193, "c": 4},
+{"n": 105, "name": "الفيل", "tr": "Al-Fil", "start": 6188, "c": 5},
+{"n": 104, "name": "الهمزة", "tr": "Al-Humazah", "start": 6179, "c": 9},
+{"n": 103, "name": "العصر", "tr": "Al-'Asr", "start": 6176, "c": 3},
+{"n": 102, "name": "التكاثر", "tr": "At-Takathur", "start": 6168, "c": 8},
+{"n": 101, "name": "القارعة", "tr": "Al-Qari'ah", "start": 6157, "c": 11},
+{"n": 100, "name": "العاديات", "tr": "Al-'Adiyat", "start": 6146, "c": 11},
+{"n": 99, "name": "الزلزلة", "tr": "Az-Zalzalah", "start": 6138, "c": 8},
+{"n": 98, "name": "البينة", "tr": "Al-Bayyinah", "start": 6130, "c": 8},
+{"n": 97, "name": "القدر", "tr": "Al-Qadr", "start": 6125, "c": 5},
+{"n": 96, "name": "العلق", "tr": "Al-'Alaq", "start": 6106, "c": 19},
+{"n": 95, "name": "التين", "tr": "At-Tin", "start": 6098, "c": 8},
+{"n": 94, "name": "الشرح", "tr": "Ash-Sharh", "start": 6090, "c": 8},
+{"n": 93, "name": "الضحى", "tr": "Ad-Duhaa", "start": 6079, "c": 11},
+{"n": 92, "name": "الليل", "tr": "Al-Layl", "start": 6058, "c": 21},
+{"n": 91, "name": "الشمس", "tr": "Ash-Shams", "start": 6043, "c": 15},
+{"n": 90, "name": "البلد", "tr": "Al-Balad", "start": 6023, "c": 20},
+{"n": 89, "name": "الفجر", "tr": "Al-Fajr", "start": 5993, "c": 30},
+{"n": 88, "name": "الغاشية", "tr": "Al-Ghashiyah", "start": 5967, "c": 26},
+{"n": 87, "name": "الأعلى", "tr": "Al-A'la", "start": 5948, "c": 19},
+{"n": 86, "name": "الطارق", "tr": "At-Tariq", "start": 5931, "c": 17},
+{"n": 85, "name": "البروج", "tr": "Al-Buruj", "start": 5909, "c": 22},
+{"n": 84, "name": "الإنشقاق", "tr": "Al-Inshiqaq", "start": 5884, "c": 25},
+{"n": 83, "name": "المطففين", "tr": "Al-Mutaffifin", "start": 5848, "c": 36},
+{"n": 82, "name": "الإنفطار", "tr": "Al-Infitar", "start": 5829, "c": 19},
+{"n": 81, "name": "التكوير", "tr": "At-Takwir", "start": 5800, "c": 29},
+{"n": 80, "name": "عبس", "tr": "'Abasa", "start": 5758, "c": 42},
+{"n": 79, "name": "النازعات", "tr": "An-Nazi'at", "start": 5712, "c": 46},
+{"n": 78, "name": "النبإ", "tr": "An-Naba", "start": 5672, "c": 40}
+];
+const SURA_IT = {1:"L'Aprente",78:"La Notizia",79:"Gli Strappanti",80:"Si accigliò",81:"L'Oscuramento",82:"Lo Squarciarsi",83:"I Frodatori",84:"La Fenditura",85:"Le Costellazioni",86:"L'Astro notturno",87:"L'Altissimo",88:"L'Avvolgente",89:"L'Alba",90:"La Città",91:"Il Sole",92:"La Notte",93:"La Luce del mattino",94:"L'Apertura",95:"Il Fico",96:"L'Aderenza",97:"Il Destino",98:"La Prova evidente",99:"Il Terremoto",100:"I Corsieri",101:"La Percotente",102:"Il Rivaleggiare",103:"Il Tempo",104:"Il Diffamatore",105:"L'Elefante",106:"I Quraysh",107:"L'Utensile",108:"L'Abbondanza",109:"I Miscredenti",110:"L'Aiuto",111:"Le Fibre di palma",112:"Il Puro Monoteismo",113:"L'Alba nascente",114:"Gli Uomini"};
+
+const LETTERS = [
+ ["ا","أَلِف","alif",false,"أَسَد","🦁","leone"],
+ ["ب","بَاء","bā'",true,"بَيْت","🏠","casa"],
+ ["ت","تَاء","tā'",true,"تُفَّاحَة","🍎","mela"],
+ ["ث","ثَاء","thā'",true,"ثَعْلَب","🦊","volpe"],
+ ["ج","جِيم","jīm",true,"جَمَل","🐪","cammello"],
+ ["ح","حَاء","ḥā'",true,"حِصَان","🐴","cavallo"],
+ ["خ","خَاء","khā'",true,"خُبْز","🍞","pane"],
+ ["د","دَال","dāl",false,"دُبّ","🐻","orso"],
+ ["ذ","ذَال","dhāl",false,"ذُرَة","🌽","mais"],
+ ["ر","رَاء","rā'",false,"رِيشَة","🪶","piuma"],
+ ["ز","زَاي","zāy",false,"زَرَافَة","🦒","giraffa"],
+ ["س","سِين","sīn",true,"سَمَكَة","🐟","pesce"],
+ ["ش","شِين","shīn",true,"شَمْس","☀️","sole"],
+ ["ص","صَاد","ṣād",true,"صُنْدُوق","📦","scatola"],
+ ["ض","ضَاد","ḍād",true,"ضِفْدَع","🐸","rana"],
+ ["ط","طَاء","ṭā'",true,"طَائِرَة","✈️","aereo"],
+ ["ظ","ظَاء","ẓā'",true,"ظَرْف","✉️","busta"],
+ ["ع","عَيْن","'ayn",true,"عَيْن","👁️","occhio"],
+ ["غ","غَيْن","ghayn",true,"غَيْمَة","☁️","nuvola"],
+ ["ف","فَاء","fā'",true,"فِيل","🐘","elefante"],
+ ["ق","قَاف","qāf",true,"قَمَر","🌙","luna"],
+ ["ك","كَاف","kāf",true,"كِتَاب","📖","libro"],
+ ["ل","لَام","lām",true,"لَيْمُون","🍋","limone"],
+ ["م","مِيم","mīm",true,"مَوْزَة","🍌","banana"],
+ ["ن","نُون","nūn",true,"نَجْمَة","⭐","stella"],
+ ["ه","هَاء","hā'",true,"هَدِيَّة","🎁","regalo"],
+ ["و","وَاو","wāw",false,"وَرْدَة","🌹","rosa"],
+ ["ي","يَاء","yā'",true,"يَد","✋","mano"]
+];
+const WORDS = [
+ ["تُفَّاحَة","🍎","mela"],["مَوْزَة","🍌","banana"],["قِطَّة","🐱","gatto"],["كَلْب","🐶","cane"],
+ ["أَسَد","🦁","leone"],["فِيل","🐘","elefante"],["سَمَكَة","🐟","pesce"],["بَيْت","🏠","casa"],
+ ["شَمْس","☀️","sole"],["قَمَر","🌙","luna"],["نَجْمَة","⭐","stella"],["كِتَاب","📖","libro"],
+ ["قَلَم","✏️","matita"],["مَاء","💧","acqua"],["شَجَرَة","🌳","albero"],["وَرْدَة","🌹","rosa"],
+ ["سَيَّارَة","🚗","automobile"],["طَائِرَة","✈️","aereo"],["بَاب","🚪","porta"],["حَلِيب","🥛","latte"],
+ ["خُبْز","🍞","pane"],["عَيْن","👁️","occhio"],["يَد","✋","mano"],["قَلْب","❤️","cuore"],
+ ["جَمَل","🐪","cammello"],["حِصَان","🐴","cavallo"],["بَطَّة","🦆","anatra"],["مَسْجِد","🕌","moschea"],
+ ["كُرَة","⚽","palla"],["بُرْتُقَالَة","🍊","arancia"],["عِنَب","🍇","uva"],["مِفْتَاح","🔑","chiave"]
+];
+const HADITH = [
+ {ar:"إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ", it:"Le azioni valgono solo secondo le intenzioni.", rawi:"ʿUmar ibn al-Khaṭṭāb", src:"Al-Bukhārī 1, Muslim 1907"},
+ {ar:"لا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ", it:"Nessuno di voi è veramente credente finché non ama per suo fratello ciò che ama per sé stesso.", rawi:"Anas ibn Mālik", src:"Al-Bukhārī 13, Muslim 45"},
+ {ar:"الْكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ", it:"La parola buona è un'elemosina (ṣadaqa).", rawi:"Abū Hurayra", src:"Al-Bukhārī 2989, Muslim 1009"},
+ {ar:"تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ", it:"Il tuo sorriso in faccia a tuo fratello è per te un'elemosina.", rawi:"Abū Dharr", src:"At-Tirmidhī 1956"},
+ {ar:"مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ", it:"Chi crede in Allah e nell'Ultimo Giorno dica il bene oppure taccia.", rawi:"Abū Hurayra", src:"Al-Bukhārī 6018, Muslim 47"},
+ {ar:"لا تَغْضَبْ", it:"Non arrabbiarti.", rawi:"Abū Hurayra", src:"Al-Bukhārī 6116"},
+ {ar:"الطُّهُورُ شَطْرُ الإِيمَانِ", it:"La purificazione è metà della fede.", rawi:"Abū Mālik al-Ashʿarī", src:"Muslim 223"},
+ {ar:"الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ", it:"Il musulmano è colui dalla cui lingua e dalla cui mano gli altri musulmani sono al sicuro.", rawi:"ʿAbdullāh ibn ʿAmr", src:"Al-Bukhārī 10, Muslim 40"},
+ {ar:"خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ", it:"Il migliore di voi è chi impara il Corano e lo insegna.", rawi:"ʿUthmān ibn ʿAffān", src:"Al-Bukhārī 5027"},
+ {ar:"مَنْ لا يَرْحَمُ لا يُرْحَمُ", it:"Chi non ha misericordia non riceverà misericordia.", rawi:"Abū Hurayra", src:"Al-Bukhārī 5997, Muslim 2318"},
+ {ar:"الدِّينُ النَّصِيحَةُ", it:"La religione è il sincero consiglio.", rawi:"Tamīm ad-Dārī", src:"Muslim 55"},
+ {ar:"يَسِّرُوا وَلا تُعَسِّرُوا، وَبَشِّرُوا وَلا تُنَفِّرُوا", it:"Rendete le cose facili e non difficili; date buone notizie e non allontanate le persone.", rawi:"Anas ibn Mālik", src:"Al-Bukhārī 69, Muslim 1734"},
+ {ar:"الْحَيَاءُ مِنَ الإِيمَانِ", it:"Il pudore fa parte della fede.", rawi:"ʿAbdullāh ibn ʿUmar", src:"Al-Bukhārī 24, Muslim 36"},
+ {ar:"مَنْ لا يَشْكُرِ النَّاسَ لا يَشْكُرِ اللَّهَ", it:"Chi non ringrazia le persone non ringrazia Allah.", rawi:"Abū Hurayra", src:"Abū Dāwūd 4811, At-Tirmidhī 1954"}
+];
+const RECITERS = {
+ alafasy:{name:"Mishary Al-Afasy", ea:"Alafasy_128kbps", isl:"ar.alafasy"},
+ husary:{name:"Mahmoud Al-Husary", ea:"Husary_128kbps", isl:"ar.husary"},
+ minshawi:{name:"Al-Minshawi (murattal)", ea:"Minshawy_Murattal_128kbps", isl:"ar.minshawi"}
+};
+// soglia di punteggio + quante parole sbagliate/mancanti si tollerano (ogni N parole)
+const SEVERITY = {facile:{min:.6, per:5}, normale:{min:.78, per:10}, rigoroso:{min:.9, per:0}};
+
+async function loadSura(n){
+  const s = QURAN.find(x=>x.n===n); if(!s) return null; if(s.v) return s;
+  try{ const c = localStorage.getItem("sura"+n); if(c){ s.v = JSON.parse(c); return s; } }catch(e){}
+  try{
+    const r = await fetch(`https://cdn.jsdelivr.net/npm/quran-json@3.1.2/dist/chapters/${n}.json`);
+    const j = await r.json();
+    s.v = j.verses.map(v=>[v.text, v.transliteration||""]);
+    try{ localStorage.setItem("sura"+n, JSON.stringify(s.v)); }catch(e){}
+    return s;
+  }catch(e){ return null; }
+}
+
+/* ================= STATO ================= */
+const Store = (()=>{
+  const def = {stars:0, ayat:{}, hadith:{}, letters:{}, set:{reps:3, mode:"mic", sev:"facile", rec:"alafasy", slow:false, auto:true, voice:true, basmala:true, translit:true, record:true, coach:true, recConflict:false}, name:""};
+  let d = def;
+  try{ const j = JSON.parse(localStorage.getItem("bayanKids")||"null"); if(j){ d = Object.assign({}, def, j); d.set = Object.assign({}, def.set, j.set||{}); } }catch(e){}
+  return { d, save(){ try{ localStorage.setItem("bayanKids", JSON.stringify(d)); }catch(e){} } };
+})();
+const S = Store.d;
+function addStars(n){
+  S.stars += n; Store.save();
+  const el = document.getElementById("stars"); el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop");
+  document.getElementById("starN").textContent = S.stars;
+}
+function confetti(){
+  const c = document.getElementById("confetti"); const em = ["⭐","🌟","✨","🎉","💚","🌙"];
+  for(let i=0;i<26;i++){ const x=document.createElement("i"); x.textContent=em[i%em.length];
+    x.style.left=Math.random()*100+"vw"; x.style.animationDelay=Math.random()*.6+"s"; c.appendChild(x); setTimeout(()=>x.remove(),2600); }
+}
+
+/* ================= UTILITY ================= */
+const $ = (s,r=document)=>r.querySelector(s);
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const pick = (a,n) => shuffle(a).slice(0,n);
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pad3 = n => String(n).padStart(3,"0");
+function owl(cls=""){ const d=document.createElement("div"); d.className="owl "+cls; d.appendChild(document.getElementById("owlTpl").content.cloneNode(true)); return d; }
+
+/* ================= VOCE (sintesi) ================= */
+const Voice = {
+  voices:[],
+  init(){ if(!("speechSynthesis" in window)) return; const load=()=>{ this.voices = speechSynthesis.getVoices(); }; load(); speechSynthesis.onvoiceschanged = load; },
+  find(lang){ return this.voices.find(v=>v.lang.replace("_","-").toLowerCase().startsWith(lang)); },
+  hasAr(){ return !!this.find("ar"); },
+  noAr(){ return this.voices.length>0 && !this.find("ar"); },
+  speak(text, lang="it", rate=1){
+    return new Promise(res=>{
+      if(!("speechSynthesis" in window)) return res(false);
+      try{
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text); const v = this.find(lang);
+        if(v) u.voice = v; u.lang = v ? v.lang : (lang==="ar" ? "ar-SA" : "it-IT"); u.rate = rate;
+        let done=false; const fin=ok=>{ if(!done){ done=true; res(ok); } };
+        u.onend=()=>fin(true); u.onerror=()=>fin(false);
+        setTimeout(()=>fin(true), 2500 + text.length*170/rate);
+        speechSynthesis.speak(u);
+      }catch(e){ res(false); }
+    });
+  },
+  stop(){ try{ speechSynthesis.cancel(); }catch(e){} }
+};
+Voice.init();
+
+/* ================= AUDIO (recitatori) ================= */
+const Player = {
+  el: new Audio(), cancel:null,
+  play(urls, rate=1){
+    this.stop();
+    return new Promise(resolve=>{
+      let idx=0, settled=false;
+      const end = v => { if(settled) return; settled=true; this.cancel=null; resolve(v); };
+      this.cancel = () => { try{ this.el.pause(); }catch(e){} end(false); };
+      const tryNext = () => {
+        if(settled) return;
+        if(idx>=urls.length) return end("error");
+        const el=this.el; el.src = urls[idx++]; el.playbackRate = rate; try{ el.preservesPitch = true; }catch(e){}
+        el.onended = () => end(true);
+        el.onerror = () => tryNext();
+        const p = el.play();
+        if(p && p.catch) p.catch(err => { if(err && err.name==="NotAllowedError") end("blocked"); });
+      };
+      tryNext();
+    });
+  },
+  stop(){ if(this.cancel) this.cancel(); },
+  unlock(){ if(this.cancel) return; try{ this.el.src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="; const p=this.el.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} }
+};
+function ayahUrls(sura, ayah, globalN){
+  const r = RECITERS[S.set.rec] || RECITERS.alafasy;
+  return [`https://everyayah.com/data/${r.ea}/${pad3(sura)}${pad3(ayah)}.mp3`,
+          `https://cdn.islamic.network/quran/audio/128/${r.isl}/${globalN}.mp3`];
+}
+
+/* ================= RICONOSCIMENTO VOCALE ================= */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const Rec = {
+  cur:null,
+  listen({maxMs=8000, onInterim}={}){
+    return new Promise(resolve=>{
+      if(!SR) return resolve({error:"unsupported"});
+      let r; try{ r = new SR(); }catch(e){ return resolve({error:"unsupported"}); }
+      r.lang="ar-SA"; r.interimResults=true; r.maxAlternatives=5; r.continuous=false;
+      let finals=[], lastAlts=[], interim="", err=null, settled=false;
+      r.onresult = e => {
+        finals=[]; interim=""; lastAlts=[];
+        for(let i=0;i<e.results.length;i++){
+          const res=e.results[i];
+          if(res.isFinal){ finals.push(res[0].transcript); lastAlts=[]; for(let k=0;k<res.length;k++) lastAlts.push(res[k].transcript); }
+          else interim += res[0].transcript;
+        }
+        onInterim && onInterim((finals.join(" ")+" "+interim).trim());
+      };
+      r.onerror = e => { err = e.error; };
+      const t = setTimeout(()=>{ try{ r.stop(); }catch(e){} }, maxMs);
+      r.onend = () => {
+        if(settled) return; settled=true; clearTimeout(t); this.cur=null;
+        const text = (finals.join(" ").trim()) || interim.trim();
+        let cands = [text];
+        if(finals.length>0 && lastAlts.length>1){
+          const head = finals.slice(0,-1).join(" ");
+          cands = lastAlts.map(a => (head+" "+a).trim());
+        }
+        resolve({text, cands: cands.filter(Boolean), error: text ? null : (err || "no-speech")});
+      };
+      this.cur = r;
+      try{ r.start(); }catch(e){ settled=true; clearTimeout(t); resolve({error:"start"}); }
+    });
+  },
+  stop(){ if(this.cur){ try{ this.cur.abort(); }catch(e){} this.cur=null; } }
+};
+
+/* ================= REGISTRAZIONE VOCE ================= */
+const Mic = {
+  stream:null, rec:null, chunks:[], url:null, ctx:null, src:null, an:null, level:0, peak:0, onLevel:null, raf:0,
+  supported(){ return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder); },
+  async open(){
+    if(this.stream) return true;
+    try{ this.stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}}); this.err=null; return true; }
+    catch(e){ this.err = e.name || "error"; return false; }
+  },
+  start(){
+    if(!this.stream) return false;
+    this.chunks=[]; this.peak=0;
+    try{ this.rec = new MediaRecorder(this.stream); this.rec.ondataavailable = e => { if(e.data && e.data.size) this.chunks.push(e.data); }; this.rec.start(); }
+    catch(e){ return false; }
+    try{
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(AC){ if(!this.ctx) this.ctx = new AC(); if(this.ctx.state==="suspended") this.ctx.resume();
+        this.src = this.ctx.createMediaStreamSource(this.stream); this.an = this.ctx.createAnalyser(); this.an.fftSize=512; this.src.connect(this.an);
+        const buf = new Uint8Array(this.an.fftSize);
+        const loop = () => { if(!this.an) return; this.an.getByteTimeDomainData(buf); let sum=0; for(const v of buf){ const x=(v-128)/128; sum+=x*x; }
+          this.level = Math.min(1, Math.sqrt(sum/buf.length)*4); this.peak = Math.max(this.peak, this.level); this.onLevel && this.onLevel(this.level); this.raf=requestAnimationFrame(loop); };
+        loop(); }
+    }catch(e){}
+    return true;
+  },
+  stop(){
+    cancelAnimationFrame(this.raf); try{ this.src && this.src.disconnect(); }catch(e){} this.src=null; this.an=null; this.onLevel && this.onLevel(0);
+    return new Promise(res=>{
+      const r=this.rec; this.rec=null;
+      if(!r || r.state==="inactive") return res(null);
+      r.onstop = () => { const b = new Blob(this.chunks, {type: r.mimeType || "audio/webm"}); if(this.url) URL.revokeObjectURL(this.url); this.url = b.size>1000 ? URL.createObjectURL(b) : null; res(this.url); };
+      try{ r.stop(); }catch(e){ res(null); }
+    });
+  },
+  close(){ if(this.stream){ this.stream.getTracks().forEach(t=>t.stop()); this.stream=null; } }
+};
+function envProblems(){
+  const p=[]; let framed=false; try{ framed = window.top!==window.self; }catch(e){ framed=true; }
+  if(framed) p.push("L'app è aperta dentro un'<b>anteprima</b> (per esempio nell'app Claude): lì il microfono e l'audio sono bloccati. Aprila dal suo link <b>https</b> in Google Chrome.");
+  if(location.protocol==="file:") p.push("L'app è aperta come <b>file</b> dal telefono: il microfono funziona solo da un indirizzo <b>https</b> (per esempio GitHub Pages).");
+  else if(window.isSecureContext===false) p.push("L'indirizzo non è sicuro: il microfono funziona solo con <b>https</b>.");
+  if(!SR) p.push("Questo browser non ha il riconoscimento vocale arabo: usa <b>Google Chrome su Android</b>.");
+  return p;
+}
+function micHelp(err){
+  if(err==="NotAllowedError" || err==="PermissionDeniedError" || err==="SecurityError" || err==="not-allowed" || err==="service-not-allowed")
+    return `<b>Il microfono è stato negato.</b> Fai così:<ol class="steps">
+      <li>Apri l'app dal suo link <b>https</b> in <b>Google Chrome</b> (non dall'anteprima di Claude e non come file).</li>
+      <li>Android: <b>Impostazioni → App → Chrome → Autorizzazioni → Microfono → “Consenti solo mentre l'app è in uso”</b>.</li>
+      <li>In Chrome: tocca il <b>🔒 lucchetto</b> accanto all'indirizzo → <b>Autorizzazioni</b> → <b>Microfono → Consenti</b>.</li>
+      <li>Ricarica la pagina e premi di nuovo <b>Inizia la prova</b>: deve comparire la richiesta “Consenti microfono?”.</li></ol>`;
+  if(err==="NotFoundError" || err==="audio-capture") return "<b>Nessun microfono trovato</b> (o non raggiungibile). Se usi auricolari Bluetooth, prova a scollegarli.";
+  if(err==="NotReadableError" || err==="AbortError") return "<b>Il microfono è occupato da un'altra app</b> (chiamata, registratore, Google Assistant). Chiudila e riprova.";
+  return err ? `Errore del microfono: ${esc(err)}` : "";
+}
+const envNote = () => { const p=envProblems(); return p.length ? `<div class="note err">⚠️ ${p.join("<br>⚠️ ")}<br><a href="#prova-mic">🎤 Fai la prova del microfono</a></div>` : ""; };
+
+/* ================= CONFRONTO TESTO ================= */
+const DIAC = /[ؐ-ًؚ-ٰٟۖ-ۭـ]/g;
+function norm(s){
+  return (s||"").replace(DIAC,"").replace(/[ٱأإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه")
+    .replace(/ؤ/g,"و").replace(/ئ/g,"ي").replace(/ء/g,"").replace(/[^ء-ي\s]/g," ").replace(/\s+/g," ").trim();
+}
+function lev(a,b){
+  const m=a.length, n=b.length; if(!m) return n; if(!n) return m;
+  let prev = Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){ const cur=[i]; for(let j=1;j<=n;j++){ cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+(a[i-1]===b[j-1]?0:1)); } prev=cur; }
+  return prev[n];
+}
+const sim = (a,b) => { const L=Math.max(a.length,b.length); return L ? 1-lev(a,b)/L : 1; };
+function compareOne(target, heard){
+  const T = norm(target).split(" ").filter(Boolean), H = norm(heard).split(" ").filter(Boolean);
+  const n=T.length, m=H.length;
+  const dp = Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=1;i<=n;i++) for(let j=1;j<=m;j++){
+    const s = sim(T[i-1],H[j-1]); const g = s>=.5 ? s : 0;
+    dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]+g);
+  }
+  const labels = new Array(n).fill("bad");
+  let i=n, j=m;
+  while(i>0 && j>0){
+    const s = sim(T[i-1],H[j-1]); const g = s>=.5 ? s : 0;
+    if(g>0 && Math.abs(dp[i][j]-(dp[i-1][j-1]+g))<1e-9){
+      const d = lev(T[i-1],H[j-1]), L = Math.max(T[i-1].length,H[j-1].length);
+      labels[i-1] = (d===0 || (d===1 && L>=5) || s>=.8) ? "ok" : "close"; i--; j--; }
+    else if(dp[i][j]===dp[i-1][j]) i--; else j--;
+  }
+  const credit = labels.reduce((a,l)=>a+(l==="ok"?1:l==="close"?.6:0),0);
+  const wordScore = n ? credit/n : 0;
+  const charScore = sim(T.join(""), H.join(""));
+  const extra = Math.max(0, m-n) / Math.max(1,n);
+  // il confronto "lettera per lettera" serve solo quando il riconoscimento unisce o divide le parole
+  const score = (m!==n ? Math.max(wordScore, charScore) : wordScore) - Math.min(.3, extra*.25);
+  return {score, labels, heard};
+}
+function evaluate(target, cands, sev){
+  let best = {score:-1, labels:[], heard:""};
+  for(const c of cands){ const r = compareOne(target,c); if(r.score>best.score) best=r; }
+  const cfg = SEVERITY[sev] || SEVERITY.facile;
+  const close = best.labels.filter(l=>l==="close").length;
+  const bad = best.labels.filter(l=>l==="bad").length + close*(sev==="rigoroso"?1:sev==="normale"?.5:0);
+  const allowed = cfg.per ? Math.floor(best.labels.length/cfg.per) : 0;
+  best.bad = bad;
+  best.pass = best.score >= cfg.min && bad <= allowed;
+  return best;
+}
+
+/* ================= MAESTRO (lezione) ================= */
+const PRAISE = [["Bravissimo! Mashallah!","ما شاء الله"],["Ottimo lavoro!","أحسنت"],["Perfetto, continua così!","بارك الله فيك"],["Grande! Che bella voce!","ممتاز"]];
+class Lesson {
+  constructor(root, opts){
+    this.root=root; this.o=opts; this.i=opts.start||0; this.tok=0; this.running=false; this.manual=false;
+    this.build(); this.show(); this.renderDots(0);
+  }
+  get set(){ return S.set; }
+  build(){
+    const o=this.o, st=this.set;
+    this.root.innerHTML = `
+    <div class="card">
+      <div class="teacher"><div class="owlBox"></div><div class="bubble" data-b>Ciao! Sono il Maestro Gufo 🦉 Tocca <b>▶ Inizia</b> e ripeti dopo di me.</div></div>
+      <div class="ayah">
+        <div class="meta"><span data-meta></span><span data-rep></span></div>
+        <div class="txt ${o.kind==="quran"?"quran":"ar"}" data-txt></div>
+        <div class="tr" data-tr></div>
+        <div class="it" data-it></div>
+      </div>
+      <div class="dots" data-dots></div>
+      <div class="center hidden" data-recbox><span class="rec-badge">Ti sto registrando…</span><div class="lvl"><i data-lvl></i></div></div>
+      <div class="heard" data-heard></div>
+      <div class="center hidden" data-mine><button class="btn sec" data-playmine>▶ Riascolta la mia voce</button></div>
+      <div class="controls">
+        <button class="btn sec sq" data-prev aria-label="Precedente">⏮</button>
+        <button class="btn big" data-run>▶ Inizia</button>
+        <button class="btn sec sq" data-listen aria-label="Ascolta">🔊</button>
+        <button class="btn sec sq" data-next aria-label="Successiva">⏭</button>
+      </div>
+      <div class="extra" data-extra></div>
+      <div class="note err hidden" data-warn></div>
+      <details class="settings">
+        <summary>⚙️ Impostazioni del maestro</summary>
+        <div class="set-row"><label>Quante volte ripetere ogni ${o.kind==="quran"?"ayah":"frase"}</label>
+          <div class="chips" data-reps>${[1,2,3,5,7,10].map(n=>`<button class="chip" data-n="${n}">${n}×</button>`).join("")}</div></div>
+        <div class="set-row"><label>Modalità</label>
+          <div class="chips" data-mode><button class="chip" data-v="mic">🎤 Ascolta e ripeti</button><button class="chip" data-v="listen">👂 Solo ascolto</button><button class="chip" data-v="parent">👨‍👧 Giudica il genitore</button></div></div>
+        <div class="set-row"><label>Severità del controllo</label>
+          <div class="chips" data-sev><button class="chip" data-v="facile">Facile</button><button class="chip" data-v="normale">Normale</button><button class="chip" data-v="rigoroso">Rigoroso</button></div></div>
+        ${o.kind==="quran"?`<div class="set-row"><label>Recitatore</label><select data-recsel>${Object.entries(RECITERS).map(([k,r])=>`<option value="${k}">${r.name}</option>`).join("")}</select></div>`:""}
+        <label class="switch">🐢 Lento <input type="checkbox" data-sw="slow"></label>
+        <label class="switch">⏭ Passa da solo alla successiva <input type="checkbox" data-sw="auto"></label>
+        <label class="switch">🗣️ Voce del maestro (frasi in italiano) <input type="checkbox" data-sw="voice"></label>
+        <label class="switch">🎙️ Registra la mia voce e fammela riascoltare <input type="checkbox" data-sw="record"></label>
+        <label class="switch">🧠 Correggi parola per parola <input type="checkbox" data-sw="coach"></label>
+        <div class="center mt"><a class="btn sec" href="#prova-mic" style="text-decoration:none;display:inline-block">🎤 Prova il microfono</a></div>
+        ${o.kind==="quran"?`<label class="switch">بسم الله Basmala all'inizio della sura <input type="checkbox" data-sw="basmala"></label>
+        <label class="switch">🔤 Mostra traslitterazione <input type="checkbox" data-sw="translit"></label>`:""}
+      </details>
+      ${o.items.length>1?`<div class="ayah-nav" data-nav></div>`:""}
+    </div>`;
+    this.owl = owl(); $(".owlBox",this.root).appendChild(this.owl);
+    const q = s => $(s,this.root);
+    this.el = {b:q("[data-b]"), meta:q("[data-meta]"), rep:q("[data-rep]"), txt:q("[data-txt]"), tr:q("[data-tr]"), it:q("[data-it]"),
+      dots:q("[data-dots]"), heard:q("[data-heard]"), recbox:q("[data-recbox]"), lvl:q("[data-lvl]"), mine:q("[data-mine]"), run:q("[data-run]"), extra:q("[data-extra]"), warn:q("[data-warn]"), nav:q("[data-nav]")};
+    q("[data-run]").onclick = () => this.running ? this.stop("Pausa. Tocca ▶ per continuare.") : (Player.unlock(), this.run());
+    q("[data-listen]").onclick = async () => { this.stop(); this.mood("talk"); await this.o.play(this.i, this.rate()); this.mood(""); };
+    q("[data-prev]").onclick = () => this.go(this.i-1);
+    q("[data-next]").onclick = () => this.go(this.i+1);
+    q("[data-reps]").onclick = e => { const n=e.target.dataset.n; if(n){ st.reps=+n; Store.save(); this.syncSet(); this.renderDots(0); } };
+    q("[data-mode]").onclick = e => { const v=e.target.dataset.v; if(v){ st.mode=v; this.manual=false; Store.save(); this.syncSet(); } };
+    q("[data-sev]").onclick = e => { const v=e.target.dataset.v; if(v){ st.sev=v; Store.save(); this.syncSet(); } };
+    const rs=q("[data-recsel]"); if(rs) rs.onchange = () => { st.rec=rs.value; Store.save(); };
+    this.root.querySelectorAll("[data-sw]").forEach(cb => cb.onchange = () => { st[cb.dataset.sw]=cb.checked; Store.save(); this.show(); });
+    q("[data-playmine]").onclick = () => { if(Mic.url){ this.stop(); Player.play([Mic.url]); } };
+    this.syncSet();
+    const ep = envProblems(); if(ep.length) this.warn("⚠️ "+ep.join("<br>⚠️ ")+"<br>Intanto puoi usare la modalità “Giudica il genitore”.");
+  }
+  syncSet(){
+    const st=this.set, q=s=>$(s,this.root);
+    q("[data-reps]").querySelectorAll(".chip").forEach(c=>c.classList.toggle("on", +c.dataset.n===st.reps));
+    q("[data-mode]").querySelectorAll(".chip").forEach(c=>c.classList.toggle("on", c.dataset.v===st.mode));
+    q("[data-sev]").querySelectorAll(".chip").forEach(c=>c.classList.toggle("on", c.dataset.v===st.sev));
+    const rs=q("[data-recsel]"); if(rs) rs.value=st.rec;
+    this.root.querySelectorAll("[data-sw]").forEach(cb => cb.checked = !!st[cb.dataset.sw]);
+  }
+  rate(){ return this.set.slow ? .8 : 1; }
+  warn(html){ this.el.warn.innerHTML=html; this.el.warn.classList.toggle("hidden", !html); }
+  bubble(html){ this.el.b.innerHTML = html; }
+  mood(m){ this.owl.className = "owl "+(m||""); }
+  say(text){ return this.set.voice ? Voice.speak(text,"it",1.05) : Promise.resolve(); }
+  show(labels){
+    const it=this.o.items[this.i];
+    this.el.meta.textContent = this.o.metaText(this.i);
+    const words = it.ar.split(/\s+/).filter(Boolean);
+    this.el.txt.innerHTML = words.map((w,k)=>`<span class="w ${labels?labels[k]||"":""}">${esc(w)}</span>`).join(" ");
+    this.el.tr.textContent = (this.o.kind!=="quran" || this.set.translit) ? (it.tr||"") : "";
+    this.el.it.textContent = it.it || "";
+    if(!labels) this.el.heard.innerHTML="";
+    this.renderNav();
+  }
+  renderDots(done){
+    const N=this.set.reps;
+    this.el.dots.innerHTML = Array.from({length:N},(_,k)=>`<i class="${k<done?"on":""} ${k===done&&this.running?"cur":""}"></i>`).join("");
+    this.el.rep.textContent = `Ripetizioni: ${done}/${N}`;
+  }
+  renderNav(){
+    if(!this.el.nav) return;
+    this.el.nav.innerHTML = this.o.items.map((_,k)=>`<button class="${this.o.isDone(k)?"done":""} ${k===this.i?"cur":""}" data-k="${k}">${k+1}</button>`).join("");
+    this.el.nav.onclick = e => { const k=e.target.dataset.k; if(k!==undefined) this.go(+k); };
+  }
+  go(i){
+    if(i<0 || i>=this.o.items.length) return;
+    const wasRunning = this.running;
+    this.stop(); this.i=i; this.show(); this.renderDots(0);
+    this.bubble(wasRunning ? "Andiamo avanti! ✨" : "Tocca <b>▶ Inizia</b> quando sei pronto.");
+    if(wasRunning) this.run();
+  }
+  stop(msg){
+    this.tok++; this.running=false; Player.stop(); Rec.stop(); Voice.stop(); Mic.stop().then(()=>Mic.close()); this.mood(""); if(this.el.recbox) this.el.recbox.classList.add("hidden");
+    this.el.run.textContent="▶ Inizia"; this.el.extra.innerHTML="";
+    if(msg) this.bubble(msg);
+  }
+  waitButtons(btns){
+    return new Promise(res=>{
+      this.el.extra.innerHTML = "";
+      btns.forEach(([label,cls,val,fn])=>{ const b=document.createElement("button"); b.className="btn "+cls; b.innerHTML=label;
+        b.onclick = fn ? fn : ()=>{ Player.unlock(); this.el.extra.innerHTML=""; res(val); }; this.el.extra.appendChild(b); });
+    });
+  }
+  childName(){ return (S.name||"").trim(); }
+  // Ascolta il bambino: riconoscimento vocale + (se possibile) registrazione della voce
+  async hear(alive, maxMs, record=true){
+    const st=this.set; let recOn=false;
+    if(record && st.record && !st.recConflict && Mic.supported()){
+      if(await Mic.open()) recOn = Mic.start();
+    }
+    if(!alive()){ await Mic.stop(); Mic.close(); return null; }
+    if(recOn){ this.el.recbox.classList.remove("hidden"); Mic.onLevel = v => { this.el.lvl.style.width = Math.round(v*100)+"%"; }; }
+    const r = SR ? await Rec.listen({maxMs, onInterim: t => { if(alive()) this.el.heard.innerHTML = `Sento: <bdi class="ar">${esc(t)}</bdi>`; }})
+                 : {error:"unsupported"};
+    const peak = Mic.peak;
+    const url = recOn ? await Mic.stop() : null; Mic.close(); Mic.onLevel=null;
+    this.el.recbox.classList.add("hidden");
+    this.el.mine.classList.toggle("hidden", !url);
+    // registrazione e riconoscimento insieme non funzionano su alcuni telefoni: lo capiamo e disattiviamo la registrazione
+    if(recOn && (r.error==="audio-capture" || r.error==="aborted" || (r.error==="no-speech" && peak>.15))){
+      this.conflicts=(this.conflicts||0)+1;
+      if(r.error!=="no-speech" || this.conflicts>=2){
+        st.recConflict=true; Store.save();
+        this.warn("ℹ️ Su questo telefono la registrazione e l'ascolto insieme non funzionano: il maestro ora usa solo l'ascolto. (Puoi riprovare da “Prova il microfono”.)");
+        return {retry:true};
+      }
+    } else if(recOn && !r.error) this.conflicts=0;
+    return {r, url, peak, recOn};
+  }
+  async judgeByParent(alive, maxMs){
+    // Il bambino ripete, registriamo, il genitore ascolta e decide
+    const st=this.set; let url=null;
+    this.mood("listen");
+    if(st.record && Mic.supported() && await Mic.open() && Mic.start()){
+      this.el.recbox.classList.remove("hidden"); Mic.onLevel = v => { this.el.lvl.style.width = Math.round(v*100)+"%"; };
+      this.bubble("Ora ripeti tu ad alta voce! 🎤 Poi tocca <b>⏹ Ho finito</b>.");
+      await this.waitButtons([["⏹ Ho finito","orange",1]]);
+      url = await Mic.stop(); Mic.close(); Mic.onLevel=null; this.el.recbox.classList.add("hidden");
+      if(!alive()) return null;
+      this.el.mine.classList.toggle("hidden", !url);
+      if(url){ this.bubble("Ascoltiamo come l'hai detta… 👂"); await Player.play([url]); if(!alive()) return null; }
+    }
+    this.bubble("Genitore: com'è andata? 👨‍👧");
+    const btns=[["✅ Detta bene","green",true],["🔁 Da rifare","red",false]];
+    if(url) btns.unshift(["▶ Riascolta","sec",null,()=>Player.play([url])]);
+    const v = await this.waitButtons(btns); if(!alive()) return null;
+    return {pass:v, manual:true, url};
+  }
+  // Correzione intelligente: fa sentire le parole sbagliate e le fa ripetere una per una
+  async coach(alive, res){
+    const it=this.o.items[this.i], words=it.ar.split(/\s+/);
+    const wrong = res.labels.map((l,k)=>l==="ok"?-1:k).filter(k=>k>=0).slice(0,3);
+    if(!wrong.length || !this.o.playWord) return;
+    for(const k of wrong){
+      if(!alive()) return;
+      const lab = res.labels.slice(); this.show(lab);
+      const span = this.el.txt.querySelectorAll(".w")[k]; if(span) span.classList.add("focus");
+      this.mood("talk"); this.bubble(`Questa parola si dice così: <span class="wtag">${esc(words[k])}</span> 👂`);
+      await this.say("Questa parola si dice così."); if(!alive()) return;
+      let ok = await this.o.playWord(this.i, k, this.rate()); if(!alive()) return;
+      if(ok!==true) return; // audio della parola non disponibile: si ripete tutta l'ayah
+      for(let t=0;t<2;t++){
+        this.mood("listen"); this.bubble(`Ripeti solo questa parola 🎤 <span class="wtag">${esc(words[k])}</span>`);
+        const h = await this.hear(alive, 4500, false); if(!alive() || !h) return;
+        if(h.retry) continue;
+        const heard = norm(h.r.text||""); const target = norm(words[k]);
+        const good = heard && heard.split(" ").some(x=>sim(x,target)>=.6) || sim(heard.replace(/ /g,""),target)>=.6;
+        if(good){ this.mood("happy"); this.bubble("Giusto! 👍"); if(span){ span.classList.remove("bad","close","focus"); span.classList.add("ok"); }
+          await this.say("Giusto!"); break; }
+        this.mood("sad"); this.bubble("Ancora una volta, ascolta… 👂"); await this.say("Ancora una volta."); if(!alive()) return;
+        await this.o.playWord(this.i, k, this.rate()*.9); if(!alive()) return;
+      }
+      await sleep(400);
+    }
+    if(!alive()) return;
+    this.mood("talk"); this.bubble("Bene! Ora rifacciamo tutta la frase insieme 💪"); await this.say("Bene! Ora rifacciamo tutta la frase insieme.");
+  }
+  async run(){
+    const tok = ++this.tok; this.running=true; this.el.run.textContent="⏸ Ferma";
+    const alive = () => tok===this.tok;
+    const st=this.set, N=st.reps; let done=0, fails=0, replayed=false;
+    this.show(); this.renderDots(0);
+    if(this.o.intro){ await this.o.intro(this.i, ()=>alive(), this); if(!alive()) return; }
+    while(done<N){
+      if(!alive()) return;
+      this.renderDots(done); this.show(); this.el.heard.innerHTML="";
+      this.mood("talk");
+      const nm=this.childName();
+      if(!replayed){
+        this.bubble(done===0 && fails===0 ? `Ascolta bene${nm?", "+esc(nm):""}… 👂` : fails ? "Ascolta di nuovo con attenzione… 👂" : `Ancora! Ripetizione <b>${done+1}</b> di ${N} 👂`);
+        if(done===0 && fails===0) await this.say(`Ascolta bene${nm?", "+nm:""}.`); if(!alive()) return;
+        this.mood("talk");
+        let ok = await this.o.play(this.i, this.rate()); if(!alive()) return;
+        if(ok==="blocked"){ this.mood(""); this.bubble("Tocca il pulsante per far parlare il maestro 🔊");
+          await this.waitButtons([["🔊 Ascolta","orange",1]]); if(!alive()) return; continue; }
+        if(ok!==true){ this.mood("sad"); this.bubble(this.o.audioError || "Non riesco a caricare l'audio. Controlla la connessione internet 📶"); this.stop(); return; }
+      }
+      replayed=false;
+      if(st.mode==="listen"){ done++; this.renderDots(done); this.mood(""); await sleep(800); continue; }
+
+      let res;
+      const words = this.o.items[this.i].ar.split(/\s+/).length;
+      const maxMs = Math.min(30000, 5000 + words*1100/this.rate());
+      if(st.mode==="parent" || this.manual || !SR){
+        res = await this.judgeByParent(alive, maxMs); if(!res) return;
+      } else {
+        this.mood("listen"); this.bubble(`Ora tocca a te${nm?", "+esc(nm):""}! Ripeti 🎤`);
+        const h = await this.hear(alive, maxMs); if(!alive() || !h) return;
+        if(h.retry){ replayed=true; continue; }   // riprova subito l'ascolto senza registrazione
+        const r = h.r;
+        if(["not-allowed","service-not-allowed","unsupported","start"].includes(r.error)){
+          this.manual=true;
+          this.warn(micHelp(r.error==="unsupported"||r.error==="start" ? "" : r.error) || "⚠️ Il riconoscimento vocale non parte: usa Google Chrome su Android. Intanto giudica il genitore.");
+          res = await this.judgeByParent(alive, maxMs); if(!res) return;
+        } else if(r.error){ res = {pass:false, error:r.error, peak:h.peak}; }
+        else { res = evaluate(this.o.items[this.i].ar, r.cands, st.sev); res.url=h.url; }
+      }
+      if(res.labels) this.show(res.labels);
+      if(res.heard) this.el.heard.innerHTML = `${Math.round(res.score*100)}% · Hai detto: <bdi class="ar">${esc(res.heard)}</bdi>`;
+      if(res.pass){
+        done++; fails=0; addStars(1); this.renderDots(done); this.mood("happy");
+        const p = PRAISE[Math.floor(Math.random()*PRAISE.length)];
+        const close = res.labels ? res.labels.filter(l=>l==="close").length : 0;
+        this.bubble(`${p[0]}${nm?" "+esc(nm)+"!":""} <span class="ar">${p[1]}</span> ⭐${close?"<br><small>Attento alle parole in arancione 🙂</small>":""}`);
+        await this.say(`${p[0]}${nm?" "+nm:""}`); if(!alive()) return; await sleep(500);
+      } else {
+        fails++; this.mood("sad");
+        if(res.manual){ this.bubble("Riproviamo insieme! 💪"); await this.say("Riproviamo insieme!"); }
+        else if(res.error==="no-speech"){
+          const msg = res.peak>.15 ? "Ti ho sentito, ma non ho capito le parole. Parla più piano e più chiaro 🙂" : "Non ti ho sentito… avvicinati al telefono e parla più forte 🙂";
+          this.bubble(msg); await this.say(res.peak>.15 ? "Ti ho sentito, ma non ho capito. Parla più piano e più chiaro." : "Non ti ho sentito. Parla più forte.");
+        }
+        else if(res.error){ this.bubble("Il riconoscimento vocale ha avuto un problema (internet?). Riproviamo 🔁"); await this.say("Riproviamo."); }
+        else {
+          const n=res.labels.length, okN=res.labels.filter(l=>l==="ok").length;
+          const wrongW = this.o.items[this.i].ar.split(/\s+/).filter((w,k)=>res.labels[k]!=="ok");
+          this.bubble(`Hai detto bene <b>${okN} parole su ${n}</b>. Da correggere: ${wrongW.slice(0,4).map(w=>`<span class="wtag">${esc(w)}</span>`).join(" ")}`);
+          await this.say(`Quasi! Hai detto bene ${okN} parole su ${n}.`); if(!alive()) return;
+          if(res.url && st.record){
+            this.mood("talk"); this.bubble("Ascolta come l'hai detta tu… 👂"); await this.say("Ascolta come l'hai detta tu."); if(!alive()) return;
+            await Player.play([res.url]); if(!alive()) return;
+          }
+          if(st.coach){ await this.coach(alive, res); }
+        }
+        if(!alive()) return;
+        if(fails>=3){
+          this.el.extra.innerHTML="";
+          const b=document.createElement("button"); b.className="btn sec"; b.textContent="Conta come fatta ✔︎";
+          b.onclick=()=>{ fails=0; done++; this.renderDots(done); b.remove(); };
+          this.el.extra.appendChild(b);
+        }
+        await sleep(900); if(!alive()) return;
+        this.show();
+      }
+    }
+    if(!alive()) return;
+    this.el.extra.innerHTML="";
+    this.o.markDone(this.i); addStars(3); confetti(); this.mood("happy"); this.renderNav();
+    const last = this.i >= this.o.items.length-1;
+    this.bubble(last ? "Ma sha Allah! Hai completato tutto! 🎉🏆" : `Fantastico! Hai ripetuto ${N} volte ⭐⭐⭐`);
+    await this.say(last ? "Mashallah! Hai completato tutto!" : "Fantastico!"); if(!alive()) return;
+    if(this.o.onAllDone && last) this.o.onAllDone();
+    if(st.auto && !last){ await sleep(900); if(!alive()) return; this.i++; this.show(); this.run(); }
+    else { this.running=false; this.el.run.textContent="▶ Inizia"; }
+  }
+}
+
+/* ================= STUDIO: EFFETTI VOCE ================= */
+const FX_PRESETS = {
+  naturale:{label:"🎤 Naturale", rev:0, size:1, warm:30, clar:30, comp:40},
+  studio:{label:"🎧 Studio", rev:15, size:1.3, warm:50, clar:50, comp:60},
+  moschea:{label:"🕌 Moschea", rev:35, size:3, warm:60, clar:45, comp:65},
+  grande:{label:"🌙 Grande moschea", rev:50, size:4.5, warm:60, clar:40, comp:70}
+};
+function makeImpulse(ctx, seconds, decay){
+  const sr=ctx.sampleRate, len=Math.max(1,Math.floor(sr*seconds)), ir=ctx.createBuffer(2,len,sr);
+  for(let ch=0; ch<2; ch++){ const d=ir.getChannelData(ch);
+    for(let i=0;i<len;i++){ const t=i/len; d[i]=(Math.random()*2-1)*Math.pow(1-t,decay); }
+    // prime riflessioni delle pareti
+    [0.013,0.021,0.034,0.047,0.061].forEach((t,k)=>{ const i=Math.floor(t*sr)+ch*37; if(i<len) d[i]+= (k%2?-1:1)*(0.6-k*0.09); });
+  }
+  return ir;
+}
+async function renderFx(buf, fx){
+  const sr=buf.sampleRate, rev=fx.rev/100, tail = rev>0 ? fx.size+0.3 : 0.1;
+  const ctx = new OfflineAudioContext(2, Math.ceil((buf.duration+tail)*sr), sr);
+  const src=ctx.createBufferSource(); src.buffer=buf;
+  const hp=ctx.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=85; hp.Q.value=.7;
+  const low=ctx.createBiquadFilter(); low.type="lowshelf"; low.frequency.value=180; low.gain.value=fx.warm/100*6;
+  const mud=ctx.createBiquadFilter(); mud.type="peaking"; mud.frequency.value=420; mud.Q.value=1; mud.gain.value=-fx.warm/100*3;
+  const pres=ctx.createBiquadFilter(); pres.type="peaking"; pres.frequency.value=3200; pres.Q.value=.9; pres.gain.value=fx.clar/100*5;
+  const air=ctx.createBiquadFilter(); air.type="highshelf"; air.frequency.value=9000; air.gain.value=fx.clar/100*3;
+  const c=fx.comp/100, comp=ctx.createDynamicsCompressor();
+  comp.threshold.value=-12-c*20; comp.ratio.value=1.5+c*4.5; comp.knee.value=12; comp.attack.value=.005; comp.release.value=.22;
+  const makeup=ctx.createGain(); makeup.gain.value=1+c*1.6;
+  const dry=ctx.createGain(); dry.gain.value=1-rev*.35;
+  src.connect(hp); hp.connect(low); low.connect(mud); mud.connect(pres); pres.connect(air); air.connect(comp); comp.connect(makeup); makeup.connect(dry); dry.connect(ctx.destination);
+  if(rev>0){
+    const pre=ctx.createDelay(1); pre.delayTime.value=.025+fx.size*.01;
+    const conv=ctx.createConvolver(); conv.buffer=makeImpulse(ctx, fx.size, 2.2+fx.size*.35);
+    const damp=ctx.createBiquadFilter(); damp.type="lowpass"; damp.frequency.value=6500;
+    const wet=ctx.createGain(); wet.gain.value=rev*1.1;
+    makeup.connect(pre); pre.connect(conv); conv.connect(damp); damp.connect(wet); wet.connect(ctx.destination);
+  }
+  src.start();
+  const out = await ctx.startRendering();
+  let peak=0; for(let ch=0; ch<out.numberOfChannels; ch++){ const d=out.getChannelData(ch); for(let i=0;i<d.length;i++){ const v=Math.abs(d[i]); if(v>peak) peak=v; } }
+  if(peak>0){ const g=.95/peak; for(let ch=0; ch<out.numberOfChannels; ch++){ const d=out.getChannelData(ch); for(let i=0;i<d.length;i++) d[i]*=g; } }
+  return out;
+}
+function wavBlob(buf){
+  const ch=buf.numberOfChannels, sr=buf.sampleRate, n=buf.length, bytes=44+n*ch*2, ab=new ArrayBuffer(bytes), v=new DataView(ab);
+  const ws=(o,t)=>{ for(let i=0;i<t.length;i++) v.setUint8(o+i,t.charCodeAt(i)); };
+  ws(0,"RIFF"); v.setUint32(4,bytes-8,true); ws(8,"WAVE"); ws(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,ch,true);
+  v.setUint32(24,sr,true); v.setUint32(28,sr*ch*2,true); v.setUint16(32,ch*2,true); v.setUint16(34,16,true); ws(36,"data"); v.setUint32(40,n*ch*2,true);
+  const data=[]; for(let c=0;c<ch;c++) data.push(buf.getChannelData(c));
+  let o=44; for(let i=0;i<n;i++) for(let c=0;c<ch;c++){ const x=Math.max(-1,Math.min(1,data[c][i])); v.setInt16(o, x<0?x*0x8000:x*0x7FFF, true); o+=2; }
+  return new Blob([ab],{type:"audio/wav"});
+}
+const RecDB = {
+  db:null,
+  open(){ return new Promise(res=>{ if(this.db) return res(this.db); try{ const r=indexedDB.open("bayanKids",1);
+    r.onupgradeneeded=()=>r.result.createObjectStore("recs",{keyPath:"id"}); r.onsuccess=()=>{ this.db=r.result; res(this.db); }; r.onerror=()=>res(null); }catch(e){ res(null); } }); },
+  async all(){ const db=await this.open(); if(!db) return []; return new Promise(res=>{ try{ const q=db.transaction("recs").objectStore("recs").getAll(); q.onsuccess=()=>res(q.result.sort((a,b)=>b.id-a.id)); q.onerror=()=>res([]); }catch(e){ res([]); } }); },
+  async put(x){ const db=await this.open(); if(!db) return false; return new Promise(res=>{ try{ const t=db.transaction("recs","readwrite"); t.objectStore("recs").put(x); t.oncomplete=()=>res(true); t.onerror=()=>res(false); }catch(e){ res(false); } }); },
+  async del(id){ const db=await this.open(); if(!db) return; return new Promise(res=>{ try{ const t=db.transaction("recs","readwrite"); t.objectStore("recs").delete(id); t.oncomplete=()=>res(); t.onerror=()=>res(); }catch(e){ res(); } }); }
+};
+function saveBlob(blob, name){
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 60000);
+}
+async function shareBlob(blob, name){
+  try{ const f=new File([blob], name, {type:blob.type}); if(navigator.canShare && navigator.canShare({files:[f]})){ await navigator.share({files:[f], title:name}); return true; } }catch(e){ if(e && e.name==="AbortError") return true; }
+  return false;
+}
+
+/* ================= VISTE ================= */
+const app = $("#app");
+let currentLesson = null;
+function setHeader(title, back){ $("#title").textContent=title; $("#back").classList.toggle("show", !!back); }
+$("#back").onclick = () => { const h=location.hash.slice(1); if(h==="prova-mic"){ history.back(); return; } if(h==="studio"){ location.hash="corano"; return; } location.hash = h.startsWith("sura-")?"corano": h.startsWith("hadith-")?"ahadith": ["alfabeto","ascolta","parole","memory"].includes(h)?"giochi":"home"; };
+
+const Views = {
+  home(){
+    setHeader("Bayān Kids", false);
+    app.innerHTML = `
+      <div class="hello"><div class="owlH"></div><div class="bubble">As-salāmu ʿalaykum! 👋 Sono il <b>Maestro Gufo</b>. Cosa impariamo oggi?</div></div>
+      <div class="grid g3">
+        <button class="tile c-purple" onclick="location.hash='giochi'"><span class="em">🎮</span><span><b>Giochi d'Arabo</b><small>Alfabeto, parole, memory e ascolto</small></span></button>
+        <button class="tile c-orange" onclick="location.hash='ahadith'"><span class="em">📜</span><span><b>Ahadith</b><small>Le parole del Profeta ﷺ da imparare</small></span></button>
+        <button class="tile c-teal" onclick="location.hash='corano'"><span class="em">📖</span><span><b>Corano col Maestro</b><small>Ascolta l'ayah, ripetila e il maestro ti corregge</small></span></button>
+      </div>
+      <div class="card mt"><label style="font-weight:800">👦 Come ti chiami? <small style="color:var(--muted)">(il maestro ti chiamerà per nome)</small></label>
+        <input class="name mt" id="nm" placeholder="Il tuo nome" value="${esc(S.name||"")}"></div>
+      ${envNote()}
+      <div class="center mt"><a class="btn sec" href="#prova-mic" style="text-decoration:none;display:inline-block">🎤 Prova il microfono</a></div>
+      ${("speechSynthesis" in window) && Voice.noAr() ? `<div class="note">🔈 Il telefono non ha una voce araba installata: alcuni giochi non parleranno in arabo. Su Android: Impostazioni → Sintesi vocale → Google → installa “Arabo”.</div>`:""}`;
+    $(".owlH").appendChild(owl("happy")); $(".owlH").style.cssText="width:86px;flex:none";
+    $("#nm").oninput = e => { S.name = e.target.value.slice(0,30); Store.save(); };
+  },
+  giochi(){
+    setHeader("Giochi d'Arabo", true);
+    app.innerHTML = `<div class="grid">
+      <button class="tile c-purple" onclick="location.hash='alfabeto'"><span class="em ar" style="font-size:44px">أ ب</span><span><b>L'Alfabeto</b><small>Tocca una lettera e ascolta</small></span></button>
+      <button class="tile c-sky" onclick="location.hash='ascolta'"><span class="em">👂</span><span><b>Ascolta e trova</b><small>Quale lettera ha detto il maestro?</small></span></button>
+      <button class="tile c-green" onclick="location.hash='parole'"><span class="em">🍎</span><span><b>Le Parole</b><small>Che cos'è in arabo?</small></span></button>
+      <button class="tile c-pink" onclick="location.hash='memory'"><span class="em">🃏</span><span><b>Memory</b><small>Trova le coppie figura–parola</small></span></button>
+    </div>`;
+  },
+  alfabeto(){
+    setHeader("L'Alfabeto", true);
+    app.innerHTML = `<div class="card big-letter hidden" id="bl"></div><div class="letters mt" id="lg"></div>`;
+    const lg=$("#lg"), bl=$("#bl");
+    lg.innerHTML = LETTERS.map((L,k)=>`<button class="letter ${S.letters[k]?"seen":""}" data-k="${k}">${L[0]}</button>`).join("");
+    lg.onclick = async e => {
+      const b=e.target.closest(".letter"); if(!b) return; const k=+b.dataset.k, L=LETTERS[k];
+      const forms = L[3] ? [["isolata",L[0]],["inizio",L[0]+"ـ"],["mezzo","ـ"+L[0]+"ـ"],["fine","ـ"+L[0]]] : [["isolata",L[0]],["fine","ـ"+L[0]]];
+      bl.classList.remove("hidden");
+      bl.innerHTML = `<div class="L">${L[0]}</div><div style="font-size:22px;font-weight:800">${L[2]} · <span class="ar">${L[1]}</span></div>
+        <div class="forms mt">${forms.map(f=>`<span>${f[1]}<small>${f[0]}</small></span>`).join("")}</div>
+        <div class="mt" style="font-size:22px"><span style="font-size:44px">${L[5]}</span> <span class="ar" style="font-size:30px">${L[4]}</span> <small style="color:var(--muted)">(${L[6]})</small></div>
+        <button class="btn mt" id="again">🔊 Ascolta ancora</button>`;
+      bl.scrollIntoView({behavior:"smooth",block:"start"});
+      if(!S.letters[k]){ S.letters[k]=1; addStars(1); b.classList.add("seen"); }
+      const speak = async()=>{ await Voice.speak(L[1],"ar",.8); await sleep(250); await Voice.speak(L[4],"ar",.8); };
+      $("#again").onclick = speak; speak();
+    };
+  },
+  ascolta(){ setHeader("Ascolta e trova", true); quizGame({
+    rounds:10,
+    make(){ const opts=pick(LETTERS,4); const ans=opts[Math.floor(Math.random()*4)]; return {ans, opts}; },
+    ask(q){ return `<div class="center"><div class="hello" style="justify-content:center"><div class="owlQ" style="width:80px"></div><div class="bubble">Quale lettera ho detto?</div></div>
+      <button class="btn big orange" data-say>🔊 Ascolta</button>
+      <div class="mt" style="color:var(--muted)">${!Voice.noAr()?"":"(Senza voce araba: cerca la lettera <b>"+q.ans[2]+"</b>)"}</div></div>`; },
+    say(q){ return Voice.speak(q.ans[1],"ar",.8); },
+    optHtml(L){ return `<span class="ar" style="font-size:52px">${L[0]}</span>`; },
+    isRight(q,L){ return L===q.ans; }
+  }); },
+  parole(){ setHeader("Le Parole", true); quizGame({
+    rounds:10,
+    make(){ const opts=pick(WORDS,4); const ans=opts[Math.floor(Math.random()*4)]; return {ans, opts}; },
+    ask(q){ return `<div class="q-emoji">${q.ans[1]}</div><div class="center" style="font-weight:800;font-size:20px">Come si dice in arabo?</div>`; },
+    optHtml(W){ return `<span class="ar">${W[0]}</span>`; }, word:true,
+    isRight(q,W){ return W===q.ans; },
+    after(q){ return Voice.speak(q.ans[0],"ar",.8); }
+  }); },
+  memory(){
+    setHeader("Memory", true);
+    const set = pick(WORDS,6); let cards = shuffle(set.flatMap((w,k)=>[{k,t:"em",v:w[1]},{k,t:"ar",v:w[0]}]));
+    app.innerHTML = `<div class="progress-txt" id="mt">Trova le 6 coppie!</div><div class="mem mt" id="mg"></div><div class="center mt"><button class="btn sec" onclick="Views.memory()">🔄 Nuova partita</button></div>`;
+    const mg=$("#mg"); mg.innerHTML = cards.map((c,i)=>`<button class="mcard" data-i="${i}"><span class="backf">؟</span><span class="face ${c.t}">${c.v}</span></button>`).join("");
+    let open=[], found=0, moves=0, lock=false;
+    mg.onclick = async e => {
+      const b=e.target.closest(".mcard"); if(!b||lock||b.classList.contains("open")||b.classList.contains("done")) return;
+      b.classList.add("open"); open.push(b);
+      const c=cards[+b.dataset.i]; if(c.t==="ar") Voice.speak(c.v,"ar",.8);
+      if(open.length===2){
+        moves++; lock=true; const [a,d]=open; const ca=cards[+a.dataset.i], cd=cards[+d.dataset.i];
+        if(ca.k===cd.k){ await sleep(350); a.classList.replace("open","done"); d.classList.replace("open","done"); found++; addStars(1); Voice.speak(set[ca.k][0],"ar",.8);
+          $("#mt").textContent = found===6 ? `🎉 Bravo! Finito in ${moves} mosse` : `Coppie: ${found}/6`; if(found===6){ addStars(3); confetti(); } }
+        else { await sleep(900); a.classList.remove("open"); d.classList.remove("open"); }
+        open=[]; lock=false;
+      }
+    };
+  },
+  ahadith(){
+    setHeader("Ahadith", true);
+    const n = Object.keys(S.hadith).length;
+    app.innerHTML = `<div class="sec-title">📜 Le parole del Profeta ﷺ <small style="color:var(--muted);font-size:15px">· imparati ${n}/${HADITH.length}</small></div>
+    <div class="list">${HADITH.map((h,k)=>`<button class="card row" onclick="location.hash='hadith-${k}'">
+      <span class="num">${S.hadith[k]?"⭐":k+1}</span><span class="t"><span class="h-ar ar" style="display:block">${h.ar}</span><small>${esc(h.it)}</small></span></button>`).join("")}</div>
+    <div class="note">ℹ️ Testi e numerazione delle raccolte classiche: fateli sempre verificare dal vostro insegnante.</div>`;
+  },
+  hadith(k){
+    const h=HADITH[k]; if(!h) return Views.ahadith();
+    setHeader(`Hadith ${k+1}`, true);
+    app.innerHTML = `<div id="les"></div>
+      <div class="card mt"><div class="src">Narrato da ${esc(h.rawi)} · ${esc(h.src)}</div></div>
+      <div class="card mt puzzle"><div style="font-weight:800;font-size:19px">🧩 Gioco: rimetti le parole in ordine</div><div class="slots" id="slots"></div><div class="pool" id="pool"></div>
+        <div class="center mt"><button class="btn sec" id="pzReset">🔄 Ricomincia</button></div></div>
+      <div class="center mt"><button class="btn big green" id="learned">${S.hadith[k]?"⭐ Imparato!":"⭐ L'ho imparato!"}</button></div>`;
+    currentLesson = new Lesson($("#les"), {
+      kind:"hadith", items:[{ar:h.ar, it:h.it}],
+      metaText:()=>`Narrato da ${h.rawi}`,
+      play:async(i,rate)=>{ if(Voice.noAr()) return "error"; return (await Voice.speak(h.ar,"ar",.75*rate)) ? true : "error"; },
+      playWord:async(i,k,rate)=>{ if(Voice.noAr()) return "error"; return (await Voice.speak(h.ar.split(/\s+/)[k],"ar",.7*rate)) ? true : "error"; },
+      audioError:"Il telefono non ha la voce araba. Android: Impostazioni → Sintesi vocale → Google → installa “Arabo”. Puoi comunque usare il gioco qui sotto.",
+      isDone:()=>!!S.hadith[k], markDone:()=>{ S.hadith[k]=1; Store.save(); $("#learned").textContent="⭐ Imparato!"; }
+    });
+    $("#learned").onclick = () => { if(!S.hadith[k]){ S.hadith[k]=1; Store.save(); addStars(3); confetti(); } $("#learned").textContent="⭐ Imparato!"; };
+    const words = h.ar.split(/\s+/);
+    const setup = () => {
+      let pos=0; const slots=$("#slots"), pool=$("#pool"); slots.innerHTML="";
+      let order = shuffle(words.map((w,i)=>i)); if(words.length>1 && order.every((v,i)=>v===i)) order.reverse();
+      pool.innerHTML = order.map(i=>`<button class="wchip" data-i="${i}">${words[i]}</button>`).join("");
+      pool.onclick = async e => { const b=e.target.closest(".wchip"); if(!b) return; const i=+b.dataset.i;
+        if(words[i]===words[pos]){ slots.appendChild(b); b.onclick=null; pos++; if(pos===words.length){ addStars(2); confetti(); Voice.speak(h.ar,"ar",.8); } }
+        else { b.classList.add("bad"); setTimeout(()=>b.classList.remove("bad"),450); } };
+    };
+    $("#pzReset").onclick = setup; setup();
+  },
+  corano(){
+    setHeader("Corano col Maestro", true);
+    app.innerHTML = `${envNote()}<div class="sec-title">📖 Scegli una sura</div>
+      <button class="tile c-purple" style="width:100%;margin-bottom:14px" onclick="location.hash='studio'"><span class="em">🎙️</span><span><b>Studio del Muqri'</b><small>Registra la tua recitazione e rendila bella come in moschea</small></span></button>
+      <div class="list">${QURAN.map(s=>{ const d=Object.keys(S.ayat[s.n]||{}).length, t=s.c;
+        return `<button class="card row" onclick="location.hash='sura-${s.n}'"><span class="num">${s.n}</span>
+          <span class="t"><b>${esc(s.tr)}</b><small>${esc(SURA_IT[s.n]||"")} · ${t} ayat</small><div class="bar"><i style="width:${Math.round(d/t*100)}%"></i></div></span>
+          <span class="arn quran">${s.name}</span></button>`; }).join("")}</div>
+      <div class="note">🎧 Serve internet per l'audio dei recitatori. Il controllo della voce confronta le parole, non le regole di tajwīd: per quelle resta fondamentale l'insegnante.</div>`;
+  },
+  "prova-mic"(){
+    setHeader("Prova del microfono", true);
+    app.innerHTML = `<div class="card"><div class="teacher"><div class="owlBox" style="width:90px;flex:none"></div><div class="bubble" id="pmB">Tocca <b>Inizia la prova</b> e di' ad alta voce: <span class="quran" style="font-size:24px">بِسۡمِ ٱللَّهِ</span></div></div>
+      <div class="center hidden mt" id="pmRec"><span class="rec-badge">Ti sto ascoltando…</span><div class="lvl"><i id="pmL"></i></div></div>
+      <div class="mt" id="pmRes"></div>
+      <div class="center mt"><button class="btn big" id="pmGo">🎤 Inizia la prova</button></div></div>
+      ${envNote()}`;
+    const ow=owl(); $(".owlBox").appendChild(ow);
+    const line = (ok,txt) => `<div class="chk"><b>${ok===true?"✅":ok===false?"❌":"➖"}</b><span>${txt}</span></div>`;
+    $("#pmGo").onclick = async () => {
+      Player.unlock(); const out=$("#pmRes"); out.innerHTML=""; $("#pmGo").disabled=true; ow.className="owl listen";
+      let rows=[]; let micOk=false, url=null, heard="", srErr=null;
+      if(Mic.supported()){ micOk = await Mic.open(); }
+      rows.push(line(micOk, micOk ? "Microfono autorizzato" : "Microfono non disponibile"+(Mic.err?` (${Mic.err})`:"")+": consenti il microfono a Chrome"));
+      let recOn = micOk && Mic.start();
+      $("#pmRec").classList.remove("hidden"); Mic.onLevel = v => { $("#pmL").style.width=Math.round(v*100)+"%"; };
+      const r = SR ? await Rec.listen({maxMs:6000, onInterim:t=>{$("#pmB").innerHTML=`Sento: <bdi class="ar">${esc(t)}</bdi>`;}}) : {error:"unsupported"};
+      const peak = Mic.peak; url = recOn ? await Mic.stop() : null; Mic.close(); Mic.onLevel=null; $("#pmRec").classList.add("hidden");
+      heard = r.text||""; srErr = r.error;
+      rows.push(line(recOn ? !!url : null, recOn ? (url ? `Registrazione della voce ok (volume massimo ${Math.round(peak*100)}%)` : "Registrazione vuota") : "Registrazione non provata"));
+      let srOk = !!heard;
+      if(!srOk && recOn && SR){ // riprova senza registrazione: forse il telefono non le regge insieme
+        $("#pmB").innerHTML = "Riproviamo solo l'ascolto: ripeti <span class='quran' style='font-size:24px'>بِسۡمِ ٱللَّهِ</span>";
+        const r2 = await Rec.listen({maxMs:6000}); heard=r2.text||""; srErr=r2.error;
+        if(heard){ S.set.recConflict=true; Store.save(); rows.push(line(null,"Su questo telefono ascolto e registrazione insieme non funzionano: il maestro userà solo l'ascolto.")); }
+        srOk=!!heard;
+      } else if(srOk && recOn){ S.set.recConflict=false; Store.save(); }
+      rows.push(line(SR ? srOk : false, !SR ? "Riconoscimento vocale non presente: usa Google Chrome su Android" : srOk ? `Riconoscimento arabo ok: ho capito <bdi class="ar" style="font-size:20px">${esc(heard)}</bdi>` : `Riconoscimento non riuscito (${esc(srErr||"nessun suono")})`));
+      const help = !micOk ? micHelp(Mic.err||"NotAllowedError") : (!srOk && srErr && srErr!=="no-speech") ? micHelp(srErr) : "";
+      out.innerHTML = rows.join("") + (help?`<div class="note err mt">${help}</div>`:"") + (url?`<div class="center mt"><button class="btn sec" id="pmPlay">▶ Ascolta la tua voce</button></div>`:"");
+      if(url) $("#pmPlay").onclick = () => Player.play([url]);
+      ow.className = "owl " + (srOk ? "happy" : "sad");
+      $("#pmB").innerHTML = srOk ? "Perfetto! Il maestro ti sente bene 🎉" : "Qualcosa non va: guarda la lista qui sotto 👇";
+      if(url && srOk){ await Player.play([url]); }
+      $("#pmGo").disabled=false; $("#pmGo").textContent="🔁 Rifai la prova";
+    };
+  },
+  studio(){
+    setHeader("Studio del Muqri'", true);
+    const st = S.studio = Object.assign({sura:1, from:1, to:7, preset:"moschea"}, S.studio||{});
+    app.innerHTML = `${envNote()}
+    <div class="card">
+      <div class="teacher"><div class="owlBox" style="width:80px;flex:none"></div><div class="bubble" id="stB">Scegli la sura, ascolta il recitatore se vuoi, poi premi <b>⏺ Registra</b> e recita con calma.</div></div>
+      <div class="set-row mt"><label>Sura</label><select id="stS">${QURAN.map(x=>`<option value="${x.n}">${x.n}. ${esc(x.tr)} – ${x.name}</option>`).join("")}</select></div>
+      <div class="set-row" style="display:flex;gap:10px"><div style="flex:1"><label style="font-weight:800">Dall'ayah</label><select id="stA"></select></div><div style="flex:1"><label style="font-weight:800">All'ayah</label><select id="stZ"></select></div></div>
+      <div class="quran" id="stTxt" style="font-size:27px;line-height:2.1;text-align:center;max-height:42vh;overflow:auto;background:#FFFCF5;border-radius:16px;padding:8px"></div>
+      <div class="center hidden mt" id="stRec"><span class="rec-badge">Registrazione <span id="stT">0:00</span></span><div class="lvl"><i id="stL"></i></div></div>
+      <div class="controls"><button class="btn sec" id="stListen">🔊 Ascolta il recitatore</button><button class="btn big red" id="stGo">⏺ Registra</button></div>
+    </div>
+    <div class="card mt hidden" id="stFx">
+      <div style="font-weight:800;font-size:20px">🎚️ Rendi bella la tua voce</div>
+      <div class="chips mt" id="stP">${Object.entries(FX_PRESETS).map(([k,p])=>`<button class="chip" data-p="${k}">${p.label}</button>`).join("")}</div>
+      <div class="slider mt"><label>🕌 Eco della moschea <span id="vRev"></span></label><input type="range" id="fRev" min="0" max="80"></div>
+      <div class="slider"><label>🔥 Voce più calda e piena <span id="vWarm"></span></label><input type="range" id="fWarm" min="0" max="100"></div>
+      <div class="slider"><label>✨ Chiarezza <span id="vClar"></span></label><input type="range" id="fClar" min="0" max="100"></div>
+      <div class="slider"><label>📢 Volume uniforme (compressore) <span id="vComp"></span></label><input type="range" id="fComp" min="0" max="100"></div>
+      <div class="controls"><button class="btn sec" id="pOrig">▶ Originale</button><button class="btn purple big" id="pFx">▶ Con effetto</button><button class="btn sec sq" id="pStop">⏹</button></div>
+      <div class="controls"><button class="btn green" id="sKeep">⭐ Salva nelle mie recitazioni</button><button class="btn sec" id="sDown">💾 Scarica</button><button class="btn sec" id="sShare">📤 Condividi</button></div>
+      <div class="note">ℹ️ L'effetto migliora suono e ambiente (eco, calore, volume): la bellezza della recitazione resta la tua 🙂</div>
+    </div>
+    <div class="card mt"><div style="font-weight:800;font-size:19px">📂 Le mie recitazioni</div><div id="stList"><small style="color:var(--muted)">Nessuna ancora.</small></div></div>`;
+    const ow=owl(); $(".owlBox").appendChild(ow);
+    const selS=$("#stS"), selA=$("#stA"), selZ=$("#stZ");
+    const sura = () => QURAN.find(x=>x.n===st.sura);
+    const fillAyat = () => { const n=sura().c; st.from=Math.min(st.from,n); st.to=Math.min(Math.max(st.to,st.from),n);
+      selA.innerHTML = selZ.innerHTML = Array.from({length:n},(_,k)=>`<option value="${k+1}">${k+1}</option>`).join(""); selA.value=st.from; selZ.value=st.to; showTxt(); };
+    const showTxt = async () => { $("#stTxt").innerHTML="⏳"; const x=await loadSura(st.sura);
+      if(!x){ $("#stTxt").innerHTML="<span style='font-family:Baloo 2'>Serve internet per caricare il testo 📶</span>"; return; } let h = (x.n!==1 && x.n!==9 && st.from===1) ? `<div style="font-size:22px;color:var(--teal-d)">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>` : "";
+      h += x.v.slice(st.from-1, st.to).map((v,k)=>`${esc(v[0])} <span style="color:var(--teal);font-size:20px">﴿${(st.from+k).toLocaleString("ar-EG")}﴾</span>`).join(" "); $("#stTxt").innerHTML=h; Store.save(); };
+    selS.value=st.sura; fillAyat();
+    selS.onchange=()=>{ st.sura=+selS.value; st.from=1; st.to=sura().c; fillAyat(); };
+    selA.onchange=()=>{ st.from=+selA.value; if(st.to<st.from) st.to=st.from; selZ.value=st.to; showTxt(); };
+    selZ.onchange=()=>{ st.to=+selZ.value; if(st.from>st.to) st.from=st.to; selA.value=st.from; showTxt(); };
+
+    let listening=false;
+    $("#stListen").onclick = async () => {
+      if(listening){ listening=false; Player.stop(); $("#stListen").textContent="🔊 Ascolta il recitatore"; return; }
+      listening=true; $("#stListen").textContent="⏹ Ferma ascolto"; const x=sura();
+      for(let a=st.from; a<=st.to && listening; a++){ ow.className="owl talk"; const r=await Player.play(ayahUrls(x.n,a,x.start+a), 1); if(r!==true) break; }
+      listening=false; ow.className="owl"; $("#stListen").textContent="🔊 Ascolta il recitatore";
+    };
+
+    // registrazione
+    let recording=false, t0=0, timer=0, rawBlob=null, rawBuf=null, fxBlob=null, fxDirty=true;
+    const fx = Object.assign({}, FX_PRESETS[st.preset]||FX_PRESETS.moschea);
+    $("#stGo").onclick = async () => {
+      if(recording){ return stopRec(); }
+      Player.stop(); listening=false;
+      if(!Mic.supported()){ $("#stB").innerHTML = "Questo browser non può registrare. Usa Google Chrome."; return; }
+      $("#stB").innerHTML="Chiedo il permesso del microfono… se compare la richiesta tocca <b>Consenti</b>.";
+      if(!(await Mic.open()) || !Mic.start()){ ow.className="owl sad"; $("#stB").innerHTML = micHelp(Mic.err||"NotAllowedError"); return; }
+      recording=true; t0=Date.now(); ow.className="owl listen"; $("#stB").innerHTML="Ti sto registrando… recita con calma 🎙️"; $("#stRec").classList.remove("hidden");
+      $("#stGo").textContent="⏹ Stop"; $("#stGo").classList.replace("red","orange");
+      Mic.onLevel = v => { $("#stL").style.width=Math.round(v*100)+"%"; };
+      timer=setInterval(()=>{ const sec=Math.floor((Date.now()-t0)/1000); $("#stT").textContent=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,"0")}`; if(sec>=600) stopRec(); },250);
+    };
+    const stopRec = async () => {
+      recording=false; clearInterval(timer); $("#stRec").classList.add("hidden"); $("#stGo").textContent="⏺ Registra di nuovo"; $("#stGo").classList.replace("orange","red");
+      const url = await Mic.stop(); Mic.close(); Mic.onLevel=null;
+      if(!url){ ow.className="owl sad"; $("#stB").innerHTML="La registrazione è vuota. Fai la prova del microfono 🎤"; return; }
+      ow.className="owl"; $("#stB").innerHTML="Preparo la tua voce… ⏳";
+      try{
+        rawBlob = await (await fetch(url)).blob();
+        const AC = window.AudioContext||window.webkitAudioContext; const ac = Mic.ctx || (Mic.ctx = new AC());
+        rawBuf = await ac.decodeAudioData(await rawBlob.arrayBuffer());
+        fxDirty=true; $("#stFx").classList.remove("hidden"); ow.className="owl happy";
+        $("#stB").innerHTML="Fatto! Ascolta la tua voce <b>con l'effetto</b> 👇"; $("#stFx").scrollIntoView({behavior:"smooth"});
+      }catch(e){ ow.className="owl sad"; $("#stB").innerHTML="Non riesco a leggere la registrazione su questo telefono 😕"; }
+    };
+
+    // effetti
+    const sliders = [["fRev","vRev","rev"],["fWarm","vWarm","warm"],["fClar","vClar","clar"],["fComp","vComp","comp"]];
+    const syncFx = () => { sliders.forEach(([i,v,k])=>{ $("#"+i).value=fx[k]; $("#"+v).textContent=fx[k]; });
+      document.querySelectorAll("#stP .chip").forEach(c=>c.classList.toggle("on", c.dataset.p===st.preset)); };
+    sliders.forEach(([i,v,k])=>{ $("#"+i).oninput = e => { fx[k]=+e.target.value; $("#"+v).textContent=fx[k]; fxDirty=true; st.preset=""; syncFx(); }; });
+    $("#stP").onclick = e => { const k=e.target.dataset.p; if(!k) return; st.preset=k; Object.assign(fx, FX_PRESETS[k]); fxDirty=true; Store.save(); syncFx(); $("#pFx").click(); };
+    syncFx();
+    const getFx = async () => {
+      if(!rawBuf) return null;
+      if(fxDirty || !fxBlob){ $("#pFx").textContent="⏳ Elaboro…"; const out = await renderFx(rawBuf, fx); fxBlob = wavBlob(out); fxDirty=false; $("#pFx").textContent="▶ Con effetto"; }
+      return fxBlob;
+    };
+    const title = () => { const x=sura(); return `${x.tr} ${st.from}-${st.to}`; };
+    const fname = () => `${title().replace(/[^\w-]+/g,"_")}_${new Date().toISOString().slice(0,10)}.wav`;
+    let fxUrl=null;
+    $("#pOrig").onclick = () => { if(rawBlob){ Player.play([URL.createObjectURL(rawBlob)]); } };
+    $("#pFx").onclick = async () => { Player.unlock(); const b=await getFx(); if(!b) return; if(fxUrl) URL.revokeObjectURL(fxUrl); fxUrl=URL.createObjectURL(b); Player.play([fxUrl]); };
+    $("#pStop").onclick = () => Player.stop();
+    $("#sDown").onclick = async () => { const b=await getFx(); if(b) saveBlob(b, fname()); };
+    $("#sShare").onclick = async () => { const b=await getFx(); if(!b) return; if(!(await shareBlob(b, fname()))) saveBlob(b, fname()); };
+    $("#sKeep").onclick = async () => { const b=await getFx(); if(!b) return;
+      const ok = await RecDB.put({id:Date.now(), title:title(), date:new Date().toLocaleString("it-IT"), preset:st.preset, blob:b});
+      $("#stB").innerHTML = ok ? "Salvata nelle tue recitazioni ⭐" : "Non riesco a salvarla su questo telefono: usa 💾 Scarica.";
+      if(ok){ addStars(2); renderList(); } };
+    const renderList = async () => {
+      const all = await RecDB.all(); const L=$("#stList"); if(!L) return;
+      if(!all.length){ L.innerHTML=`<small style="color:var(--muted)">Nessuna ancora.</small>`; return; }
+      L.innerHTML = all.map(r=>`<div class="recitem"><span class="t">${esc(r.title)}<small>${esc(r.date)}${r.preset&&FX_PRESETS[r.preset]?" · "+FX_PRESETS[r.preset].label:""}</small></span>
+        <button data-a="play" data-id="${r.id}">▶</button><button data-a="share" data-id="${r.id}">📤</button><button data-a="del" data-id="${r.id}">🗑</button></div>`).join("");
+      L.onclick = async e => { const b=e.target.closest("button"); if(!b) return; const r=all.find(x=>x.id===+b.dataset.id); if(!r) return;
+        if(b.dataset.a==="play") Player.play([URL.createObjectURL(r.blob)]);
+        if(b.dataset.a==="share"){ const n=r.title.replace(/[^\w-]+/g,"_")+".wav"; if(!(await shareBlob(r.blob,n))) saveBlob(r.blob,n); }
+        if(b.dataset.a==="del"){ if(b.dataset.sure){ await RecDB.del(r.id); renderList(); } else { b.dataset.sure=1; b.textContent="❓"; setTimeout(()=>{ if(b.isConnected){ b.textContent="🗑"; delete b.dataset.sure; } },2500); } }
+      };
+    };
+    renderList();
+  },
+  async sura(n){
+    const s = QURAN.find(x=>x.n===n); if(!s) return Views.corano();
+    setHeader(`${s.tr} · ${s.name}`, true);
+    app.innerHTML = `<div class="card center">⏳ Carico la sura…</div>`;
+    const ok = await loadSura(n);
+    if(location.hash !== "#sura-"+n) return;
+    if(!ok){ app.innerHTML = `<div class="note err">Non riesco a caricare il testo della sura. Controlla internet 📶 e riprova.</div>`; return; }
+    app.innerHTML = `<div id="les"></div>`;
+    S.ayat[n] = S.ayat[n] || {};
+    currentLesson = new Lesson($("#les"), {
+      kind:"quran", items: s.v.map(v=>({ar:v[0], tr:v[1]})),
+      metaText:i=>`Ayah ${i+1} di ${s.v.length}`,
+      play:(i,rate)=>Player.play(ayahUrls(n, i+1, s.start+i+1), rate),
+      playWord:(i,k,rate)=>Player.play([`https://audio.qurancdn.com/wbw/${pad3(n)}_${pad3(i+1)}_${pad3(k+1)}.mp3`], Math.min(1,rate)),
+      intro: async (i, alive, L) => {
+        if(i===0 && n!==1 && n!==9 && S.set.basmala){
+          L.mood("talk"); L.bubble(`<span class="quran" style="font-size:24px">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</span>`);
+          const r = await Player.play(ayahUrls(1,1,1), L.rate()); if(r==="blocked" && alive()){ await L.waitButtons([["🔊 Ascolta","orange",1]]); }
+        }
+      },
+      isDone:i=>!!S.ayat[n][i], markDone:i=>{ S.ayat[n][i]=1; Store.save(); }
+    });
+  }
+};
+
+function quizGame(g){
+  let round=0, score=0, q=null, tries=0;
+  const next = () => {
+    if(round>=g.rounds){ app.innerHTML = `<div class="card center"><div style="font-size:70px">🏆</div><div class="sec-title">Bravo! ${score}/${g.rounds} al primo colpo</div>
+      <button class="btn big" id="again">🔄 Gioca ancora</button></div>`; addStars(3); confetti(); $("#again").onclick=()=>{round=0;score=0;next();}; return; }
+    q = g.make(); tries=0; round++;
+    app.innerHTML = `<div class="progress-txt">Domanda ${round} di ${g.rounds} · ✅ ${score}</div><div class="card mt">${g.ask(q)}</div>
+      <div class="opts">${q.opts.map((o,i)=>`<button class="opt ${g.word?"word":""}" data-i="${i}">${g.optHtml(o)}</button>`).join("")}</div>`;
+    const oq=$(".owlQ"); if(oq) oq.appendChild(owl("talk"));
+    const sb=$("[data-say]"); if(sb){ sb.onclick=()=>g.say(q); g.say(q).then(()=>{ const o=$(".owlQ .owl"); if(o) o.className="owl"; }); }
+    $(".opts").onclick = async e => {
+      const b=e.target.closest(".opt"); if(!b||b.disabled) return; const o=q.opts[+b.dataset.i];
+      if(g.isRight(q,o)){ b.classList.add("right"); document.querySelectorAll(".opt").forEach(x=>x.disabled=true);
+        if(tries===0){ score++; addStars(1); } if(g.after) await g.after(q); await sleep(700); next(); }
+      else { tries++; b.classList.add("wrong"); b.disabled=true; }
+    };
+  };
+  next();
+}
+
+function route(){
+  if(currentLesson){ currentLesson.stop(); currentLesson=null; }
+  Player.stop(); Rec.stop(); Voice.stop(); Mic.stop().then(()=>Mic.close());
+  const h = location.hash.slice(1) || "home";
+  window.scrollTo(0,0);
+  if(h.startsWith("sura-")) return Views.sura(+h.slice(5));
+  if(h.startsWith("hadith-")) return Views.hadith(+h.slice(7));
+  (Views[h] || Views.home)();
+}
+window.addEventListener("hashchange", route);
+document.getElementById("starN").textContent = S.stars;
+route();
+setTimeout(()=>{ if(!location.hash || location.hash==="#home") route(); }, 1200); // ridisegna quando le voci sono caricate
+</script>
+</body>
+</html>

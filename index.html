@@ -10,7 +10,7 @@
 <title>Bayān Kids – Arabo, Ahadith e Corano</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Baloo+2:wght@500;700;800&family=Noto+Naskh+Arabic:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Baloo+2:wght@500;700;800&family=Fredoka:wght@500;600;700&family=Noto+Naskh+Arabic:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#FFF8EC; --card:#FFFFFF; --ink:#2B2D42; --muted:#6B7080;
@@ -168,6 +168,95 @@ input[type=range]{width:100%;accent-color:var(--purple);height:30px}
 input.name{font:inherit;font-size:18px;padding:10px 12px;border-radius:14px;border:2px solid #E2E2E2;width:100%}
 .center{text-align:center}
 .mt{margin-top:14px}
+
+/* ======== TEMA BAMBINI ======== */
+body{background:
+  radial-gradient(circle at 12% 8%, rgba(255,255,255,.9) 0 26px, transparent 27px),
+  radial-gradient(circle at 18% 9%, rgba(255,255,255,.9) 0 20px, transparent 21px),
+  radial-gradient(circle at 84% 14%, rgba(255,255,255,.85) 0 22px, transparent 23px),
+  radial-gradient(circle at 90% 13%, rgba(255,255,255,.85) 0 16px, transparent 17px),
+  linear-gradient(180deg,#7FD1FF 0,#BDE9FF 260px,#E8F8FF 420px,#FFF8EC 640px);
+  background-repeat:no-repeat;min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+h1,.sec-title,.tile b,.mtile b,.btn,.hero b,.banner b{font-family:"Fredoka","Baloo 2",sans-serif}
+header{background:linear-gradient(120deg,#0E9F8E,#18B6C9 55%,#4C8DFF);box-shadow:0 6px 0 rgba(11,127,114,.35);
+  border-radius:0 0 26px 26px;padding-bottom:12px}
+header h1{font-size:23px;font-weight:700;letter-spacing:.2px}
+.back{background:rgba(255,255,255,.25);border-radius:16px}
+.stars{background:linear-gradient(180deg,#FFE680,#FFC93C);box-shadow:0 3px 0 #E0A800;font-size:18px}
+main{padding:18px 16px}
+.card{border-radius:26px;box-shadow:0 7px 0 rgba(0,0,0,.06),0 12px 26px rgba(30,60,90,.08)}
+.bubble{border-radius:22px;border:3px solid #E5F4FF;box-shadow:0 5px 0 rgba(0,0,0,.05)}
+.bubble:before{border-right-color:#E5F4FF;left:-13px}
+.owl svg .pg{animation:bob 3.2s ease-in-out infinite;transform-origin:60px 112px}
+@keyframes bob{50%{transform:translateY(-2.5px) rotate(-1.5deg)}}
+.owl .eyes{animation:blink 4.5s infinite;transform-origin:60px 47px}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+.owl .flipL,.owl .flipR{transition:transform .35s}
+.owl .flipL{transform-origin:30px 64px}.owl .flipR{transform-origin:90px 64px}
+.owl.happy svg .pg{animation:hop .55s ease 3}
+@keyframes hop{50%{transform:translateY(-9px)}}
+.owl.happy .flipL{transform:rotate(38deg)}.owl.happy .flipR{transform:rotate(-38deg)}
+.owl.listen .flipL{animation:wave 1s ease-in-out infinite}
+@keyframes wave{50%{transform:rotate(22deg)}}
+.owl.talk .beak{transform-origin:60px 55px}
+.owl.happy .eyes{animation:none}
+.owl.sad .pupil{transform:translateY(2.5px)}
+.owl.sad .flipL{transform:rotate(-8deg)}.owl.sad .flipR{transform:rotate(8deg)}
+/* hero */
+.hero{display:flex;align-items:center;gap:10px;margin:2px 0 14px}
+.hero .owlH{width:128px;flex:none}
+.hero .bubble{font-size:18px;flex:1}
+.level{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.level .medal{width:54px;height:54px;border-radius:50%;background:linear-gradient(180deg,#FFE680,#FFB703);display:grid;place-items:center;font-size:28px;box-shadow:0 4px 0 #E09A00;flex:none}
+.level .t{flex:1}.level b{font-family:"Fredoka","Baloo 2",sans-serif;font-size:19px}
+.level .bar{height:12px;background:#FFF1C9}.level .bar i{background:linear-gradient(90deg,#FFB703,#FB8500)}
+.level small{color:var(--muted)}
+/* menu */
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+@media(min-width:700px){.menu{grid-template-columns:repeat(4,1fr)}}
+.mtile{position:relative;overflow:hidden;border-radius:30px;padding:18px 10px 16px;color:#fff;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:8px;min-height:168px;justify-content:center;transition:transform .12s}
+.mtile:active{transform:translateY(5px) scale(.98)}
+.mtile:after{content:"";position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.14);top:-40px;right:-40px}
+.mtile:before{content:"";position:absolute;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.12);bottom:-24px;left:-18px}
+.mtile .ic{width:78px;height:78px;border-radius:50%;background:rgba(255,255,255,.28);display:grid;place-items:center;font-size:44px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.08)}
+.mtile b{font-size:21px;line-height:1.05;position:relative;z-index:1}
+.mtile small{font-size:14px;opacity:.95;line-height:1.2;position:relative;z-index:1}
+.mtile.wide{grid-column:1/-1;flex-direction:row;min-height:auto;justify-content:flex-start;text-align:left;padding:14px 18px}
+.mtile.wide .ic{width:58px;height:58px;font-size:32px}
+.g-purple{background:linear-gradient(160deg,#9B7BFF,#6A45F0);box-shadow:0 8px 0 #4F2FC9}
+.g-teal{background:linear-gradient(160deg,#20C3AE,#0B8F80);box-shadow:0 8px 0 #07695E}
+.g-orange{background:linear-gradient(160deg,#FFB547,#FF8A00);box-shadow:0 8px 0 #D46F00}
+.g-pink{background:linear-gradient(160deg,#FF7EA8,#F2477E);box-shadow:0 8px 0 #C72D60}
+.g-sky{background:linear-gradient(160deg,#5DD3F5,#2196F3);box-shadow:0 8px 0 #1673C2}
+.g-green{background:linear-gradient(160deg,#5AD58F,#22A75E);box-shadow:0 8px 0 #178347}
+/* banner di sezione */
+.banner{border-radius:28px;padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;margin-bottom:16px;position:relative;overflow:hidden}
+.banner .ic{font-size:46px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;flex:none}
+.banner b{display:block;font-size:24px;line-height:1.1}.banner small{font-size:15px;opacity:.95}
+.banner:after{content:"";position:absolute;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.13);top:-50px;right:-30px}
+/* tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;display:flex;justify-content:space-around;
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom));border-radius:26px 26px 0 0;box-shadow:0 -6px 24px rgba(30,60,90,.12)}
+.tabbar a{flex:1;text-decoration:none;color:var(--muted);font-weight:800;font-size:12.5px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;border-radius:18px;font-family:"Fredoka","Baloo 2",sans-serif}
+.tabbar a span{font-size:25px;line-height:1.1;transition:transform .2s}
+.tabbar a.on{color:var(--teal-d);background:#E3F7F4}
+.tabbar a.on span{transform:translateY(-3px) scale(1.15)}
+/* stella a 8 punte per i numeri delle sure */
+.snum{position:relative;width:48px;height:48px;display:grid;place-items:center;flex:none;color:#fff;font-weight:800;font-family:"Fredoka","Baloo 2",sans-serif;font-size:15px}
+.snum:before,.snum:after{content:"";position:absolute;inset:7px;border-radius:7px;background:var(--teal)}
+.snum:after{transform:rotate(45deg)}
+.snum i{position:relative;z-index:1;font-style:normal}
+.snum.done:before,.snum.done:after{background:#FFB703}
+.list .card.row{border:3px solid transparent}
+.list .card.row:active{border-color:#BDEFE8;transform:scale(.99)}
+.num{border-radius:16px;background:linear-gradient(180deg,#FFE9C2,#FFD08A);color:#8A4B00}
+.teacher .owl{width:112px}
+.letter{border-radius:22px;box-shadow:0 6px 0 #E4DCFF;border:3px solid #EFE9FF;color:#5B3FD9}
+.opt{border:3px solid #EEF2F7}
+.mcard{background:linear-gradient(160deg,#9B7BFF,#6A45F0);box-shadow:0 6px 0 #4F2FC9}
+.btn{border-radius:18px}
+.namebox{display:flex;gap:8px;align-items:center}
 </style>
 </head>
 <body>
@@ -177,21 +266,40 @@ input.name{font:inherit;font-size:18px;padding:10px 12px;border-radius:14px;bord
   <div class="stars" id="stars">⭐ <span id="starN">0</span></div>
 </header>
 <main id="app"></main>
+<nav class="tabbar" id="tabbar">
+  <a href="#home" data-t="home"><span>🏠</span>Casa</a>
+  <a href="#giochi" data-t="giochi"><span>🎮</span>Giochi</a>
+  <a href="#corano" data-t="corano"><span>📖</span>Corano</a>
+  <a href="#ahadith" data-t="ahadith"><span>📜</span>Ahadith</a>
+  <a href="#studio" data-t="studio"><span>🎙️</span>Studio</a>
+</nav>
 <div class="confetti" id="confetti"></div>
 
 <template id="owlTpl">
 <svg viewBox="0 0 120 120" aria-hidden="true">
-  <path d="M22 44 L28 12 L48 32Z" fill="#7A4E2D"/><path d="M98 44 L92 12 L72 32Z" fill="#7A4E2D"/>
-  <ellipse cx="60" cy="70" rx="44" ry="46" fill="#8B5E3C"/>
-  <ellipse cx="60" cy="84" rx="28" ry="28" fill="#F1D7B0"/>
-  <path d="M40 80 q6 6 12 0 M56 92 q6 6 12 0 M70 80 q6 6 12 0" stroke="#D9B98C" stroke-width="2" fill="none"/>
-  <circle cx="43" cy="52" r="15" fill="#fff"/><circle cx="77" cy="52" r="15" fill="#fff"/>
-  <circle class="pupil" cx="43" cy="53" r="6.5" fill="#222"/><circle class="pupil" cx="77" cy="53" r="6.5" fill="#222"/>
-  <path class="happy" d="M33 54 q10 -10 20 0 M67 54 q10 -10 20 0" stroke="#222" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <g fill="none" stroke="#2B2D42" stroke-width="3"><circle cx="43" cy="52" r="17"/><circle cx="77" cy="52" r="17"/><path d="M60 50 h0.1"/></g>
-  <path class="beak" d="M53 66 L67 66 L60 78Z" fill="#FF9F1C"/>
-  <path d="M20 78 q-8 14 6 26 q4 -14 -6 -26Z M100 78 q8 14 -6 26 q-4 -14 6 -26Z" fill="#6E4426"/>
-  <g class="mic"><circle cx="104" cy="22" r="14" fill="#E63946"/><rect x="100" y="13" width="8" height="13" rx="4" fill="#fff"/><path d="M97 22 q7 9 14 0 M104 29 v4" stroke="#fff" stroke-width="2" fill="none"/></g>
+ <ellipse cx="60" cy="115" rx="30" ry="4" fill="#000" opacity=".12"/>
+ <g class="pg">
+  <ellipse cx="46" cy="111" rx="11" ry="5" fill="#FF9F1C"/><ellipse cx="74" cy="111" rx="11" ry="5" fill="#FF9F1C"/>
+  <path class="flipL" d="M26 60 Q8 78 14 96 Q26 86 31 72Z" fill="#1F2A44"/>
+  <path class="flipR" d="M94 60 Q112 78 106 96 Q94 86 89 72Z" fill="#1F2A44"/>
+  <path d="M60 14 C30 14 21 44 21 70 C21 96 37 112 60 112 C83 112 99 96 99 70 C99 44 90 14 60 14Z" fill="#26344F"/>
+  <path d="M60 48 C41 48 35 66 35 82 C35 100 46 108 60 108 C74 108 85 100 85 82 C85 66 79 48 60 48Z" fill="#fff"/>
+  <path d="M60 31 C47 26 33 34 33 49 C33 61 45 67 60 67 C75 67 87 61 87 49 C87 34 73 26 60 31Z" fill="#fff"/>
+  <path d="M29 70 Q60 83 91 70 L91 78 Q60 91 29 78Z" fill="#0E9F8E"/>
+  <path d="M72 80 L83 101 L73 99 L66 83Z" fill="#0B7F72"/>
+  <circle cx="44" cy="77" r="1.8" fill="#FFD23F"/><circle cx="60" cy="81" r="1.8" fill="#FFD23F"/><circle cx="76" cy="77" r="1.8" fill="#FFD23F"/>
+  <path d="M37 25 Q39 8 60 7 Q81 8 83 25 Q60 19 37 25Z" fill="#fff"/>
+  <path d="M38 24 Q60 18 82 24" stroke="#0E9F8E" stroke-width="2.5" fill="none"/>
+  <circle cx="50" cy="15" r="1.6" fill="#0E9F8E"/><circle cx="60" cy="12" r="1.6" fill="#0E9F8E"/><circle cx="70" cy="15" r="1.6" fill="#0E9F8E"/>
+  <g class="eyes">
+   <circle class="pupil" cx="48" cy="47" r="6.2" fill="#1B1B2F"/><circle class="pupil" cx="72" cy="47" r="6.2" fill="#1B1B2F"/>
+   <circle class="pupil" cx="50.2" cy="44.8" r="2.1" fill="#fff"/><circle class="pupil" cx="74.2" cy="44.8" r="2.1" fill="#fff"/>
+   <path class="happy" d="M41 49 q7 -8 14 0 M65 49 q7 -8 14 0" stroke="#1B1B2F" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+  </g>
+  <ellipse cx="39" cy="58" rx="6" ry="3.4" fill="#FF8FAB" opacity=".75"/><ellipse cx="81" cy="58" rx="6" ry="3.4" fill="#FF8FAB" opacity=".75"/>
+  <path class="beak" d="M52 55 Q60 50 68 55 L60 64Z" fill="#FF9F1C"/>
+ </g>
+ <g class="mic"><circle cx="104" cy="20" r="14" fill="#E63946"/><rect x="100" y="11" width="8" height="13" rx="4" fill="#fff"/><path d="M97 20 q7 9 14 0 M104 27 v4" stroke="#fff" stroke-width="2" fill="none"/></g>
 </svg>
 </template>
 
@@ -555,7 +663,7 @@ class Lesson {
     const o=this.o, st=this.set;
     this.root.innerHTML = `
     <div class="card">
-      <div class="teacher"><div class="owlBox"></div><div class="bubble" data-b>Ciao! Sono il Maestro Gufo 🦉 Tocca <b>▶ Inizia</b> e ripeti dopo di me.</div></div>
+      <div class="teacher"><div class="owlBox"></div><div class="bubble" data-b>Ciao! Sono Bayan 🐧 Tocca <b>▶ Inizia</b> e ripeti dopo di me.</div></div>
       <div class="ayah">
         <div class="meta"><span data-meta></span><span data-rep></span></div>
         <div class="txt ${o.kind==="quran"?"quran":"ar"}" data-txt></div>
@@ -575,7 +683,7 @@ class Lesson {
       <div class="extra" data-extra></div>
       <div class="note err hidden" data-warn></div>
       <details class="settings">
-        <summary>⚙️ Impostazioni del maestro</summary>
+        <summary>⚙️ Impostazioni di Bayan</summary>
         <div class="set-row"><label>Quante volte ripetere ogni ${o.kind==="quran"?"ayah":"frase"}</label>
           <div class="chips" data-reps>${[1,2,3,5,7,10].map(n=>`<button class="chip" data-n="${n}">${n}×</button>`).join("")}</div></div>
         <div class="set-row"><label>Modalità</label>
@@ -585,7 +693,7 @@ class Lesson {
         ${o.kind==="quran"?`<div class="set-row"><label>Recitatore</label><select data-recsel>${Object.entries(RECITERS).map(([k,r])=>`<option value="${k}">${r.name}</option>`).join("")}</select></div>`:""}
         <label class="switch">🐢 Lento <input type="checkbox" data-sw="slow"></label>
         <label class="switch">⏭ Passa da solo alla successiva <input type="checkbox" data-sw="auto"></label>
-        <label class="switch">🗣️ Voce del maestro (frasi in italiano) <input type="checkbox" data-sw="voice"></label>
+        <label class="switch">🗣️ Voce di Bayan (frasi in italiano) <input type="checkbox" data-sw="voice"></label>
         <label class="switch">🎙️ Registra la mia voce e fammela riascoltare <input type="checkbox" data-sw="record"></label>
         <label class="switch">🧠 Correggi parola per parola <input type="checkbox" data-sw="coach"></label>
         <div class="center mt"><a class="btn sec" href="#prova-mic" style="text-decoration:none;display:inline-block">🎤 Prova il microfono</a></div>
@@ -753,7 +861,7 @@ class Lesson {
         if(done===0 && fails===0) await this.say(`Ascolta bene${nm?", "+nm:""}.`); if(!alive()) return;
         this.mood("talk");
         let ok = await this.o.play(this.i, this.rate()); if(!alive()) return;
-        if(ok==="blocked"){ this.mood(""); this.bubble("Tocca il pulsante per far parlare il maestro 🔊");
+        if(ok==="blocked"){ this.mood(""); this.bubble("Tocca il pulsante per far parlare Bayan 🔊");
           await this.waitButtons([["🔊 Ascolta","orange",1]]); if(!alive()) return; continue; }
         if(ok!==true){ this.mood("sad"); this.bubble(this.o.audioError || "Non riesco a caricare l'audio. Controlla la connessione internet 📶"); this.stop(); return; }
       }
@@ -905,28 +1013,35 @@ $("#back").onclick = () => { const h=location.hash.slice(1); if(h==="prova-mic")
 const Views = {
   home(){
     setHeader("Bayān Kids", false);
+    const nm=(S.name||"").trim(), lvl=Math.floor(S.stars/20)+1, inLvl=S.stars%20;
     app.innerHTML = `
-      <div class="hello"><div class="owlH"></div><div class="bubble">As-salāmu ʿalaykum! 👋 Sono il <b>Maestro Gufo</b>. Cosa impariamo oggi?</div></div>
-      <div class="grid g3">
-        <button class="tile c-purple" onclick="location.hash='giochi'"><span class="em">🎮</span><span><b>Giochi d'Arabo</b><small>Alfabeto, parole, memory e ascolto</small></span></button>
-        <button class="tile c-orange" onclick="location.hash='ahadith'"><span class="em">📜</span><span><b>Ahadith</b><small>Le parole del Profeta ﷺ da imparare</small></span></button>
-        <button class="tile c-teal" onclick="location.hash='corano'"><span class="em">📖</span><span><b>Corano col Maestro</b><small>Ascolta l'ayah, ripetila e il maestro ti corregge</small></span></button>
+      <section class="hero"><div class="owlH"></div>
+        <div class="bubble">As-salāmu ʿalaykum${nm?", <b>"+esc(nm)+"</b>":""}! 👋<br>Sono <b>Bayan</b>, il pinguino maestro. Cosa impariamo oggi?</div></section>
+      <div class="card level"><div class="medal">🏅</div><div class="t"><b>Livello ${lvl}</b> <small>· ⭐ ${S.stars} stelle</small>
+        <div class="bar"><i style="width:${inLvl/20*100}%"></i></div><small>Ancora ${20-inLvl} ⭐ per il livello ${lvl+1}!</small></div></div>
+      <div class="menu">
+        <button class="mtile g-teal" onclick="location.hash='corano'"><span class="ic">📖</span><b>Corano</b><small>Ripeti con Bayan</small></button>
+        <button class="mtile g-purple" onclick="location.hash='giochi'"><span class="ic">🎮</span><b>Giochi</b><small>Alfabeto e parole</small></button>
+        <button class="mtile g-orange" onclick="location.hash='ahadith'"><span class="ic">📜</span><b>Ahadith</b><small>Le parole del Profeta ﷺ</small></button>
+        <button class="mtile g-pink" onclick="location.hash='studio'"><span class="ic">🎙️</span><b>Studio</b><small>Registra la tua voce</small></button>
+        <button class="mtile g-sky wide" onclick="location.hash='prova-mic'"><span class="ic">🎤</span><span><b>Prova il microfono</b><br><small>Controlla che Bayan ti senta</small></span></button>
       </div>
-      <div class="card mt"><label style="font-weight:800">👦 Come ti chiami? <small style="color:var(--muted)">(il maestro ti chiamerà per nome)</small></label>
-        <input class="name mt" id="nm" placeholder="Il tuo nome" value="${esc(S.name||"")}"></div>
+      <div class="card mt"><label style="font-weight:800;font-family:'Fredoka','Baloo 2',sans-serif;font-size:18px">👦👧 Come ti chiami?</label>
+        <div class="namebox mt"><input class="name" id="nm" placeholder="Scrivi il tuo nome" value="${esc(S.name||"")}"><button class="btn" id="nmOk">OK</button></div></div>
       ${envNote()}
-      <div class="center mt"><a class="btn sec" href="#prova-mic" style="text-decoration:none;display:inline-block">🎤 Prova il microfono</a></div>
       ${("speechSynthesis" in window) && Voice.noAr() ? `<div class="note">🔈 Il telefono non ha una voce araba installata: alcuni giochi non parleranno in arabo. Su Android: Impostazioni → Sintesi vocale → Google → installa “Arabo”.</div>`:""}`;
-    $(".owlH").appendChild(owl("happy")); $(".owlH").style.cssText="width:86px;flex:none";
+    $(".owlH").appendChild(owl("happy"));
     $("#nm").oninput = e => { S.name = e.target.value.slice(0,30); Store.save(); };
+    $("#nmOk").onclick = () => { Store.save(); Views.home(); if(S.name.trim()) Voice.speak("Ciao "+S.name.trim()+"! Io sono Bayan.","it",1.05); };
   },
   giochi(){
     setHeader("Giochi d'Arabo", true);
-    app.innerHTML = `<div class="grid">
-      <button class="tile c-purple" onclick="location.hash='alfabeto'"><span class="em ar" style="font-size:44px">أ ب</span><span><b>L'Alfabeto</b><small>Tocca una lettera e ascolta</small></span></button>
-      <button class="tile c-sky" onclick="location.hash='ascolta'"><span class="em">👂</span><span><b>Ascolta e trova</b><small>Quale lettera ha detto il maestro?</small></span></button>
-      <button class="tile c-green" onclick="location.hash='parole'"><span class="em">🍎</span><span><b>Le Parole</b><small>Che cos'è in arabo?</small></span></button>
-      <button class="tile c-pink" onclick="location.hash='memory'"><span class="em">🃏</span><span><b>Memory</b><small>Trova le coppie figura–parola</small></span></button>
+    app.innerHTML = `<div class="banner g-purple"><span class="ic">🎮</span><span><b>Giochi d'Arabo</b><small>Gioca e impara con Bayan!</small></span></div>
+    <div class="menu">
+      <button class="mtile g-purple" onclick="location.hash='alfabeto'"><span class="ic ar" style="font-size:36px">أ ب</span><b>L'Alfabeto</b><small>Tocca e ascolta</small></button>
+      <button class="mtile g-sky" onclick="location.hash='ascolta'"><span class="ic">👂</span><b>Ascolta e trova</b><small>Quale lettera è?</small></button>
+      <button class="mtile g-green" onclick="location.hash='parole'"><span class="ic">🍎</span><b>Le Parole</b><small>Come si dice?</small></button>
+      <button class="mtile g-pink" onclick="location.hash='memory'"><span class="ic">🃏</span><b>Memory</b><small>Trova le coppie</small></button>
     </div>`;
   },
   alfabeto(){
@@ -988,7 +1103,7 @@ const Views = {
   ahadith(){
     setHeader("Ahadith", true);
     const n = Object.keys(S.hadith).length;
-    app.innerHTML = `<div class="sec-title">📜 Le parole del Profeta ﷺ <small style="color:var(--muted);font-size:15px">· imparati ${n}/${HADITH.length}</small></div>
+    app.innerHTML = `<div class="banner g-orange"><span class="ic">📜</span><span><b>Le parole del Profeta ﷺ</b><small>Imparati ${n} su ${HADITH.length} ⭐</small></span></div>
     <div class="list">${HADITH.map((h,k)=>`<button class="card row" onclick="location.hash='hadith-${k}'">
       <span class="num">${S.hadith[k]?"⭐":k+1}</span><span class="t"><span class="h-ar ar" style="display:block">${h.ar}</span><small>${esc(h.it)}</small></span></button>`).join("")}</div>
     <div class="note">ℹ️ Testi e numerazione delle raccolte classiche: fateli sempre verificare dal vostro insegnante.</div>`;
@@ -1022,11 +1137,11 @@ const Views = {
     $("#pzReset").onclick = setup; setup();
   },
   corano(){
-    setHeader("Corano col Maestro", true);
-    app.innerHTML = `${envNote()}<div class="sec-title">📖 Scegli una sura</div>
-      <button class="tile c-purple" style="width:100%;margin-bottom:14px" onclick="location.hash='studio'"><span class="em">🎙️</span><span><b>Studio del Muqri'</b><small>Registra la tua recitazione e rendila bella come in moschea</small></span></button>
+    setHeader("Corano con Bayan", true);
+    app.innerHTML = `<div class="banner g-teal"><span class="ic">📖</span><span><b>Corano con Bayan</b><small>Scegli una sura: Bayan recita, tu ripeti!</small></span></div>${envNote()}
+      <div class="menu" style="margin:0 0 16px"><button class="mtile g-pink wide" onclick="location.hash='studio'"><span class="ic">🎙️</span><span><b>Studio del Muqri'</b><br><small>Registra la tua recitazione con l'eco della moschea</small></span></button></div>
       <div class="list">${QURAN.map(s=>{ const d=Object.keys(S.ayat[s.n]||{}).length, t=s.c;
-        return `<button class="card row" onclick="location.hash='sura-${s.n}'"><span class="num">${s.n}</span>
+        return `<button class="card row" onclick="location.hash='sura-${s.n}'"><span class="snum ${d>=t?"done":""}"><i>${s.n}</i></span>
           <span class="t"><b>${esc(s.tr)}</b><small>${esc(SURA_IT[s.n]||"")} · ${t} ayat</small><div class="bar"><i style="width:${Math.round(d/t*100)}%"></i></div></span>
           <span class="arn quran">${s.name}</span></button>`; }).join("")}</div>
       <div class="note">🎧 Serve internet per l'audio dei recitatori. Il controllo della voce confronta le parole, non le regole di tajwīd: per quelle resta fondamentale l'insegnante.</div>`;
@@ -1063,7 +1178,7 @@ const Views = {
       out.innerHTML = rows.join("") + (help?`<div class="note err mt">${help}</div>`:"") + (url?`<div class="center mt"><button class="btn sec" id="pmPlay">▶ Ascolta la tua voce</button></div>`:"");
       if(url) $("#pmPlay").onclick = () => Player.play([url]);
       ow.className = "owl " + (srOk ? "happy" : "sad");
-      $("#pmB").innerHTML = srOk ? "Perfetto! Il maestro ti sente bene 🎉" : "Qualcosa non va: guarda la lista qui sotto 👇";
+      $("#pmB").innerHTML = srOk ? "Perfetto! Bayan ti sente bene 🎉" : "Qualcosa non va: guarda la lista qui sotto 👇";
       if(url && srOk){ await Player.play([url]); }
       $("#pmGo").disabled=false; $("#pmGo").textContent="🔁 Rifai la prova";
     };
@@ -1228,6 +1343,8 @@ function route(){
   Player.stop(); Rec.stop(); Voice.stop(); Mic.stop().then(()=>Mic.close());
   const h = location.hash.slice(1) || "home";
   window.scrollTo(0,0);
+  const sec = h.startsWith("sura-")||h==="corano" ? "corano" : h.startsWith("hadith")||h==="ahadith" ? "ahadith" : ["giochi","alfabeto","ascolta","parole","memory"].includes(h) ? "giochi" : h==="studio" ? "studio" : h==="home" ? "home" : "";
+  document.querySelectorAll("#tabbar a").forEach(a=>a.classList.toggle("on", a.dataset.t===sec));
   if(h.startsWith("sura-")) return Views.sura(+h.slice(5));
   if(h.startsWith("hadith-")) return Views.hadith(+h.slice(7));
   (Views[h] || Views.home)();

@@ -257,6 +257,16 @@ main{padding:18px 16px}
 .mcard{background:linear-gradient(160deg,#9B7BFF,#6A45F0);box-shadow:0 6px 0 #4F2FC9}
 .btn{border-radius:18px}
 .namebox{display:flex;gap:8px;align-items:center}
+#stars{display:none!important}
+.cele{position:fixed;inset:0;z-index:60;background:rgba(20,40,70,.45);display:grid;place-items:center;padding:20px;animation:fadein .25s}
+.cele .box{background:linear-gradient(180deg,#FFFFFF,#FFF5D6);border-radius:32px;padding:22px 20px;text-align:center;max-width:360px;width:100%;
+  box-shadow:0 10px 0 #E9C46A,0 20px 40px rgba(0,0,0,.25);animation:popin .45s cubic-bezier(.2,1.6,.4,1)}
+.cele .owl{width:170px;margin:-70px auto 0}
+.cele b{display:block;font-family:"Fredoka","Baloo 2",sans-serif;font-size:28px;color:#0B7F72;line-height:1.1;margin-top:6px}
+.cele p{font-size:20px;font-weight:700;margin:8px 0 14px}
+.cele .trophy{font-size:54px;line-height:1}
+@keyframes fadein{from{opacity:0}}
+@keyframes popin{from{transform:scale(.4);opacity:0}}
 </style>
 </head>
 <body>
@@ -425,7 +435,7 @@ async function loadSura(n){
 
 /* ================= STATO ================= */
 const Store = (()=>{
-  const def = {stars:0, ayat:{}, hadith:{}, letters:{}, set:{reps:3, mode:"mic", sev:"facile", rec:"alafasy", slow:false, auto:true, voice:true, basmala:true, translit:true, record:true, coach:true, recConflict:false}, name:""};
+  const def = {stars:0, ayat:{}, hadith:{}, letters:{}, set:{reps:3, mode:"mic", sev:"facile", rec:"alafasy", slow:false, auto:true, voice:true, basmala:true, translit:true, record:true, coach:true, recConflict:false, myVoice:true}, name:""};
   let d = def;
   try{ const j = JSON.parse(localStorage.getItem("bayanKids")||"null"); if(j){ d = Object.assign({}, def, j); d.set = Object.assign({}, def.set, j.set||{}); } }catch(e){}
   return { d, save(){ try{ localStorage.setItem("bayanKids", JSON.stringify(d)); }catch(e){} } };
@@ -440,6 +450,24 @@ function confetti(){
   const c = document.getElementById("confetti"); const em = ["⭐","🌟","✨","🎉","💚","🌙"];
   for(let i=0;i<26;i++){ const x=document.createElement("i"); x.textContent=em[i%em.length];
     x.style.left=Math.random()*100+"vw"; x.style.animationDelay=Math.random()*.6+"s"; c.appendChild(x); setTimeout(()=>x.remove(),2600); }
+}
+
+// ogni 10 risposte giuste Bayan festeggia
+function goodJob(){
+  S.good = (S.good||0) + 1; Store.save();
+  if(S.good % 10 !== 0) return null;
+  const n = S.good, nm = (S.name||"").trim();
+  const old = document.getElementById("cele"); if(old) old.remove();
+  const d = document.createElement("div"); d.className="cele"; d.id="cele";
+  d.innerHTML = `<div class="box"><div class="pgBox"></div><div class="trophy">🏆</div>
+    <b>Ma sha Allah${nm?", "+esc(nm):""}!</b><p>Hai fatto <span style="color:#FB8500">${n}</span> cose giuste! 🎉</p>
+    <button class="btn big green">Continua ▶</button></div>`;
+  d.querySelector(".pgBox").appendChild(owl("happy"));
+  const close = () => d.remove();
+  d.querySelector("button").onclick = close; d.onclick = e => { if(e.target===d) close(); };
+  document.body.appendChild(d); confetti(); setTimeout(()=>confetti(),700);
+  setTimeout(close, 4500);
+  return `Mashallah${nm?" "+nm:""}! Hai fatto ${n} cose giuste!`;
 }
 
 /* ================= UTILITY ================= */
@@ -695,6 +723,8 @@ class Lesson {
         <label class="switch">⏭ Passa da solo alla successiva <input type="checkbox" data-sw="auto"></label>
         <label class="switch">🗣️ Voce di Bayan (frasi in italiano) <input type="checkbox" data-sw="voice"></label>
         <label class="switch">🎙️ Registra la mia voce e fammela riascoltare <input type="checkbox" data-sw="record"></label>
+        <label class="switch">👨 Bayan parla con la voce di papà/mamma <input type="checkbox" data-sw="myVoice"></label>
+        <div class="center"><a class="btn sec" href="#voce" style="text-decoration:none;display:inline-block">🗣️ Registra la voce di Bayan</a></div>
         <label class="switch">🧠 Correggi parola per parola <input type="checkbox" data-sw="coach"></label>
         <div class="center mt"><a class="btn sec" href="#prova-mic" style="text-decoration:none;display:inline-block">🎤 Prova il microfono</a></div>
         ${o.kind==="quran"?`<label class="switch">بسم الله Basmala all'inizio della sura <input type="checkbox" data-sw="basmala"></label>
@@ -731,7 +761,7 @@ class Lesson {
   warn(html){ this.el.warn.innerHTML=html; this.el.warn.classList.toggle("hidden", !html); }
   bubble(html){ this.el.b.innerHTML = html; }
   mood(m){ this.owl.className = "owl "+(m||""); }
-  say(text){ return this.set.voice ? Voice.speak(text,"it",1.05) : Promise.resolve(); }
+  say(text, key){ return this.set.voice ? sayP(key, text) : Promise.resolve(); }
   show(labels){
     const it=this.o.items[this.i];
     this.el.meta.textContent = this.o.metaText(this.i);
@@ -826,24 +856,25 @@ class Lesson {
       const lab = res.labels.slice(); this.show(lab);
       const span = this.el.txt.querySelectorAll(".w")[k]; if(span) span.classList.add("focus");
       this.mood("talk"); this.bubble(`Questa parola si dice così: <span class="wtag">${esc(words[k])}</span> 👂`);
-      await this.say("Questa parola si dice così."); if(!alive()) return;
+      await this.say("Questa parola si dice così.","parola"); if(!alive()) return;
       let ok = await this.o.playWord(this.i, k, this.rate()); if(!alive()) return;
       if(ok!==true) return; // audio della parola non disponibile: si ripete tutta l'ayah
       for(let t=0;t<2;t++){
         this.mood("listen"); this.bubble(`Ripeti solo questa parola 🎤 <span class="wtag">${esc(words[k])}</span>`);
+        if(this.set.voice && Phr.has("ripetiparola")){ await this.say("","ripetiparola"); if(!alive()) return; }
         const h = await this.hear(alive, 4500, false); if(!alive() || !h) return;
         if(h.retry) continue;
         const heard = norm(h.r.text||""); const target = norm(words[k]);
         const good = heard && heard.split(" ").some(x=>sim(x,target)>=.6) || sim(heard.replace(/ /g,""),target)>=.6;
-        if(good){ this.mood("happy"); this.bubble("Giusto! 👍"); if(span){ span.classList.remove("bad","close","focus"); span.classList.add("ok"); }
-          await this.say("Giusto!"); break; }
-        this.mood("sad"); this.bubble("Ancora una volta, ascolta… 👂"); await this.say("Ancora una volta."); if(!alive()) return;
+        if(good){ goodJob(); this.mood("happy"); this.bubble("Giusto! 👍"); if(span){ span.classList.remove("bad","close","focus"); span.classList.add("ok"); }
+          await this.say("Giusto!","giusto"); break; }
+        this.mood("sad"); this.bubble("Ancora una volta, ascolta… 👂"); await this.say("Ancora una volta.","ancora"); if(!alive()) return;
         await this.o.playWord(this.i, k, this.rate()*.9); if(!alive()) return;
       }
       await sleep(400);
     }
     if(!alive()) return;
-    this.mood("talk"); this.bubble("Bene! Ora rifacciamo tutta la frase insieme 💪"); await this.say("Bene! Ora rifacciamo tutta la frase insieme.");
+    this.mood("talk"); this.bubble("Bene! Ora rifacciamo tutta la frase insieme 💪"); await this.say("Bene! Ora rifacciamo tutta la frase insieme.","insieme");
   }
   async run(){
     const tok = ++this.tok; this.running=true; this.el.run.textContent="⏸ Ferma";
@@ -858,7 +889,7 @@ class Lesson {
       const nm=this.childName();
       if(!replayed){
         this.bubble(done===0 && fails===0 ? `Ascolta bene${nm?", "+esc(nm):""}… 👂` : fails ? "Ascolta di nuovo con attenzione… 👂" : `Ancora! Ripetizione <b>${done+1}</b> di ${N} 👂`);
-        if(done===0 && fails===0) await this.say(`Ascolta bene${nm?", "+nm:""}.`); if(!alive()) return;
+        if(done===0 && fails===0) await this.say(`Ascolta bene${nm?", "+nm:""}.`,"ascolta"); if(!alive()) return;
         this.mood("talk");
         let ok = await this.o.play(this.i, this.rate()); if(!alive()) return;
         if(ok==="blocked"){ this.mood(""); this.bubble("Tocca il pulsante per far parlare Bayan 🔊");
@@ -875,6 +906,7 @@ class Lesson {
         res = await this.judgeByParent(alive, maxMs); if(!res) return;
       } else {
         this.mood("listen"); this.bubble(`Ora tocca a te${nm?", "+esc(nm):""}! Ripeti 🎤`);
+        if(this.set.voice && Phr.has("tocca")){ this.mood("talk"); await this.say("","tocca"); if(!alive()) return; this.mood("listen"); }
         const h = await this.hear(alive, maxMs); if(!alive() || !h) return;
         if(h.retry){ replayed=true; continue; }   // riprova subito l'ascolto senza registrazione
         const r = h.r;
@@ -889,25 +921,26 @@ class Lesson {
       if(res.heard) this.el.heard.innerHTML = `${Math.round(res.score*100)}% · Hai detto: <bdi class="ar">${esc(res.heard)}</bdi>`;
       if(res.pass){
         done++; fails=0; addStars(1); this.renderDots(done); this.mood("happy");
-        const p = PRAISE[Math.floor(Math.random()*PRAISE.length)];
+        const cheer = goodJob();
+        const pi = Math.floor(Math.random()*PRAISE.length), p = PRAISE[pi];
         const close = res.labels ? res.labels.filter(l=>l==="close").length : 0;
         this.bubble(`${p[0]}${nm?" "+esc(nm)+"!":""} <span class="ar">${p[1]}</span> ⭐${close?"<br><small>Attento alle parole in arancione 🙂</small>":""}`);
-        await this.say(`${p[0]}${nm?" "+nm:""}`); if(!alive()) return; await sleep(500);
+        await (cheer ? this.say(cheer,"dieci") : this.say(`${p[0]}${nm?" "+nm:""}`, praiseKey(pi))); if(!alive()) return; await sleep(cheer?1500:500);
       } else {
         fails++; this.mood("sad");
-        if(res.manual){ this.bubble("Riproviamo insieme! 💪"); await this.say("Riproviamo insieme!"); }
+        if(res.manual){ this.bubble("Riproviamo insieme! 💪"); await this.say("Riproviamo insieme!","riprova"); }
         else if(res.error==="no-speech"){
           const msg = res.peak>.15 ? "Ti ho sentito, ma non ho capito le parole. Parla più piano e più chiaro 🙂" : "Non ti ho sentito… avvicinati al telefono e parla più forte 🙂";
-          this.bubble(msg); await this.say(res.peak>.15 ? "Ti ho sentito, ma non ho capito. Parla più piano e più chiaro." : "Non ti ho sentito. Parla più forte.");
+          this.bubble(msg); await (res.peak>.15 ? this.say("Ti ho sentito, ma non ho capito. Parla più piano e più chiaro.","noncapito") : this.say("Non ti ho sentito. Parla più forte.","nonsento"));
         }
-        else if(res.error){ this.bubble("Il riconoscimento vocale ha avuto un problema (internet?). Riproviamo 🔁"); await this.say("Riproviamo."); }
+        else if(res.error){ this.bubble("Il riconoscimento vocale ha avuto un problema (internet?). Riproviamo 🔁"); await this.say("Riproviamo.","riprova"); }
         else {
           const n=res.labels.length, okN=res.labels.filter(l=>l==="ok").length;
           const wrongW = this.o.items[this.i].ar.split(/\s+/).filter((w,k)=>res.labels[k]!=="ok");
           this.bubble(`Hai detto bene <b>${okN} parole su ${n}</b>. Da correggere: ${wrongW.slice(0,4).map(w=>`<span class="wtag">${esc(w)}</span>`).join(" ")}`);
-          await this.say(`Quasi! Hai detto bene ${okN} parole su ${n}.`); if(!alive()) return;
+          await (Phr.has("quasi") ? this.say("","quasi") : this.say(`Quasi! Hai detto bene ${okN} parole su ${n}.`,"quasi")); if(!alive()) return;
           if(res.url && st.record){
-            this.mood("talk"); this.bubble("Ascolta come l'hai detta tu… 👂"); await this.say("Ascolta come l'hai detta tu."); if(!alive()) return;
+            this.mood("talk"); this.bubble("Ascolta come l'hai detta tu… 👂"); await this.say("Ascolta come l'hai detta tu.","tuavoce"); if(!alive()) return;
             await Player.play([res.url]); if(!alive()) return;
           }
           if(st.coach){ await this.coach(alive, res); }
@@ -928,7 +961,7 @@ class Lesson {
     this.o.markDone(this.i); addStars(3); confetti(); this.mood("happy"); this.renderNav();
     const last = this.i >= this.o.items.length-1;
     this.bubble(last ? "Ma sha Allah! Hai completato tutto! 🎉🏆" : `Fantastico! Hai ripetuto ${N} volte ⭐⭐⭐`);
-    await this.say(last ? "Mashallah! Hai completato tutto!" : "Fantastico!"); if(!alive()) return;
+    await (last ? this.say("Mashallah! Hai completato tutto!","tutto") : this.say("Fantastico!","fine")); if(!alive()) return;
     if(this.o.onAllDone && last) this.o.onAllDone();
     if(st.auto && !last){ await sleep(900); if(!alive()) return; this.i++; this.show(); this.run(); }
     else { this.running=false; this.el.run.textContent="▶ Inizia"; }
@@ -989,12 +1022,50 @@ function wavBlob(buf){
 }
 const RecDB = {
   db:null,
-  open(){ return new Promise(res=>{ if(this.db) return res(this.db); try{ const r=indexedDB.open("bayanKids",1);
-    r.onupgradeneeded=()=>r.result.createObjectStore("recs",{keyPath:"id"}); r.onsuccess=()=>{ this.db=r.result; res(this.db); }; r.onerror=()=>res(null); }catch(e){ res(null); } }); },
+  open(){ return new Promise(res=>{ if(this.db) return res(this.db); try{ const r=indexedDB.open("bayanKids",2);
+    r.onupgradeneeded=()=>{ const db=r.result; if(!db.objectStoreNames.contains("recs")) db.createObjectStore("recs",{keyPath:"id"}); if(!db.objectStoreNames.contains("voice")) db.createObjectStore("voice",{keyPath:"id"}); }; r.onsuccess=()=>{ this.db=r.result; res(this.db); }; r.onerror=()=>res(null); }catch(e){ res(null); } }); },
   async all(){ const db=await this.open(); if(!db) return []; return new Promise(res=>{ try{ const q=db.transaction("recs").objectStore("recs").getAll(); q.onsuccess=()=>res(q.result.sort((a,b)=>b.id-a.id)); q.onerror=()=>res([]); }catch(e){ res([]); } }); },
   async put(x){ const db=await this.open(); if(!db) return false; return new Promise(res=>{ try{ const t=db.transaction("recs","readwrite"); t.objectStore("recs").put(x); t.oncomplete=()=>res(true); t.onerror=()=>res(false); }catch(e){ res(false); } }); },
   async del(id){ const db=await this.open(); if(!db) return; return new Promise(res=>{ try{ const t=db.transaction("recs","readwrite"); t.objectStore("recs").delete(id); t.oncomplete=()=>res(); t.onerror=()=>res(); }catch(e){ res(); } }); }
 };
+/* ===== La voce di Bayan registrata dal genitore ===== */
+const PHRASES = [
+  ["ciao","Ciao! Io sono Bayan.","👋"],
+  ["ascolta","Ascolta bene.","👂"],
+  ["tocca","Ora tocca a te!","🎤"],
+  ["bravo1","Bravissimo! Mashallah!","🌟"],
+  ["bravo2","Ottimo lavoro!","👍"],
+  ["bravo3","Perfetto, continua così!","💚"],
+  ["quasi","Quasi! Ascolta ancora e riprova.","💪"],
+  ["tuavoce","Ascolta come l'hai detta tu.","🔁"],
+  ["parola","Questa parola si dice così.","🔤"],
+  ["ripetiparola","Ripeti solo questa parola.","🗣️"],
+  ["giusto","Giusto!","✅"],
+  ["ancora","Ancora una volta.","↩️"],
+  ["insieme","Bene! Ora rifacciamo tutta la frase insieme.","🤝"],
+  ["nonsento","Non ti ho sentito. Parla più forte.","🔊"],
+  ["noncapito","Ti ho sentito, ma non ho capito. Parla più piano e più chiaro.","🐢"],
+  ["riprova","Riproviamo!","🔄"],
+  ["fine","Fantastico!","🎉"],
+  ["tutto","Mashallah! Hai completato tutto!","🏆"],
+  ["dieci","Mashallah! Hai fatto altre dieci cose giuste!","🥳"]
+];
+const Phr = {
+  urls:{}, loaded:false,
+  async load(){ const db=await RecDB.open(); if(!db) return; await new Promise(res=>{ try{ const q=db.transaction("voice").objectStore("voice").getAll();
+    q.onsuccess=()=>{ q.result.forEach(x=>{ this.urls[x.id]=URL.createObjectURL(x.blob); }); res(); }; q.onerror=()=>res(); }catch(e){ res(); } }); this.loaded=true; },
+  has(k){ return S.set.myVoice!==false && !!this.urls[k]; },
+  async save(k, blob){ const db=await RecDB.open(); if(!db) return false; return new Promise(res=>{ try{ const t=db.transaction("voice","readwrite"); t.objectStore("voice").put({id:k, blob}); t.oncomplete=()=>{ if(this.urls[k]) URL.revokeObjectURL(this.urls[k]); this.urls[k]=URL.createObjectURL(blob); res(true); }; t.onerror=()=>res(false); }catch(e){ res(false); } }); },
+  async del(k){ const db=await RecDB.open(); if(!db) return; return new Promise(res=>{ try{ const t=db.transaction("voice","readwrite"); t.objectStore("voice").delete(k); t.oncomplete=()=>{ delete this.urls[k]; res(); }; t.onerror=()=>res(); }catch(e){ res(); } }); }
+};
+Phr.load();
+// Bayan parla: con la voce registrata del genitore se c'è, altrimenti con la voce del telefono
+function sayP(key, text){
+  if(Phr.has(key)) return Player.play([Phr.urls[key]], 1);
+  return text ? Voice.speak(text,"it",1.05) : Promise.resolve();
+}
+const praiseKey = i => ["bravo1","bravo2","bravo3","bravo2"][i] || "bravo1";
+
 function saveBlob(blob, name){
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href), 60000);
@@ -1008,22 +1079,21 @@ async function shareBlob(blob, name){
 const app = $("#app");
 let currentLesson = null;
 function setHeader(title, back){ $("#title").textContent=title; $("#back").classList.toggle("show", !!back); }
-$("#back").onclick = () => { const h=location.hash.slice(1); if(h==="prova-mic"){ history.back(); return; } if(h==="studio"){ location.hash="corano"; return; } location.hash = h.startsWith("sura-")?"corano": h.startsWith("hadith-")?"ahadith": ["alfabeto","ascolta","parole","memory"].includes(h)?"giochi":"home"; };
+$("#back").onclick = () => { const h=location.hash.slice(1); if(h==="prova-mic"||h==="voce"){ history.back(); return; } if(h==="studio"){ location.hash="corano"; return; } location.hash = h.startsWith("sura-")?"corano": h.startsWith("hadith-")?"ahadith": ["alfabeto","ascolta","parole","memory"].includes(h)?"giochi":"home"; };
 
 const Views = {
   home(){
     setHeader("Bayān Kids", false);
-    const nm=(S.name||"").trim(), lvl=Math.floor(S.stars/20)+1, inLvl=S.stars%20;
+    const nm=(S.name||"").trim();
     app.innerHTML = `
       <section class="hero"><div class="owlH"></div>
         <div class="bubble">As-salāmu ʿalaykum${nm?", <b>"+esc(nm)+"</b>":""}! 👋<br>Sono <b>Bayan</b>, il pinguino maestro. Cosa impariamo oggi?</div></section>
-      <div class="card level"><div class="medal">🏅</div><div class="t"><b>Livello ${lvl}</b> <small>· ⭐ ${S.stars} stelle</small>
-        <div class="bar"><i style="width:${inLvl/20*100}%"></i></div><small>Ancora ${20-inLvl} ⭐ per il livello ${lvl+1}!</small></div></div>
       <div class="menu">
         <button class="mtile g-teal" onclick="location.hash='corano'"><span class="ic">📖</span><b>Corano</b><small>Ripeti con Bayan</small></button>
         <button class="mtile g-purple" onclick="location.hash='giochi'"><span class="ic">🎮</span><b>Giochi</b><small>Alfabeto e parole</small></button>
         <button class="mtile g-orange" onclick="location.hash='ahadith'"><span class="ic">📜</span><b>Ahadith</b><small>Le parole del Profeta ﷺ</small></button>
         <button class="mtile g-pink" onclick="location.hash='studio'"><span class="ic">🎙️</span><b>Studio</b><small>Registra la tua voce</small></button>
+        <button class="mtile g-green wide" onclick="location.hash='voce'"><span class="ic">🗣️</span><span><b>La voce di Bayan</b><br><small>Papà o mamma registrano le frasi del maestro</small></span></button>
         <button class="mtile g-sky wide" onclick="location.hash='prova-mic'"><span class="ic">🎤</span><span><b>Prova il microfono</b><br><small>Controlla che Bayan ti senta</small></span></button>
       </div>
       <div class="card mt"><label style="font-weight:800;font-family:'Fredoka','Baloo 2',sans-serif;font-size:18px">👦👧 Come ti chiami?</label>
@@ -1032,7 +1102,7 @@ const Views = {
       ${("speechSynthesis" in window) && Voice.noAr() ? `<div class="note">🔈 Il telefono non ha una voce araba installata: alcuni giochi non parleranno in arabo. Su Android: Impostazioni → Sintesi vocale → Google → installa “Arabo”.</div>`:""}`;
     $(".owlH").appendChild(owl("happy"));
     $("#nm").oninput = e => { S.name = e.target.value.slice(0,30); Store.save(); };
-    $("#nmOk").onclick = () => { Store.save(); Views.home(); if(S.name.trim()) Voice.speak("Ciao "+S.name.trim()+"! Io sono Bayan.","it",1.05); };
+    $("#nmOk").onclick = () => { Store.save(); Views.home(); if(Phr.has("ciao")) sayP("ciao"); else if(S.name.trim()) Voice.speak("Ciao "+S.name.trim()+"! Io sono Bayan.","it",1.05); };
   },
   giochi(){
     setHeader("Giochi d'Arabo", true);
@@ -1093,7 +1163,7 @@ const Views = {
       const c=cards[+b.dataset.i]; if(c.t==="ar") Voice.speak(c.v,"ar",.8);
       if(open.length===2){
         moves++; lock=true; const [a,d]=open; const ca=cards[+a.dataset.i], cd=cards[+d.dataset.i];
-        if(ca.k===cd.k){ await sleep(350); a.classList.replace("open","done"); d.classList.replace("open","done"); found++; addStars(1); Voice.speak(set[ca.k][0],"ar",.8);
+        if(ca.k===cd.k){ await sleep(350); a.classList.replace("open","done"); d.classList.replace("open","done"); found++; addStars(1); { const ch=goodJob(); ch ? sayP("dieci",ch) : Voice.speak(set[ca.k][0],"ar",.8); }
           $("#mt").textContent = found===6 ? `🎉 Bravo! Finito in ${moves} mosse` : `Coppie: ${found}/6`; if(found===6){ addStars(3); confetti(); } }
         else { await sleep(900); a.classList.remove("open"); d.classList.remove("open"); }
         open=[]; lock=false;
@@ -1131,7 +1201,7 @@ const Views = {
       let order = shuffle(words.map((w,i)=>i)); if(words.length>1 && order.every((v,i)=>v===i)) order.reverse();
       pool.innerHTML = order.map(i=>`<button class="wchip" data-i="${i}">${words[i]}</button>`).join("");
       pool.onclick = async e => { const b=e.target.closest(".wchip"); if(!b) return; const i=+b.dataset.i;
-        if(words[i]===words[pos]){ slots.appendChild(b); b.onclick=null; pos++; if(pos===words.length){ addStars(2); confetti(); Voice.speak(h.ar,"ar",.8); } }
+        if(words[i]===words[pos]){ slots.appendChild(b); b.onclick=null; pos++; if(pos===words.length){ addStars(2); const ch=goodJob(); confetti(); ch ? sayP("dieci",ch) : Voice.speak(h.ar,"ar",.8); } }
         else { b.classList.add("bad"); setTimeout(()=>b.classList.remove("bad"),450); } };
     };
     $("#pzReset").onclick = setup; setup();
@@ -1145,6 +1215,45 @@ const Views = {
           <span class="t"><b>${esc(s.tr)}</b><small>${esc(SURA_IT[s.n]||"")} · ${t} ayat</small><div class="bar"><i style="width:${Math.round(d/t*100)}%"></i></div></span>
           <span class="arn quran">${s.name}</span></button>`; }).join("")}</div>
       <div class="note">🎧 Serve internet per l'audio dei recitatori. Il controllo della voce confronta le parole, non le regole di tajwīd: per quelle resta fondamentale l'insegnante.</div>`;
+  },
+  voce(){
+    setHeader("La voce di Bayan", true);
+    const nm=(S.name||"").trim();
+    app.innerHTML = `<div class="banner g-green"><span class="ic">🗣️</span><span><b>La voce di Bayan</b><small>Registra le frasi con la tua voce: Bayan parlerà come papà o mamma!</small></span></div>
+      ${envNote()}
+      <div class="card"><label class="switch" style="font-size:18px">👨 Usa la mia voce <input type="checkbox" id="vOn"></label>
+        <div class="note" style="margin-bottom:0">💡 Parla vicino al telefono, con calma e con entusiasmo! ${nm?`Puoi anche dire il nome, per esempio: “Bravissimo ${esc(nm)}! Mashallah!”.`:""} Le frasi che non registri le dice la voce del telefono.</div></div>
+      <div class="center hidden mt" id="vRec"><span class="rec-badge">Registrazione…</span><div class="lvl"><i id="vL"></i></div></div>
+      <div class="list mt" id="vList"></div>`;
+    $("#vOn").checked = S.set.myVoice!==false; $("#vOn").onchange = e => { S.set.myVoice = e.target.checked; Store.save(); };
+    let recKey=null;
+    const render = () => {
+      const n = PHRASES.filter(([k])=>Phr.urls[k]).length;
+      $("#vList").innerHTML = `<div class="progress-txt" style="grid-column:1/-1">Registrate: ${n} di ${PHRASES.length}</div>` + PHRASES.map(([k,t,ic])=>`
+        <div class="card recitem" style="border:0;padding:12px 14px"><span style="font-size:28px">${ic}</span>
+          <span class="t">“${esc(t)}”<small>${Phr.urls[k]?"✅ Registrata con la tua voce":"Voce del telefono"}</small></span>
+          <button data-a="rec" data-k="${k}" style="background:${recKey===k?"#E63946":"#FFE1E4"};color:${recKey===k?"#fff":"#E63946"};font-size:${recKey===k?"20px":"24px"}">${recKey===k?"⏹":"●"}</button>
+          ${Phr.urls[k]?`<button data-a="play" data-k="${k}">▶</button><button data-a="del" data-k="${k}">🗑</button>`:`<button data-a="tts" data-k="${k}">🔈</button>`}</div>`).join("");
+    };
+    const stopRec = async () => {
+      const k=recKey; recKey=null; const url = await Mic.stop(); Mic.close(); Mic.onLevel=null; $("#vRec").classList.add("hidden");
+      if(url){ const blob = await (await fetch(url)).blob(); await Phr.save(k, blob); render(); Player.play([Phr.urls[k]]); } else render();
+    };
+    $("#vList").onclick = async e => {
+      const b=e.target.closest("button"); if(!b) return; const k=b.dataset.k, a=b.dataset.a;
+      if(a==="rec"){
+        if(recKey===k) return stopRec();
+        if(recKey) await stopRec();
+        Player.stop(); Voice.stop();
+        if(!Mic.supported() || !(await Mic.open()) || !Mic.start()){ $("#vList").insertAdjacentHTML("beforebegin", `<div class="note err">${micHelp(Mic.err||"NotAllowedError")}</div>`); return; }
+        recKey=k; $("#vRec").classList.remove("hidden"); Mic.onLevel = v => { $("#vL").style.width=Math.round(v*100)+"%"; };
+        render(); setTimeout(()=>{ if(recKey===k) stopRec(); }, 8000);
+      }
+      if(a==="play") Player.play([Phr.urls[k]]);
+      if(a==="tts"){ const t=PHRASES.find(x=>x[0]===k)[1]; Voice.speak(t,"it",1.05); }
+      if(a==="del"){ if(b.dataset.sure){ await Phr.del(k); render(); } else { b.dataset.sure=1; b.textContent="❓"; setTimeout(()=>{ if(b.isConnected){ b.textContent="🗑"; delete b.dataset.sure; } },2500); } }
+    };
+    (Phr.loaded ? Promise.resolve() : Phr.load()).then(render);
   },
   "prova-mic"(){
     setHeader("Prova del microfono", true);
@@ -1331,7 +1440,7 @@ function quizGame(g){
     $(".opts").onclick = async e => {
       const b=e.target.closest(".opt"); if(!b||b.disabled) return; const o=q.opts[+b.dataset.i];
       if(g.isRight(q,o)){ b.classList.add("right"); document.querySelectorAll(".opt").forEach(x=>x.disabled=true);
-        if(tries===0){ score++; addStars(1); } if(g.after) await g.after(q); await sleep(700); next(); }
+        if(tries===0){ score++; addStars(1); } const ch=goodJob(); if(ch) await sayP("dieci",ch); else if(g.after) await g.after(q); await sleep(ch?1800:700); next(); }
       else { tries++; b.classList.add("wrong"); b.disabled=true; }
     };
   };
@@ -1341,6 +1450,7 @@ function quizGame(g){
 function route(){
   if(currentLesson){ currentLesson.stop(); currentLesson=null; }
   Player.stop(); Rec.stop(); Voice.stop(); Mic.stop().then(()=>Mic.close());
+  { const c=document.getElementById("cele"); if(c) c.remove(); }
   const h = location.hash.slice(1) || "home";
   window.scrollTo(0,0);
   const sec = h.startsWith("sura-")||h==="corano" ? "corano" : h.startsWith("hadith")||h==="ahadith" ? "ahadith" : ["giochi","alfabeto","ascolta","parole","memory"].includes(h) ? "giochi" : h==="studio" ? "studio" : h==="home" ? "home" : "";

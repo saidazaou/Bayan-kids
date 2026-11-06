@@ -302,6 +302,65 @@ main{padding:18px 16px}
 .crop{position:fixed;inset:0;z-index:70;background:rgba(10,20,40,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;color:#fff}
 .crop canvas{border-radius:50%;touch-action:none;box-shadow:0 0 0 4px #fff,0 0 0 9999px rgba(0,0,0,.35);max-width:80vw;max-height:80vw}
 .crop input[type=range]{width:min(320px,80vw)}
+.fq-new .pick{display:grid;gap:10px}
+.fq-new .pick button{display:flex;align-items:center;gap:12px;text-align:left;border:3px solid transparent}
+.fq-new .pick button.on{border-color:var(--teal);background:#E3F7F4}
+.play{--gold:#FFC93C}
+.play .top{display:flex;align-items:center;gap:10px;background:#1B1446;color:#fff;border-radius:22px;padding:10px 12px;box-shadow:0 5px 0 #0B0726}
+.play .top .ava{width:52px;height:52px;font-size:28px;border-width:3px}
+.play .top .who{flex:1;min-width:0}.play .top .who b{display:block;font-family:"Fredoka","Baloo 2",sans-serif;font-size:19px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.play .top .who small{opacity:.85}
+.play .score{background:linear-gradient(180deg,#FFE680,#FFC93C);color:#3A2A00;border-radius:14px;padding:4px 10px;font-weight:800;font-family:"Fredoka","Baloo 2",sans-serif;font-size:18px;white-space:nowrap}
+.ladder{display:flex;gap:4px;margin:10px 2px}
+.ladder i{flex:1;height:10px;border-radius:6px;background:#DCE3F0}
+.ladder i.ok{background:var(--green)}.ladder i.ko{background:var(--red)}.ladder i.cur{background:var(--gold);box-shadow:0 0 0 2px #fff,0 0 8px #FFC93C}
+.qmeta{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700;color:#3A3F55}
+.qmeta .lv{color:#F2A900;letter-spacing:1px}
+.qcard{position:relative;margin-top:8px;border-radius:26px;padding:20px 16px 18px;color:#fff;text-align:center;
+  background:radial-gradient(ellipse at 50% 130%,#6A45F0 0,#2A1B6E 55%,#160F45 100%);box-shadow:0 7px 0 #0B0726}
+.qcard .qtxt{font-family:"Fredoka","Baloo 2",sans-serif;font-size:23px;line-height:1.3;font-weight:600}
+.play[dir=rtl] .qcard .qtxt,.play[dir=rtl] .ans span.t,.play[dir=rtl] .fb p,.play[dir=rtl] .hintbox{font-family:"Noto Naskh Arabic",serif;font-weight:700}
+.play[dir=rtl] .qcard .qtxt{font-size:25px;line-height:1.7}
+.qcard .say{position:absolute;top:8px;inset-inline-end:8px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18);font-size:20px}
+.timer{position:relative;width:54px;height:54px;flex:none}
+.timer svg{transform:rotate(-90deg)}.timer b{position:absolute;inset:0;display:grid;place-items:center;font-family:"Fredoka","Baloo 2",sans-serif;font-size:19px;color:#3A3F55}
+.timer.low b{color:var(--red)}
+.answers{display:grid;gap:10px;margin-top:14px}
+@media(min-width:620px){.answers{grid-template-columns:1fr 1fr}}
+.ans{display:flex;align-items:center;gap:12px;text-align:start;border-radius:999px;padding:10px 16px 10px 10px;background:#fff;border:3px solid #E3E8F2;box-shadow:0 5px 0 #D5DCEA;font-size:19px;font-weight:700;min-height:62px;transition:transform .1s}
+.play[dir=rtl] .ans{padding:10px 10px 10px 16px}
+.ans .L{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:"Fredoka","Baloo 2",sans-serif;font-size:21px;flex:none}
+.ans:nth-child(1) .L{background:#2196F3}.ans:nth-child(2) .L{background:#FF8A00}.ans:nth-child(3) .L{background:#2BB673}.ans:nth-child(4) .L{background:#6A45F0}
+.ans.sel{border-color:var(--gold);background:#FFF7DB;box-shadow:0 5px 0 #F2C230}
+.ans.right{border-color:var(--green);background:#D5F5E3;box-shadow:0 5px 0 #8FD9AF;animation:pulseok .6s 2}
+.ans.wrong{border-color:var(--red);background:#FFD6DA;box-shadow:0 5px 0 #F2A0A8;animation:shake .4s}
+.ans.gone{opacity:.25;pointer-events:none}
+.ans:disabled{cursor:default}
+@keyframes pulseok{50%{transform:scale(1.03)}}
+.lifes{display:flex;justify-content:center;gap:12px;margin-top:16px}
+.life{width:62px;height:62px;border-radius:50%;background:linear-gradient(160deg,#5C6BC0,#303F9F);box-shadow:0 5px 0 #1A237E;color:#fff;font-weight:800;font-size:17px;display:grid;place-items:center;position:relative}
+.life .ic{font-size:26px;line-height:1}
+.life.used{background:#C9CED8;box-shadow:0 5px 0 #A9AFBB;color:#fff}
+.life.used:after{content:"";position:absolute;width:70%;height:4px;background:var(--red);border-radius:2px;transform:rotate(-35deg)}
+.life.armed{background:linear-gradient(160deg,#FFD54F,#FFA000);box-shadow:0 5px 0 #C77800;animation:pulse 1s infinite}
+.lifelbl{text-align:center;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:6px}
+.hintbox{margin-top:12px;background:#FFF5D6;border:2px dashed #F2C230;border-radius:18px;padding:10px 14px;font-weight:700}
+.confirm{display:block;width:100%;margin-top:14px}
+.fb{margin-top:14px;border-radius:24px;padding:14px 16px;background:#fff;box-shadow:var(--shadow)}
+.fb h3{margin:0;font-family:"Fredoka","Baloo 2",sans-serif;font-size:24px}
+.fb.ok h3{color:#178347}.fb.ko h3{color:var(--red)}
+.fb p{margin:6px 0 0;line-height:1.45}
+.fb .pts{font-family:"Fredoka","Baloo 2",sans-serif;font-weight:700;color:#C77800;font-size:20px}
+.family{position:fixed;inset:0;z-index:65;background:rgba(15,10,50,.9);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center}
+.family .big{font-family:"Fredoka","Baloo 2",sans-serif;font-size:64px;font-weight:700;color:#FFC93C}
+.votes{display:flex;gap:14px;align-items:flex-end;min-height:200px}
+.votes div{display:flex;flex-direction:column;align-items:center;gap:6px}
+.votes i{display:block;width:44px;border-radius:10px 10px 4px 4px;background:#FFC93C;min-height:6px;transition:height .2s}
+.votes button{width:54px;height:54px;border-radius:50%;font-family:"Fredoka","Baloo 2",sans-serif;font-size:22px;color:#fff}
+.endstats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.endstats div{background:#fff;border-radius:18px;padding:10px;text-align:center;box-shadow:var(--shadow)}
+.endstats b{display:block;font-family:"Fredoka","Baloo 2",sans-serif;font-size:28px}
+.endstats small{color:var(--muted);font-weight:700}
 .toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:#2B2D42;color:#fff;border-radius:16px;padding:10px 16px;font-weight:700;z-index:80;animation:fadein .2s}
 .cele{position:fixed;inset:0;z-index:60;background:rgba(20,40,70,.45);display:grid;place-items:center;padding:20px;animation:fadein .25s}
 .cele .box{background:linear-gradient(180deg,#FFFFFF,#FFF5D6);border-radius:32px;padding:22px 20px;text-align:center;max-width:360px;width:100%;
@@ -1181,6 +1240,98 @@ function cropPhoto(file){
   });
 }
 
+/* ================= FAMILY QUIZ: domande, lingue e motore ================= */
+const FQ_BANK = [{"id":"K5-ANI-001","age":"kids5","cat":"animali","level":1,"src":"Conoscenza di base","correct":1,"status":"verificata","it":{"q":"Quale animale fa le uova?","a":["🐱 Il gatto","🐔 La gallina","🐶 Il cane","🐄 La mucca"],"hint":"Ha le piume e due ali.","exp":"La gallina fa le uova. Anche gli uccelli, i pesci e le tartarughe fanno le uova."},"ar":{"q":"أيُّ حيوانٍ يَبيض؟","a":["🐱 القطّة","🐔 الدجاجة","🐶 الكلب","🐄 البقرة"],"hint":"لها ريش وجناحان.","exp":"الدجاجة تبيض، والطيور والأسماك والسلاحف تبيض أيضًا."},"dar":{"q":"شمن حيوان كيبيّض؟","a":["🐱 المش","🐔 الدجاجة","🐶 الكلب","🐄 البقرة"],"hint":"عندها الريش وجوج جناحات.","exp":"الدجاجة كتبيّض، وحتى الطيور والحوت والفكرون كيبيّضو."}},
+{"id":"K5-ANI-002","age":"kids5","cat":"animali","level":1,"src":"Conoscenza di base","correct":3,"status":"verificata","it":{"q":"Quante zampe ha un cane?","a":["6","8","2","4"],"hint":"Le stesse di un gatto.","exp":"Il cane ha 4 zampe, come il gatto e il cavallo."},"ar":{"q":"كم رِجلًا للكلب؟","a":["6","8","2","4"],"hint":"مثل أرجل القطّ.","exp":"للكلب أربع أرجل، مثل القطّ والحصان."},"dar":{"q":"شحال من رجل عندو الكلب؟","a":["6","8","2","4"],"hint":"بحال المش.","exp":"الكلب عندو ربعة د الرجلين، بحال المش والعود."}},
+{"id":"K5-FRU-001","age":"kids5","cat":"frutta","level":2,"src":"Conoscenza di base","correct":0,"status":"verificata","it":{"q":"Quale frutto è giallo e si sbuccia?","a":["🍌 La banana","🍓 La fragola","🍎 La mela","🍇 L'uva"],"hint":"Piace tanto alle scimmie.","exp":"La banana è gialla: si toglie la buccia e si mangia."},"ar":{"q":"ما الفاكهة الصفراء التي نُقشّرها؟","a":["🍌 الموز","🍓 الفراولة","🍎 التفّاح","🍇 العنب"],"hint":"يحبّه القرد كثيرًا.","exp":"الموز أصفر، نُزيل قشرته ثم نأكله."},"dar":{"q":"شمن فاكية صفرا وكنقشروها؟","a":["🍌 البنان","🍓 الفريز","🍎 التفاح","🍇 العنب"],"hint":"القرد كيبغيها بزاف.","exp":"البنان صفرا، كنحيدو ليها القشرة ومن بعد كناكلوها."}},
+{"id":"K5-NAT-001","age":"kids5","cat":"natura","level":2,"src":"Conoscenza di base","correct":3,"status":"verificata","it":{"q":"Dove vive un pesce?","a":["🏜️ Nel deserto","🌳 Sugli alberi","☁️ Nel cielo","💧 Nell'acqua"],"hint":"Ci nuota dentro.","exp":"I pesci vivono nell'acqua: nel mare, nei fiumi e nei laghi."},"ar":{"q":"أين تعيش السمكة؟","a":["🏜️ في الصحراء","🌳 فوق الأشجار","☁️ في السماء","💧 في الماء"],"hint":"تسبح فيه.","exp":"تعيش الأسماك في الماء: في البحر والأنهار والبحيرات."},"dar":{"q":"فين كيعيش الحوت؟","a":["🏜️ فالصحرا","🌳 فوق الشجر","☁️ فالسما","💧 فالما"],"hint":"كيعوم فيه.","exp":"الحوت كيعيش فالما: فالبحر، فالواد وفالضاية."}},
+{"id":"K5-COR-001","age":"kids5","cat":"corpo","level":3,"src":"Conoscenza di base","correct":3,"status":"verificata","it":{"q":"Con che cosa sentiamo i suoni?","a":["👃 Con il naso","👀 Con gli occhi","✋ Con le mani","👂 Con le orecchie"],"hint":"Sono due, ai lati della testa.","exp":"Sentiamo con le orecchie, vediamo con gli occhi e annusiamo con il naso."},"ar":{"q":"بماذا نسمع الأصوات؟","a":["👃 بالأنف","👀 بالعينين","✋ باليدين","👂 بالأذنين"],"hint":"اثنتان على جانبَي الرأس.","exp":"نسمع بالأذنين، ونرى بالعينين، ونشمّ بالأنف."},"dar":{"q":"بأش كنسمعو الصوت؟","a":["👃 بالنيف","👀 بالعينين","✋ باليدين","👂 بالوذنين"],"hint":"جوج، فجناب الراس.","exp":"كنسمعو بالوذنين، كنشوفو بالعينين، وكنشمّو بالنيف."}},
+{"id":"K5-MAT-001","age":"kids5","cat":"matematica","level":3,"src":"Aritmetica","correct":2,"status":"verificata","it":{"q":"Quanto fa 2 + 3?","a":["6","4","5","7"],"hint":"Conta con le dita: 2 dita e poi altre 3.","exp":"2 + 3 = 5: come le dita di una mano!"},"ar":{"q":"كم يساوي 2 + 3؟","a":["6","4","5","7"],"hint":"عُدّ على أصابعك: إصبعان ثم ثلاثة.","exp":"2 + 3 = 5، مثل أصابع اليد الواحدة!"},"dar":{"q":"شحال كتعطي 2 + 3؟","a":["6","4","5","7"],"hint":"حسب بصباعك: جوج ومن بعد تلاتة.","exp":"2 + 3 = 5، بحال الصباع ديال يد وحدة!"}},
+{"id":"K5-ISL-001","age":"kids5","cat":"islam","level":3,"src":"Conoscenza di base","correct":2,"status":"verificata","it":{"q":"Dove pregano insieme i musulmani?","a":["🛒 Al mercato","🎠 Alle giostre","🕌 Nella moschea","🏖️ In spiaggia"],"hint":"Spesso ha un minareto.","exp":"La moschea è la casa di preghiera dei musulmani. Da lì si sente l'adhān."},"ar":{"q":"أين يصلّي المسلمون جماعةً؟","a":["🛒 في السوق","🎠 في الملاهي","🕌 في المسجد","🏖️ على الشاطئ"],"hint":"له غالبًا مئذنة.","exp":"المسجد بيت الصلاة عند المسلمين، ومنه يُرفع الأذان."},"dar":{"q":"فين كيصليو المسلمين جماعة؟","a":["🛒 فالسوق","🎠 فالملاهي","🕌 فالجامع","🏖️ فالبحر"],"hint":"غالبا عندو الصومعة.","exp":"الجامع هو فين كيصليو المسلمين، ومنو كيتسمع الأذان."}},
+{"id":"K5-VIT-001","age":"kids5","cat":"vita","level":4,"src":"Calendario","correct":1,"status":"verificata","it":{"q":"Quanti giorni ha una settimana?","a":["5","7","3","10"],"hint":"Da lunedì a domenica.","exp":"La settimana ha 7 giorni: lunedì, martedì, mercoledì, giovedì, venerdì, sabato e domenica."},"ar":{"q":"كم يومًا في الأسبوع؟","a":["5","7","3","10"],"hint":"من الاثنين إلى الأحد.","exp":"في الأسبوع سبعة أيام: السبت والأحد والاثنين والثلاثاء والأربعاء والخميس والجمعة."},"dar":{"q":"شحال من نهار فالسيمانة؟","a":["5","7","3","10"],"hint":"من الاثنين حتى للحد.","exp":"السيمانة فيها 7 ديال الأيام: السبت، الحد، الاثنين، الثلاثاء، الاربعاء، الخميس والجمعة."}},
+{"id":"K5-SPA-001","age":"kids5","cat":"spazio","level":4,"src":"Conoscenza di base","correct":0,"status":"verificata","it":{"q":"Che cosa ci dà luce e calore di giorno?","a":["☀️ Il sole","🌙 La luna","⭐ Le stelle","🌧️ La pioggia"],"hint":"È una grande stella gialla.","exp":"Il sole è una stella: di giorno ci dà luce e calore."},"ar":{"q":"ما الذي يعطينا الضوء والحرارة في النهار؟","a":["☀️ الشمس","🌙 القمر","⭐ النجوم","🌧️ المطر"],"hint":"نجمٌ كبير أصفر.","exp":"الشمس نجمٌ يعطينا الضوء والحرارة في النهار."},"dar":{"q":"شنو اللي كيعطينا الضو والسخانة فالنهار؟","a":["☀️ الشمس","🌙 القمرة","⭐ النجوم","🌧️ الشتا"],"hint":"نجمة كبيرة صفرا.","exp":"الشمس نجمة كتعطينا الضو والسخانة فالنهار."}},
+{"id":"K5-COR-002","age":"kids5","cat":"corpo","level":5,"src":"Odontoiatria pediatrica: 20 denti decidui","correct":3,"status":"verificata","it":{"q":"Quanti denti da latte hanno di solito i bambini?","a":["10","50","32","20"],"hint":"Sono meno dei denti dei grandi, che sono 32.","exp":"I bambini hanno 20 denti da latte. Poi cadono e crescono i denti definitivi: negli adulti sono 32."},"ar":{"q":"كم سنًّا لبنيًّا عند الأطفال عادةً؟","a":["10","50","32","20"],"hint":"أقلّ من أسنان الكبار وهي 32.","exp":"للأطفال 20 سنًّا لبنيًّا، ثم تسقط وتنبت الأسنان الدائمة، وعددها عند الكبار 32."},"dar":{"q":"شحال من سنّة ديال الحليب كتكون عند الدراري عادة؟","a":["10","50","32","20"],"hint":"قل من السنان ديال الكبار، اللي هوما 32.","exp":"الدراري عندهم 20 سنّة ديال الحليب، من بعد كيطيحو وكيطلعو السنان الدايمين، والكبار عندهم 32."}},
+{"id":"K7-GEO-001","age":"kids7","cat":"geografia","level":1,"src":"Capitali europee","correct":3,"status":"verificata","it":{"q":"Qual è la capitale della Spagna?","a":["Lisbona","Roma","Barcellona","Madrid"],"hint":"Si trova al centro del paese.","exp":"Madrid è la capitale della Spagna e si trova al centro del paese."},"ar":{"q":"ما عاصمة إسبانيا؟","a":["لشبونة","روما","برشلونة","مدريد"],"hint":"تقع في وسط البلاد.","exp":"مدريد عاصمة إسبانيا وتقع في وسطها."},"dar":{"q":"شنو هي العاصمة ديال إسبانيا؟","a":["لشبونة","روما","برشلونة","مدريد"],"hint":"كاينة فالوسط ديال البلاد.","exp":"مدريد هي العاصمة ديال إسبانيا وكاينة فالوسط ديالها."}},
+{"id":"K7-ISL-001","age":"kids7","cat":"islam","level":1,"src":"Ṣaḥīḥ al-Bukhārī 349, Muslim 162 (hadith del Miʿrāj)","correct":0,"status":"verificata","it":{"q":"Quante sono le preghiere obbligatorie in un giorno?","a":["5","7","3","2"],"hint":"La prima è al-Fajr, l'ultima è al-ʿIshāʾ.","exp":"Le preghiere obbligatorie sono 5: Fajr, Ẓuhr, ʿAṣr, Maghrib e ʿIshāʾ."},"ar":{"q":"كم صلاةً مفروضةً في اليوم؟","a":["5","7","3","2"],"hint":"أوّلها الفجر وآخرها العشاء.","exp":"الصلوات المفروضة خمس: الفجر والظهر والعصر والمغرب والعشاء."},"dar":{"q":"شحال من صلاة مفروضة فالنهار؟","a":["5","7","3","2"],"hint":"اللولة هي الفجر واللخرة هي العشا.","exp":"الصلوات المفروضين خمسة: الفجر، الظهر، العصر، المغرب والعشا."}},
+{"id":"K7-FRU-001","age":"kids7","cat":"frutta","level":2,"src":"Botanica di base","correct":0,"status":"verificata","it":{"q":"Quale di questi è una verdura?","a":["🥕 La carota","🍒 La ciliegia","🍌 La banana","🍎 La mela"],"hint":"È arancione e piace ai conigli.","exp":"La carota è una verdura (una radice). Mela, banana e ciliegia sono frutti."},"ar":{"q":"أيٌّ من هذه من الخُضار؟","a":["🥕 الجزر","🍒 الكرز","🍌 الموز","🍎 التفّاح"],"hint":"برتقاليّ اللون ويحبّه الأرنب.","exp":"الجزر من الخضار (وهو جذر)، أمّا التفّاح والموز والكرز ففواكه."},"dar":{"q":"شكون فهادو خضرة؟","a":["🥕 خيزو","🍒 حب الملوك","🍌 البنان","🍎 التفاح"],"hint":"لونو ليموني وكيبغيه القنية.","exp":"خيزو خضرة (جدر)، والتفاح والبنان وحب الملوك فاكية."}},
+{"id":"K7-SPA-001","age":"kids7","cat":"spazio","level":2,"src":"NASA, Solar System Exploration","correct":2,"status":"verificata","it":{"q":"Qual è il pianeta più vicino al Sole?","a":["Venere","Terra","Mercurio","Marte"],"hint":"È anche il pianeta più piccolo.","exp":"Mercurio è il pianeta più vicino al Sole ed è il più piccolo del sistema solare."},"ar":{"q":"ما أقرب كوكب إلى الشمس؟","a":["الزهرة","الأرض","عطارد","المريخ"],"hint":"وهو أيضًا أصغر الكواكب.","exp":"عطارد أقرب الكواكب إلى الشمس وأصغرها في المجموعة الشمسية."},"dar":{"q":"شمن كوكب أقرب للشمس؟","a":["الزهرة","الأرض","عطارد","المريخ"],"hint":"وهو حتى أصغر كوكب.","exp":"عطارد هو أقرب كوكب للشمس وهو أصغر واحد فالمجموعة الشمسية."}},
+{"id":"K7-COR-001","age":"kids7","cat":"corpo","level":3,"src":"Anatomia di base","correct":2,"status":"verificata","it":{"q":"Quale organo usiamo per respirare?","a":["Lo stomaco","I reni","I polmoni","Il fegato"],"hint":"Sono due e si gonfiano quando prendi aria.","exp":"Con i polmoni prendiamo l'ossigeno dall'aria e buttiamo fuori l'anidride carbonica."},"ar":{"q":"أيّ عضو نستعمله للتنفّس؟","a":["المعدة","الكليتان","الرئتان","الكبد"],"hint":"هما اثنتان وتنتفخان عندما نُدخل الهواء.","exp":"بالرئتين نأخذ الأكسجين من الهواء ونُخرج ثاني أكسيد الكربون."},"dar":{"q":"شمن عضو كنتنفسو بيه؟","a":["المعدة","الكلاوي","الرية","الكبدة"],"hint":"جوج وكيتنفخو منين كتدخل الهوا.","exp":"بالرية كناخدو الأكسجين من الهوا وكنخرجو ثاني أكسيد الكربون."}},
+{"id":"K7-SCI-001","age":"kids7","cat":"scienza","level":3,"src":"Fisica di base (pressione di 1 atm)","correct":2,"status":"verificata","it":{"q":"A quanti gradi bolle l'acqua al livello del mare?","a":["200 °C","50 °C","100 °C","0 °C"],"hint":"A 0 gradi invece diventa ghiaccio.","exp":"L'acqua bolle a 100 °C e gela a 0 °C."},"ar":{"q":"عند كم درجة يغلي الماء عند مستوى سطح البحر؟","a":["200 °م","50 °م","100 °م","0 °م"],"hint":"أمّا عند 0 درجة فيتجمّد.","exp":"يغلي الماء عند 100 درجة مئوية ويتجمّد عند 0 درجة."},"dar":{"q":"فشحال من درجة كيغلي الما فمستوى البحر؟","a":["200 °م","50 °م","100 °م","0 °م"],"hint":"وف0 درجة كيولي تلج.","exp":"الما كيغلي ف100 درجة وكيجمد ف0 درجة."}},
+{"id":"K7-STO-001","age":"kids7","cat":"storia","level":3,"src":"Storia antica (Antico Regno d'Egitto)","correct":2,"status":"verificata","it":{"q":"Quale popolo antico costruì le piramidi di Giza?","a":["I Vichinghi","I Greci","Gli antichi Egizi","I Romani"],"hint":"Si trovano vicino al fiume Nilo.","exp":"Le piramidi di Giza furono costruite dagli antichi Egizi più di 4.500 anni fa, come tombe per i faraoni."},"ar":{"q":"مَن بنى أهرامات الجيزة؟","a":["الفايكنغ","الإغريق","المصريون القدماء","الرومان"],"hint":"تقع قرب نهر النيل.","exp":"بنى المصريون القدماء أهرامات الجيزة قبل أكثر من 4500 سنة لتكون مقابر للفراعنة."},"dar":{"q":"شكون اللي بنا الأهرامات ديال الجيزة؟","a":["الفايكينغ","الإغريق","المصريين القدام","الرومان"],"hint":"كاينين حدا واد النيل.","exp":"المصريين القدام بناو الأهرامات ديال الجيزة هادي كثر من 4500 عام، باش يكونو قبور للفراعنة."}},
+{"id":"K7-MAT-001","age":"kids7","cat":"matematica","level":4,"src":"Aritmetica","correct":3,"status":"verificata","it":{"q":"Quanto fa 7 × 8?","a":["64","48","54","56"],"hint":"È 7 × 7 = 49, più un altro 7.","exp":"7 × 8 = 56. Trucco: 5, 6, 7, 8 → 56 = 7 × 8."},"ar":{"q":"كم يساوي 7 × 8؟","a":["64","48","54","56"],"hint":"هو 7 × 7 = 49 ثم نضيف 7.","exp":"7 × 8 = 56. حيلة للتذكّر: 5، 6، 7، 8 ← 56 = 7 × 8."},"dar":{"q":"شحال كتعطي 7 × 8؟","a":["64","48","54","56"],"hint":"هي 7 × 7 = 49 وزيد عليها 7.","exp":"7 × 8 = 56. باش تعقل: 5، 6، 7، 8 ← 56 = 7 × 8."}},
+{"id":"K7-GEO-002","age":"kids7","cat":"geografia","level":4,"src":"Atlante geografico (Po: 652 km)","correct":3,"status":"verificata","it":{"q":"Qual è il fiume più lungo d'Italia?","a":["L'Adige","L'Arno","Il Tevere","Il Po"],"hint":"Attraversa la Pianura Padana.","exp":"Il Po è lungo circa 652 km: nasce dal Monviso e sfocia nel mare Adriatico."},"ar":{"q":"ما أطول نهر في إيطاليا؟","a":["نهر الأديجي","نهر الأرنو","نهر التيبر","نهر البو"],"hint":"يعبر سهل بادانا في الشمال.","exp":"يبلغ طول نهر البو نحو 652 كم، ينبع من جبل مونفيزو ويصبّ في البحر الأدرياتيكي."},"dar":{"q":"شنو هو أطول واد فإيطاليا؟","a":["واد الأديجي","واد الأرنو","واد التيبر","واد البو"],"hint":"كيدوز من السهل ديال الشمال (بادانا).","exp":"واد البو طولو تقريبا 652 كيلومتر، كيبدا من جبل مونفيزو وكيخوي فالبحر الأدرياتيكي."}},
+{"id":"K7-NAT-001","age":"kids7","cat":"natura","level":5,"src":"Biologia vegetale","correct":0,"status":"verificata","it":{"q":"Come si chiama il processo con cui le piante producono il loro cibo con la luce del sole?","a":["La fotosintesi","La germinazione","La digestione","L'evaporazione"],"hint":"Nel nome c'è 'foto', che vuol dire luce.","exp":"Con la fotosintesi le piante usano luce, acqua e anidride carbonica per produrre zuccheri, e liberano ossigeno."},"ar":{"q":"ما اسم العملية التي تصنع بها النباتات غذاءها باستعمال ضوء الشمس؟","a":["التمثيل الضوئي","الإنبات","الهضم","التبخّر"],"hint":"في الاسم كلمة «ضوء».","exp":"في التمثيل الضوئي تستعمل النباتات الضوء والماء وثاني أكسيد الكربون لصنع السكّر، وتُطلق الأكسجين."},"dar":{"q":"شنو سميت العملية اللي كتصاوب بيها النباتات الماكلة ديالها بضو الشمس؟","a":["التمثيل الضوئي","الإنبات","الهضم","التبخر"],"hint":"فالسمية كاينة كلمة «ضوء».","exp":"فالتمثيل الضوئي، النباتات كتستعمل الضو والما وثاني أكسيد الكربون باش تصاوب السكر، وكتطلق الأكسجين."}},
+{"id":"T-NAT-001","age":"teen","cat":"natura","level":1,"src":"Zoologia di base","correct":1,"status":"verificata","it":{"q":"Qual è la differenza tra vertebrati e invertebrati?","a":["Gli invertebrati sono sempre più grandi","I vertebrati hanno la colonna vertebrale","I vertebrati vivono solo in acqua","Gli invertebrati hanno lo scheletro osseo"],"hint":"Pensa alla parola 'vertebra'.","exp":"I vertebrati (pesci, anfibi, rettili, uccelli, mammiferi) hanno la colonna vertebrale; gli invertebrati, come insetti e polpi, no."},"ar":{"q":"ما الفرق بين الفقاريات واللافقاريات؟","a":["اللافقاريات أكبر حجمًا دائمًا","للفقاريات عمودٌ فقري","الفقاريات تعيش في الماء فقط","اللافقاريات لها هيكل عظمي"],"hint":"فكّر في كلمة «فِقرة».","exp":"الفقاريات (الأسماك والبرمائيات والزواحف والطيور والثدييات) لها عمود فقري، أمّا اللافقاريات مثل الحشرات والأخطبوط فليس لها."},"dar":{"q":"شنو الفرق بين الفقاريات واللافقاريات؟","a":["اللافقاريات ديما كبار","الفقاريات عندهم العمود الفقري","الفقاريات كيعيشو غير فالما","اللافقاريات عندهم الهيكل العظمي"],"hint":"فكر فالكلمة «فقرة».","exp":"الفقاريات (الحوت، البرمائيات، الزواحف، الطيور والثدييات) عندهم العمود الفقري، واللافقاريات بحال الحشرات والأخطبوط ما عندهمش."}},
+{"id":"T-ISL-001","age":"teen","cat":"islam","level":1,"src":"Corano 2:183–185","correct":0,"status":"verificata","it":{"q":"In quale mese del calendario islamico il digiuno è obbligatorio?","a":["Ramaḍān","Shawwāl","Dhū al-Ḥijja","Muḥarram"],"hint":"Alla sua fine si celebra ʿĪd al-Fiṭr.","exp":"Il digiuno del Ramadan è uno dei cinque pilastri dell'Islam (Corano 2:183–185)."},"ar":{"q":"في أيّ شهر من التقويم الهجري يكون الصيام مفروضًا؟","a":["رمضان","شوّال","ذو الحجّة","محرّم"],"hint":"في آخره يكون عيد الفطر.","exp":"صيام رمضان ركن من أركان الإسلام الخمسة (سورة البقرة: 183–185)."},"dar":{"q":"فشمن شهر ديال التقويم الهجري كيكون الصيام فرض؟","a":["رمضان","شوال","ذو الحجة","محرم"],"hint":"فاللخر ديالو كيجي العيد الصغير.","exp":"صيام رمضان ركن من الأركان الخمسة ديال الإسلام (سورة البقرة 183–185)."}},
+{"id":"T-GEO-001","age":"teen","cat":"geografia","level":2,"src":"Atlante geografico","correct":3,"status":"verificata","it":{"q":"Quale di questi continenti è attraversato dall'Equatore?","a":["L'Europa","L'Australia","L'Antartide","L'Africa"],"hint":"Passa per il Kenya e il Congo.","exp":"L'Equatore attraversa Africa, Sud America e Asia (Indonesia). Non tocca Europa, Antartide e Australia."},"ar":{"q":"أيّ هذه القارّات يمرّ بها خطّ الاستواء؟","a":["أوروبا","أستراليا","القارة القطبية الجنوبية","أفريقيا"],"hint":"يمرّ بكينيا والكونغو.","exp":"يمرّ خط الاستواء بأفريقيا وأمريكا الجنوبية وآسيا (إندونيسيا)، ولا يمرّ بأوروبا ولا بالقارة القطبية الجنوبية ولا بأستراليا."},"dar":{"q":"شمن قارة من هادو كيدوز منها خط الاستواء؟","a":["أوروبا","أستراليا","القطب الجنوبي","أفريقيا"],"hint":"كيدوز من كينيا والكونغو.","exp":"خط الاستواء كيدوز من أفريقيا وأمريكا الجنوبية وآسيا (إندونيسيا)، وما كيدوزش من أوروبا ولا القطب الجنوبي ولا أستراليا."}},
+{"id":"T-SCI-001","age":"teen","cat":"scienza","level":2,"src":"Tavola periodica (IUPAC)","correct":2,"status":"verificata","it":{"q":"Qual è il simbolo chimico dell'oro?","a":["Ag","Or","Au","Go"],"hint":"Viene dal latino aurum.","exp":"Au viene dal latino aurum. Ag è l'argento (argentum)."},"ar":{"q":"ما الرمز الكيميائي للذهب؟","a":["Ag","Or","Au","Go"],"hint":"مأخوذ من الكلمة اللاتينية aurum.","exp":"الرمز Au من اللاتينية aurum، أمّا Ag فهو رمز الفضّة."},"dar":{"q":"شنو الرمز الكيميائي ديال الذهب؟","a":["Ag","Or","Au","Go"],"hint":"جاي من الكلمة اللاتينية aurum.","exp":"Au جاي من اللاتينية aurum، وAg هو الرمز ديال النقرة."}},
+{"id":"T-COR-001","age":"teen","cat":"corpo","level":3,"src":"Fisiologia del sangue","correct":1,"status":"verificata","it":{"q":"Qual è la funzione principale dei globuli rossi?","a":["Combattere le infezioni","Trasportare l'ossigeno","Far coagulare il sangue","Produrre ormoni"],"hint":"Contengono l'emoglobina.","exp":"I globuli rossi contengono emoglobina, che lega l'ossigeno nei polmoni e lo porta a tutto il corpo. Le infezioni sono compito dei globuli bianchi."},"ar":{"q":"ما الوظيفة الرئيسية لكريات الدم الحمراء؟","a":["مكافحة العدوى","نقل الأكسجين","تخثّر الدم","إنتاج الهرمونات"],"hint":"تحتوي على الهيموغلوبين.","exp":"تحتوي كريات الدم الحمراء على الهيموغلوبين الذي يحمل الأكسجين من الرئتين إلى كل الجسم، أمّا مكافحة العدوى فمهمّة الكريات البيضاء."},"dar":{"q":"شنو هي الخدمة الأساسية ديال الكريات الحمرين؟","a":["كيحاربو الميكروبات","كينقلو الأكسجين","كيجمّدو الدم","كيصاوبو الهرمونات"],"hint":"فيهم الهيموغلوبين.","exp":"الكريات الحمرين فيهم الهيموغلوبين اللي كيهز الأكسجين من الرية لكاع الجسم، أما الميكروبات كيحاربوهم الكريات البيضين."}},
+{"id":"T-STO-001","age":"teen","cat":"storia","level":3,"src":"Storia medievale","correct":1,"status":"verificata","it":{"q":"In che anno cadde l'Impero romano d'Occidente?","a":["753 a.C.","476 d.C.","1066 d.C.","1492 d.C."],"hint":"Fu nel V secolo dopo Cristo.","exp":"Nel 476 Odoacre depose l'ultimo imperatore, Romolo Augustolo. Il 753 a.C. è la data tradizionale della fondazione di Roma."},"ar":{"q":"في أيّ سنة سقطت الإمبراطورية الرومانية الغربية؟","a":["753 ق.م","476 م","1066 م","1492 م"],"hint":"في القرن الخامس الميلادي.","exp":"في سنة 476 خلع أودواكر آخر إمبراطور، رومولوس أوغسطولوس. أمّا 753 ق.م فهو التاريخ التقليدي لتأسيس روما."},"dar":{"q":"فشمن عام طاحت الإمبراطورية الرومانية الغربية؟","a":["753 ق.م","476 م","1066 م","1492 م"],"hint":"فالقرن الخامس الميلادي.","exp":"ف476 أودواكر حيّد آخر إمبراطور، رومولوس أوغسطولوس. و753 قبل الميلاد هو التاريخ المعروف ديال تأسيس روما."}},
+{"id":"T-MAT-001","age":"teen","cat":"matematica","level":3,"src":"Geometria euclidea","correct":2,"status":"verificata","it":{"q":"Quanto vale la somma degli angoli interni di un triangolo?","a":["90°","270°","180°","360°"],"hint":"È mezzo giro.","exp":"In ogni triangolo gli angoli interni sommano 180°; in un quadrilatero 360°."},"ar":{"q":"كم مجموع الزوايا الداخلية للمثلث؟","a":["90°","270°","180°","360°"],"hint":"نصف دورة كاملة.","exp":"مجموع الزوايا الداخلية لأيّ مثلث 180°، وفي الشكل الرباعي 360°."},"dar":{"q":"شحال كيكون المجموع ديال الزوايا الداخلية ديال المثلث؟","a":["90°","270°","180°","360°"],"hint":"نص دورة.","exp":"فأي مثلث المجموع ديال الزوايا الداخلية هو 180°، وفالرباعي 360°."}},
+{"id":"T-SPO-001","age":"teen","cat":"sport","level":4,"src":"Comitato Olimpico Internazionale","correct":1,"status":"verificata","it":{"q":"Ogni quanti anni si svolgono le Olimpiadi estive?","a":["3","4","2","5"],"hint":"Lo stesso tempo che passa tra due Mondiali di calcio.","exp":"Le Olimpiadi estive si tengono ogni 4 anni (per esempio Parigi 2024 e Los Angeles 2028)."},"ar":{"q":"كل كم سنة تُقام الألعاب الأولمبية الصيفية؟","a":["3","4","2","5"],"hint":"المدّة نفسها بين كأسَي عالم لكرة القدم.","exp":"تُقام الألعاب الأولمبية الصيفية كل 4 سنوات (مثل باريس 2024 ولوس أنجلوس 2028)."},"dar":{"q":"كل شحال من عام كتدار الألعاب الأولمبية ديال الصيف؟","a":["3","4","2","5"],"hint":"نفس المدة اللي بين جوج كيسان ديال العالم.","exp":"الألعاب الأولمبية ديال الصيف كتدار كل 4 سنين (بحال باريس 2024 ولوس أنجلوس 2028)."}},
+{"id":"T-SCI-002","age":"teen","cat":"scienza","level":4,"src":"Fisica atomica","correct":1,"status":"verificata","it":{"q":"Quale particella dell'atomo ha carica negativa?","a":["Il fotone","L'elettrone","Il neutrone","Il protone"],"hint":"Si muove intorno al nucleo.","exp":"L'elettrone ha carica negativa e si muove intorno al nucleo; il protone è positivo e il neutrone è neutro."},"ar":{"q":"ما الجُسيم ذو الشحنة السالبة في الذرّة؟","a":["الفوتون","الإلكترون","النيوترون","البروتون"],"hint":"يتحرّك حول النواة.","exp":"الإلكترون سالب الشحنة ويتحرّك حول النواة، والبروتون موجب، والنيوترون متعادل."},"dar":{"q":"شنو هو الجسيم اللي عندو شحنة سالبة فالذرة؟","a":["الفوتون","الإلكترون","النيوترون","البروتون"],"hint":"كيتحرك دايز على النواة.","exp":"الإلكترون شحنتو سالبة وكيتحرك دايز على النواة، البروتون موجب، والنيوترون محايد."}},
+{"id":"T-SCI-003","age":"teen","cat":"scienza","level":5,"src":"Chimica di base","correct":0,"status":"verificata","it":{"q":"Qual è la formula chimica dell'acqua ossigenata?","a":["H₂O₂","H₂O","CO₂","O₃"],"hint":"Ha un atomo di ossigeno in più dell'acqua.","exp":"L'acqua ossigenata è H₂O₂: due atomi di idrogeno e due di ossigeno. L'acqua è H₂O, l'ozono è O₃."},"ar":{"q":"ما الصيغة الكيميائية للماء الأكسجيني (بيروكسيد الهيدروجين)؟","a":["H₂O₂","H₂O","CO₂","O₃"],"hint":"فيه ذرّة أكسجين أكثر من الماء.","exp":"الماء الأكسجيني H₂O₂: ذرّتا هيدروجين وذرّتا أكسجين. والماء H₂O، والأوزون O₃."},"dar":{"q":"شنو هي الصيغة الكيميائية ديال الما الأكسيجيني؟","a":["H₂O₂","H₂O","CO₂","O₃"],"hint":"فيه ذرة ديال الأكسجين كثر من الما.","exp":"الما الأكسيجيني هو H₂O₂: جوج ديال الهيدروجين وجوج ديال الأكسجين. الما هو H₂O، والأوزون هو O₃."}},
+{"id":"A-COR-001","age":"adult","cat":"corpo","level":1,"src":"Fisiologia endocrina","correct":1,"status":"verificata","it":{"q":"Quale organo produce l'insulina?","a":["Il fegato","Il pancreas","La milza","I reni"],"hint":"Si trova dietro lo stomaco.","exp":"Il pancreas produce l'insulina, l'ormone che abbassa lo zucchero nel sangue."},"ar":{"q":"أيّ عضو يُفرز الإنسولين؟","a":["الكبد","البنكرياس","الطحال","الكليتان"],"hint":"يقع خلف المعدة.","exp":"يُفرز البنكرياس الإنسولين، وهو الهرمون الذي يخفّض سكّر الدم."},"dar":{"q":"شمن عضو كيفرز الأنسولين؟","a":["الكبدة","البنكرياس","الطحال","الكلاوي"],"hint":"كاين مور المعدة.","exp":"البنكرياس هو اللي كيفرز الأنسولين، الهرمون اللي كينقص السكر فالدم."}},
+{"id":"A-ISL-001","age":"adult","cat":"islam","level":1,"src":"Ṣaḥīḥ al-Bukhārī 8, Muslim 16","correct":0,"status":"verificata","it":{"q":"Quanti sono i pilastri dell'Islam?","a":["5","3","6","7"],"hint":"Il primo è la Shahāda.","exp":"Shahāda, preghiera, zakat, digiuno del Ramadan e Hajj: «L'Islam è costruito su cinque» (al-Bukhārī 8, Muslim 16)."},"ar":{"q":"كم عدد أركان الإسلام؟","a":["5","3","6","7"],"hint":"أوّلها الشهادتان.","exp":"الشهادتان، والصلاة، والزكاة، وصوم رمضان، والحجّ: «بُني الإسلام على خمس» (البخاري 8، مسلم 16)."},"dar":{"q":"شحال هوما الأركان ديال الإسلام؟","a":["5","3","6","7"],"hint":"اللول هو الشهادة.","exp":"الشهادة، الصلاة، الزكاة، صيام رمضان، والحج: «بُني الإسلام على خمس» (البخاري 8، مسلم 16)."}},
+{"id":"A-GEO-001","age":"adult","cat":"capitali","level":2,"src":"Atlante geografico","correct":3,"status":"verificata","it":{"q":"Qual è la capitale dell'Australia?","a":["Perth","Melbourne","Sydney","Canberra"],"hint":"Non è la città più grande.","exp":"La capitale è Canberra, costruita apposta come compromesso tra Sydney e Melbourne."},"ar":{"q":"ما عاصمة أستراليا؟","a":["بيرث","ملبورن","سيدني","كانبرا"],"hint":"ليست أكبر مدنها.","exp":"عاصمة أستراليا كانبرا، وقد بُنيت خصّيصًا حلًّا وسطًا بين سيدني وملبورن."},"dar":{"q":"شنو هي العاصمة ديال أستراليا؟","a":["بيرث","ملبورن","سيدني","كانبرا"],"hint":"ماشي هي أكبر مدينة فيها.","exp":"العاصمة هي كانبرا، تبنات خصيصا كحل وسط بين سيدني وملبورن."}},
+{"id":"A-NAT-001","age":"adult","cat":"natura","level":2,"src":"Composizione dell'atmosfera (NASA)","correct":2,"status":"verificata","it":{"q":"Quale gas è il più abbondante nell'atmosfera terrestre?","a":["L'argon","L'ossigeno","L'azoto","L'anidride carbonica"],"hint":"Non è quello che ci serve per respirare.","exp":"L'aria è circa 78% azoto, 21% ossigeno e meno dell'1% argon; l'anidride carbonica è circa lo 0,04%."},"ar":{"q":"ما الغاز الأكثر وفرةً في الغلاف الجوي للأرض؟","a":["الأرغون","الأكسجين","النيتروجين","ثاني أكسيد الكربون"],"hint":"ليس الغاز الذي نحتاجه للتنفّس.","exp":"يتكوّن الهواء من نحو 78% نيتروجين و21% أكسجين وأقلّ من 1% أرغون، أمّا ثاني أكسيد الكربون فنحو 0.04%."},"dar":{"q":"شنو هو الغاز اللي كاين بزاف فالغلاف الجوي ديال الأرض؟","a":["الأرغون","الأكسجين","النيتروجين","ثاني أكسيد الكربون"],"hint":"ماشي هو الغاز اللي كنحتاجو باش نتنفسو.","exp":"الهوا فيه تقريبا 78% نيتروجين، 21% أكسجين، وقل من 1% أرغون، وثاني أكسيد الكربون تقريبا 0.04%."}},
+{"id":"A-STO-001","age":"adult","cat":"storia","level":3,"src":"NASA, missione Apollo 11","correct":2,"status":"verificata","it":{"q":"In che anno l'uomo è arrivato per la prima volta sulla Luna?","a":["1961","1957","1969","1975"],"hint":"Missione Apollo 11.","exp":"Il 20 luglio 1969 Neil Armstrong e Buzz Aldrin camminarono sulla Luna con Apollo 11. Nel 1957 partì lo Sputnik, nel 1961 Gagarin volò nello spazio."},"ar":{"q":"في أيّ سنة وصل الإنسان إلى القمر لأوّل مرّة؟","a":["1961","1957","1969","1975"],"hint":"مهمّة أبولو 11.","exp":"في 20 يوليو 1969 مشى نيل آرمسترونغ وباز ألدرين على القمر ضمن مهمّة أبولو 11. وفي 1957 أُطلق سبوتنيك، وفي 1961 صعد غاغارين إلى الفضاء."},"dar":{"q":"فشمن عام وصل الإنسان للقمرة أول مرة؟","a":["1961","1957","1969","1975"],"hint":"المهمة أبولو 11.","exp":"ف20 يوليوز 1969 نيل آرمسترونغ وباز ألدرين تمشاو فوق القمرة مع أبولو 11. ف1957 تلاح سبوتنيك، وف1961 غاغارين طلع للفضاء."}},
+{"id":"A-MAT-001","age":"adult","cat":"matematica","level":3,"src":"Aritmetica","correct":0,"status":"verificata","it":{"q":"Qual è la radice quadrata di 144?","a":["12","16","14","11"],"hint":"Un numero che moltiplicato per sé stesso dà 144: una dozzina.","exp":"12 × 12 = 144, quindi √144 = 12."},"ar":{"q":"ما الجذر التربيعي للعدد 144؟","a":["12","16","14","11"],"hint":"عددٌ إذا ضُرب في نفسه أعطى 144: دزينة.","exp":"12 × 12 = 144، إذن √144 = 12."},"dar":{"q":"شنو هو الجذر التربيعي ديال 144؟","a":["12","16","14","11"],"hint":"رقم إلا ضربتيه فراسو كيعطيك 144: دزينة.","exp":"12 × 12 = 144، إذن √144 = 12."}},
+{"id":"A-GEO-002","age":"adult","cat":"geografia","level":3,"src":"Atlante geografico (Nilo: circa 6.650 km)","correct":3,"status":"verificata","it":{"q":"Qual è il fiume più lungo dell'Africa?","a":["Lo Zambesi","Il Niger","Il Congo","Il Nilo"],"hint":"Sfocia nel Mediterraneo, in Egitto.","exp":"Il Nilo è lungo circa 6.650 km e sfocia nel Mediterraneo; il Congo è il secondo fiume africano."},"ar":{"q":"ما أطول نهر في أفريقيا؟","a":["الزامبيزي","النيجر","الكونغو","النيل"],"hint":"يصبّ في البحر المتوسّط في مصر.","exp":"يبلغ طول النيل نحو 6650 كم ويصبّ في البحر المتوسّط، والكونغو ثاني أطول أنهار أفريقيا."},"dar":{"q":"شنو هو أطول واد فأفريقيا؟","a":["واد الزامبيزي","واد النيجر","واد الكونغو","واد النيل"],"hint":"كيخوي فالبحر الأبيض المتوسط فمصر.","exp":"النيل طولو تقريبا 6650 كيلومتر وكيخوي فالبحر المتوسط، والكونغو هو التاني فأفريقيا."}},
+{"id":"A-SCI-001","age":"adult","cat":"scienza","level":4,"src":"Fisica (c = 299.792,458 km/s)","correct":1,"status":"verificata","it":{"q":"Qual è la velocità approssimativa della luce nel vuoto?","a":["30.000 km/s","300.000 km/s","3.000 km/s","300.000 km/h"],"hint":"Dal Sole alla Terra impiega circa 8 minuti.","exp":"La luce viaggia a circa 299.792 km al secondo: in un secondo farebbe il giro della Terra più di 7 volte."},"ar":{"q":"ما السرعة التقريبية للضوء في الفراغ؟","a":["30000 كم/ث","300000 كم/ث","3000 كم/ث","300000 كم/س"],"hint":"يصل من الشمس إلى الأرض في نحو 8 دقائق.","exp":"يسير الضوء بسرعة نحو 299792 كم في الثانية، أي يدور حول الأرض أكثر من 7 مرّات في ثانية واحدة."},"dar":{"q":"شحال تقريبا هي السرعة ديال الضو فالفراغ؟","a":["30000 كم/ث","300000 كم/ث","3000 كم/ث","300000 كم/س"],"hint":"كيوصل من الشمس للأرض فتقريبا 8 دقايق.","exp":"الضو كيمشي بتقريبا 299792 كيلومتر فالثانية، يعني كيدور على الأرض كثر من 7 مرات فثانية وحدة."}},
+{"id":"A-ISL-002","age":"adult","cat":"islam","level":4,"src":"Muṣḥaf (riwāya Ḥafṣ)","correct":1,"status":"verificata","it":{"q":"Quale sura del Corano non inizia con la Basmala?","a":["Al-Fātiḥa","At-Tawba","Al-Mulk","Yā-Sīn"],"hint":"È la nona sura.","exp":"At-Tawba (sura 9) è l'unica sura che non inizia con la Basmala; in compenso la Basmala compare due volte nella sura An-Naml (27)."},"ar":{"q":"أيّ سورة في القرآن لا تبدأ بالبسملة؟","a":["سورة الفاتحة","سورة التوبة","سورة الملك","سورة يس"],"hint":"هي السورة التاسعة.","exp":"سورة التوبة (السورة 9) هي السورة الوحيدة التي لا تبدأ بالبسملة، وتأتي البسملة مرّتين في سورة النمل (27)."},"dar":{"q":"شمن سورة فالقرآن ما كتبداش بالبسملة؟","a":["سورة الفاتحة","سورة التوبة","سورة الملك","سورة يس"],"hint":"هي السورة التاسعة.","exp":"سورة التوبة (رقم 9) هي الوحيدة اللي ما كتبداش بالبسملة، والبسملة جات جوج مرات فسورة النمل (27)."}},
+{"id":"A-SCI-002","age":"adult","cat":"scienza","level":5,"src":"Astrofisica (composizione della materia barionica)","correct":0,"status":"verificata","it":{"q":"Qual è l'elemento chimico più abbondante nell'universo?","a":["L'idrogeno","Il carbonio","L'elio","L'ossigeno"],"hint":"È il primo della tavola periodica.","exp":"L'idrogeno costituisce circa il 74% della materia ordinaria dell'universo; poi viene l'elio, circa il 24%."},"ar":{"q":"ما أكثر عنصر كيميائي وفرةً في الكون؟","a":["الهيدروجين","الكربون","الهيليوم","الأكسجين"],"hint":"هو الأوّل في الجدول الدوري.","exp":"يشكّل الهيدروجين نحو 74% من المادّة العادية في الكون، ويليه الهيليوم بنحو 24%."},"dar":{"q":"شنو هو العنصر الكيميائي اللي كاين بزاف فالكون؟","a":["الهيدروجين","الكربون","الهيليوم","الأكسجين"],"hint":"هو اللول فالجدول الدوري.","exp":"الهيدروجين كيمثل تقريبا 74% من المادة العادية فالكون، ومن بعدو الهيليوم بتقريبا 24%."}}];
+const FQ_CATS = {
+  animali:["🐾","Animali","الحيوانات","الحيوانات"], corpo:["🫀","Corpo umano e salute","جسم الإنسان والصحّة","الجسم والصحة"],
+  natura:["🌿","Natura e ambiente","الطبيعة والبيئة","الطبيعة والبيئة"], geografia:["🌍","Geografia e nazioni","الجغرافيا والدول","الجغرافيا والدول"],
+  capitali:["🏳️","Capitali e bandiere","العواصم والأعلام","العواصم والرايات"], frutta:["🍎","Frutta e verdura","الفواكه والخضار","الفاكية والخضرة"],
+  cibo:["🍽️","Alimentazione e cibo","التغذية والطعام","الماكلة"], scienza:["🔬","Scienza e tecnologia","العلوم والتكنولوجيا","العلوم والتكنولوجيا"],
+  storia:["🏛️","Storia e civiltà","التاريخ والحضارات","التاريخ والحضارات"], matematica:["➗","Matematica e logica","الرياضيات والمنطق","الحساب والمنطق"],
+  spazio:["🪐","Spazio e pianeti","الفضاء والكواكب","الفضاء والكواكب"], sport:["⚽","Sport","الرياضة","الرياضة"],
+  islam:["🕌","Religione e cultura islamica","الدين والثقافة الإسلامية","الدين والثقافة الإسلامية"], vita:["🏠","Vita quotidiana","الحياة اليومية","الحياة ديال كل نهار"]
+};
+const FQ_T = {
+  it:{q:"Domanda",of:"di",lv:"Livello",confirm:"✔ Confermo",next:"Avanti ▶",ok:"Giusto!",ko:"Sbagliato!",timeup:"Tempo scaduto!",was:"La risposta giusta è:",pts:"punti",
+      l50:"50/50",lhint:"Indizio",lsecond:"2ª possibilità",lfam:"Famiglia",secondOn:"Seconda possibilità attiva: se sbagli, puoi riprovare!",retry:"Sbagliato, ma hai una seconda possibilità! Riprova.",
+      fam:"Chiedete alla famiglia!",famSub:"Ognuno tocca la lettera che pensa sia giusta.",close:"Chiudi",hint:"Indizio",read:"Leggi",
+      end:"Fine partita!",right:"Giuste",wrongs:"Sbagliate",perc:"Successo",score:"Punteggio",time:"Tempo",lifes:"Aiuti usati",again:"🔄 Gioca ancora",exit:"Esci",
+      m4:"Campione assoluto! 🏆",m3:"Bravissimo! 🌟",m2:"Bene, continua così! 👍",m1:"Ottimo allenamento, la prossima andrà meglio! 💪",ready:"Pronto?",start:"Iniziamo!",letters:["A","B","C","D"]},
+  ar:{q:"السؤال",of:"من",lv:"المستوى",confirm:"✔ أؤكّد",next:"التالي ◀",ok:"إجابة صحيحة!",ko:"إجابة خاطئة!",timeup:"انتهى الوقت!",was:"الإجابة الصحيحة هي:",pts:"نقطة",
+      l50:"50/50",lhint:"تلميح",lsecond:"فرصة ثانية",lfam:"العائلة",secondOn:"الفرصة الثانية مفعّلة: إن أخطأت يمكنك المحاولة مرّة أخرى!",retry:"خطأ، لكن لديك فرصة ثانية! حاول مرّة أخرى.",
+      fam:"اسألوا العائلة!",famSub:"يلمس كلّ واحد الحرف الذي يظنّه صحيحًا.",close:"إغلاق",hint:"تلميح",read:"اقرأ",
+      end:"انتهت اللعبة!",right:"صحيحة",wrongs:"خاطئة",perc:"النجاح",score:"النقاط",time:"الوقت",lifes:"المساعدات المستعملة",again:"🔄 العب مرّة أخرى",exit:"خروج",
+      m4:"بطل حقيقي! 🏆",m3:"ممتاز! 🌟",m2:"جيّد، واصل! 👍",m1:"تدريب رائع، المرّة القادمة ستكون أفضل! 💪",ready:"هل أنت مستعدّ؟",start:"لنبدأ!",letters:["أ","ب","ج","د"]},
+  dar:{q:"السؤال",of:"من",lv:"المستوى",confirm:"✔ متأكد",next:"اللي من بعد ◀",ok:"صحيح!",ko:"غلط!",timeup:"سالا الوقت!",was:"الجواب الصحيح هو:",pts:"نقطة",
+      l50:"50/50",lhint:"تلميحة",lsecond:"فرصة تانية",lfam:"العائلة",secondOn:"الفرصة التانية خدامة: إلا غلطتي تقدر تعاود!",retry:"غلطتي، ولكن عندك فرصة تانية! عاود.",
+      fam:"سوّلو العائلة!",famSub:"كل واحد يضغط على الحرف اللي كيبان ليه صحيح.",close:"سدّ",hint:"تلميحة",read:"قرا",
+      end:"سالات اللعبة!",right:"صحاح",wrongs:"غالطين",perc:"النجاح",score:"النقط",time:"الوقت",lifes:"المساعدات اللي تستعملو",again:"🔄 عاود لعب",exit:"خرج",
+      m4:"بطل! 🏆",m3:"واعر بزاف! 🌟",m2:"مزيان، زيد! 👍",m1:"تدريب مزيان، المرة الجاية غادي تكون حسن! 💪",ready:"واجد؟",start:"يالاه نبداو!",letters:["أ","ب","ج","د"]}
+};
+const FQ_LEVEL_PTS = [100,200,300,500,800];
+const FQ_SCHED = {10:[1,1,2,2,3,3,3,4,4,5], 20:[1,1,1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,5,5]};
+const FQ_TIMER_DEF = {kids5:0, kids7:45, teen:30, adult:30};
+const FQSound = {
+  ctx:null,
+  beep(notes){ if(S.set.fqSound===false) return; try{ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; this.ctx=this.ctx||new AC(); const c=this.ctx; if(c.state==="suspended") c.resume();
+    let t=c.currentTime; notes.forEach(([f,d,type])=>{ const o=c.createOscillator(), g=c.createGain(); o.type=type||"sine"; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.25,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+d+.02); t+=d*.85; }); }catch(e){} },
+  ok(){ this.beep([[660,.14],[880,.14],[1175,.28]]); }, ko(){ this.beep([[220,.25,"square"],[165,.4,"square"]]); }, tick(){ this.beep([[1000,.05,"triangle"]]); }
+};
+function fqBank(age){ return FQ_BANK.filter(q=>q.age===age && q.status==="verificata"); }
+function fqPickQuestions(age, n, exclude){
+  const pool = fqBank(age).filter(q=>!(exclude||[]).includes(q.cat)); const used=new Set(); const out=[];
+  const sched = FQ_SCHED[n] || FQ_SCHED[20].slice(0,n);
+  for(const lvl of sched){
+    let cands = pool.filter(q=>!used.has(q.id) && q.level===lvl);
+    for(let d=1; !cands.length && d<5; d++) cands = pool.filter(q=>!used.has(q.id) && (q.level===lvl-d || q.level===lvl+d));
+    if(!cands.length) break;
+    const q = cands[Math.floor(Math.random()*cands.length)]; used.add(q.id); out.push(q);
+  }
+  return out;
+}
+const fqPlain = t => String(t).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu,"").trim();
+function fqSpeak(text, lang){ return Voice.speak(fqPlain(text), lang==="it"?"it":"ar", lang==="it"?1:.85); }
+let fqCleanup = null;
+
 /* ================= VISTE ================= */
 const app = $("#app");
 let currentLesson = null;
@@ -1368,7 +1519,7 @@ const Views = {
         <div class="fq-logo">Family Quiz</div><div class="fq-logo-ar">كويز العائلة</div><div class="pgBox"></div>
         <div style="position:relative;z-index:1;font-weight:700;margin-top:6px">Il quiz di tutta la famiglia, condotto da Bayan!</div></div>
       <div class="fq-menu">
-        <button class="fq-btn g-gold wide soon" data-go="new"><span class="ic">▶</span>Nuova partita</button>
+        <button class="fq-btn g-gold wide" data-go="fq-nuova"><span class="ic">▶</span>Nuova partita</button>
         <button class="fq-btn g-teal" data-go="fq-giocatori"><span class="ic">👨‍👩‍👧‍👦</span>Giocatori</button>
         <button class="fq-btn g-purple soon" data-go="q"><span class="ic">📚</span>Domande</button>
         <button class="fq-btn g-sky soon" data-go="st"><span class="ic">📊</span>Statistiche</button>
@@ -1448,6 +1599,148 @@ const Views = {
     const del=$("#pDel"); if(del) del.onclick = async () => { if(!del.dataset.sure){ del.dataset.sure=1; del.textContent="Tocca di nuovo per confermare"; setTimeout(()=>{ if(del.isConnected){ del.textContent="🗑 Elimina giocatore"; delete del.dataset.sure; } },3000); return; }
       await FQ.del("fq_players", p.id); toast("Giocatore eliminato"); location.hash="fq-giocatori"; };
     render();
+  },
+  async "fq-nuova"(){
+    setHeader("Nuova partita", true);
+    const ps = await FQ.players(); if(location.hash!=="#fq-nuova") return;
+    const st = S.fqNew = Object.assign({player:null, n:20, timer:"auto", read:"auto"}, S.fqNew||{});
+    if(!ps.find(p=>p.id===st.player)) st.player = ps[0] ? ps[0].id : null;
+    app.innerHTML = `<div class="fq-new"><div class="banner g-gold" style="color:#3A2A00"><span class="ic">▶</span><span><b>Nuova partita</b><small>Scegli chi gioca e come</small></span></div>
+      ${ps.length ? "" : `<div class="card center">Prima crea almeno un giocatore.<br><button class="btn mt" onclick="location.hash='fq-player-new'">➕ Aggiungi giocatore</button></div>`}
+      <div class="card ${ps.length?"":"hidden"}">
+        <div class="field" style="margin-top:0"><label>Chi gioca?</label><div class="pick" id="nwP">${ps.map(p=>`<button class="card pl-card" data-p="${p.id}">${FQ.avatarHtml(p)}<span class="t"><b>${esc(p.name)}</b><span class="tag">${FQ.group(p.group).short}</span><span class="tag">${FQ.lang(p.lang).sub}</span></span></button>`).join("")}</div>
+          <small style="color:var(--muted)">Più giocatori insieme: in arrivo nella prossima fase.</small></div>
+        <div class="field"><label>Quante domande?</label><div class="chips" id="nwN"><button class="chip" data-n="20">20 (completa)</button><button class="chip" data-n="10">10 (breve)</button></div><small id="nwNote" style="color:var(--muted)"></small></div>
+        <div class="field"><label>Tempo per rispondere</label><div class="chips" id="nwT">${["auto","0","15","30","45","60"].map(v=>`<button class="chip" data-t="${v}">${v==="auto"?"Automatico":v==="0"?"Senza timer":v+" s"}</button>`).join("")}</div><small id="nwTnote" style="color:var(--muted)"></small></div>
+        <div class="field"><label>Leggere ad alta voce le domande</label><div class="chips" id="nwR"><button class="chip" data-r="auto">Automatico</button><button class="chip" data-r="on">Sempre</button><button class="chip" data-r="off">Mai</button></div><small style="color:var(--muted)">Automatico: solo per i bambini di 5–6 anni.</small></div>
+        <button class="btn big green" style="width:100%" id="nwGo">▶ Inizia la partita</button>
+      </div></div>`;
+    const sync = () => {
+      document.querySelectorAll("#nwP [data-p]").forEach(b=>b.classList.toggle("on", b.dataset.p===st.player));
+      document.querySelectorAll("#nwN [data-n]").forEach(b=>b.classList.toggle("on", +b.dataset.n===st.n));
+      document.querySelectorAll("#nwT [data-t]").forEach(b=>b.classList.toggle("on", b.dataset.t===st.timer));
+      document.querySelectorAll("#nwR [data-r]").forEach(b=>b.classList.toggle("on", b.dataset.r===st.read));
+      const p = ps.find(x=>x.id===st.player); if(!p) return;
+      const have = fqBank(p.group).length;
+      $("#nwNote").textContent = have < st.n ? `Per ora l'archivio di prova ha ${have} domande per la fascia ${FQ.group(p.group).short}: la partita sarà di ${have} domande. Le altre arrivano con l'archivio completo.` : "";
+      $("#nwTnote").textContent = st.timer==="auto" ? `Per ${p.name}: ${FQ_TIMER_DEF[p.group] ? FQ_TIMER_DEF[p.group]+" secondi" : "senza timer"}.` : "";
+      Store.save();
+    };
+    const root = $(".fq-new");
+    root.onclick = e => { const b=e.target.closest("button"); if(!b) return;
+      if(b.dataset.p) st.player=b.dataset.p; if(b.dataset.n) st.n=+b.dataset.n; if(b.dataset.t) st.timer=b.dataset.t; if(b.dataset.r) st.read=b.dataset.r; sync(); };
+    const go=$("#nwGo"); if(go) go.onclick = () => { if(!st.player) return; location.hash="fq-gioco"; };
+    sync();
+  },
+  async "fq-gioco"(){
+    const ps = await FQ.players(); if(location.hash!=="#fq-gioco") return;
+    const st = S.fqNew || {}; const p = ps.find(x=>x.id===st.player);
+    if(!p){ location.hash="fq-nuova"; return; }
+    const lang = p.lang || "it", T = FQ_T[lang], rtl = lang!=="it";
+    const qs = fqPickQuestions(p.group, st.n||20);
+    if(!qs.length){ app.innerHTML = `<div class="note err">Non ci sono domande per questa fascia.</div>`; return; }
+    const secs = st.timer==="auto" ? FQ_TIMER_DEF[p.group] : +st.timer;
+    const read = st.read==="on" || (st.read!=="off" && p.group==="kids5");
+    const G = {i:0, score:0, ok:0, ko:0, used:{}, t0:Date.now(), log:[], armed:false, timerId:null, left:0, paused:false};
+    setHeader("Family Quiz", true);
+    const stop = () => { clearInterval(G.timerId); G.timerId=null; Voice.stop(); document.querySelectorAll(".family").forEach(x=>x.remove()); };
+    fqCleanup = stop;
+    const ladder = () => `<div class="ladder">${qs.map((_,k)=>`<i class="${k<G.i?(G.log[k]&&G.log[k].ok?"ok":"ko"):k===G.i?"cur":""}"></i>`).join("")}</div>`;
+    const timerSvg = () => { if(!secs) return ""; const f=G.left/secs, C=2*Math.PI*22;
+      return `<div class="timer ${G.left<=5?"low":""}"><svg width="54" height="54"><circle cx="27" cy="27" r="22" stroke="#E3E8F2" stroke-width="6" fill="none"/><circle cx="27" cy="27" r="22" stroke="${G.left<=5?"#E63946":"#2BB673"}" stroke-width="6" fill="none" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-f)}" stroke-linecap="round"/></svg><b>${G.left}</b></div>`; };
+    const showQ = () => {
+      const q = qs[G.i], L = q[lang] || q.it, cat = FQ_CATS[q.cat] || ["❓",q.cat,q.cat,q.cat];
+      G.sel=null; G.armed=false; G.done=false; G.gone=[]; G.qStart=Date.now(); G.left=secs;
+      app.innerHTML = `<div class="play" dir="${rtl?"rtl":"ltr"}" lang="${lang==="it"?"it":"ar"}">
+        <div class="top">${FQ.avatarHtml(p)}<div class="who"><b>${esc(p.name)}</b><small>${T.q} ${G.i+1} ${T.of} ${qs.length}</small></div><div class="score">⭐ ${G.score}</div></div>
+        ${ladder()}
+        <div class="qmeta"><span>${cat[0]} ${lang==="it"?cat[1]:lang==="ar"?cat[2]:cat[3]}</span><span>${T.lv} <span class="lv">${"★".repeat(q.level)}${"☆".repeat(5-q.level)}</span></span><span id="tmr">${timerSvg()}</span></div>
+        <div class="qcard"><button class="say" id="say" aria-label="${T.read}">🔊</button><div class="qtxt">${esc(L.q)}</div></div>
+        <div id="hintBox"></div>
+        <div class="answers" id="ans">${L.a.map((a,k)=>`<button class="ans" data-k="${k}"><span class="L">${T.letters[k]}</span><span class="t">${esc(a)}</span></button>`).join("")}</div>
+        <button class="btn big green confirm hidden" id="conf">${T.confirm}</button>
+        <div id="fb"></div>
+        <div id="lifeWrap"><div class="lifes" id="lifes">
+          <button class="life ${G.used.fifty?"used":""}" data-l="fifty">50<br>50</button>
+          <button class="life ${G.used.hint?"used":""}" data-l="hint"><span class="ic">💡</span></button>
+          <button class="life ${G.used.second?"used":""}" data-l="second"><span class="ic">🔁</span></button>
+          <button class="life ${G.used.family?"used":""}" data-l="family"><span class="ic">👨‍👩‍👧</span></button></div>
+          <div class="lifes" style="margin-top:0"><span class="lifelbl" style="width:62px">${T.l50}</span><span class="lifelbl" style="width:62px">${T.lhint}</span><span class="lifelbl" style="width:62px">${T.lsecond}</span><span class="lifelbl" style="width:62px">${T.lfam}</span></div></div>
+      </div>`;
+      $("#say").onclick = () => readQ();
+      $("#ans").onclick = e => { const b=e.target.closest(".ans"); if(!b||G.done||b.classList.contains("gone")||b.disabled) return;
+        document.querySelectorAll(".ans").forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); G.sel=+b.dataset.k; $("#conf").classList.remove("hidden"); };
+      $("#conf").onclick = () => { if(G.sel!==null && !G.done) answer(G.sel); };
+      $("#lifes").onclick = e => { const b=e.target.closest(".life"); if(!b||G.done) return; useLife(b.dataset.l, b); };
+      if(secs){ clearInterval(G.timerId); G.timerId = setInterval(()=>{ if(G.paused||G.done) return; G.left--; const t=$("#tmr"); if(t) t.innerHTML=timerSvg(); if(G.left>0 && G.left<=5) FQSound.tick(); if(G.left<=0) answer(null); }, 1000); }
+      if(read) readQ();
+    };
+    const readQ = async () => { const L=qs[G.i][lang]||qs[G.i].it; await fqSpeak(L.q, lang); for(let k=0;k<4;k++){ if(G.done) return; if(G.gone.includes(k)) continue; await fqSpeak(`${T.letters[k]}. ${L.a[k]}`, lang); } };
+    const useLife = (l, b) => {
+      if(G.used[l]) return; const q=qs[G.i], L=q[lang]||q.it;
+      if(l==="fifty"){ const wrong=[0,1,2,3].filter(k=>k!==q.correct); wrong.sort(()=>Math.random()-.5); G.gone=wrong.slice(0,2);
+        G.gone.forEach(k=>{ const x=document.querySelector(`.ans[data-k="${k}"]`); x.classList.add("gone"); x.classList.remove("sel"); if(G.sel===k){ G.sel=null; $("#conf").classList.add("hidden"); } }); }
+      if(l==="hint"){ $("#hintBox").innerHTML = `<div class="hintbox">💡 ${esc(L.hint)}</div>`; if(read) fqSpeak(L.hint, lang); }
+      if(l==="second"){ G.armed=true; b.classList.add("armed"); $("#hintBox").insertAdjacentHTML("beforeend", `<div class="hintbox">🔁 ${esc(T.secondOn)}</div>`); }
+      if(l==="family") family();
+      G.used[l]=G.i+1; if(l!=="second") b.classList.add("used");
+    };
+    const family = () => {
+      G.paused=true; let left=30; const votes=[0,0,0,0];
+      const d=document.createElement("div"); d.className="family"; d.dir=rtl?"rtl":"ltr";
+      const cols=["#2196F3","#FF8A00","#2BB673","#6A45F0"];
+      d.innerHTML = `<div style="font-family:Fredoka,'Baloo 2',sans-serif;font-size:28px;font-weight:700">👨‍👩‍👧 ${T.fam}</div><div>${T.famSub}</div><div class="big" id="fl">30</div>
+        <div class="votes">${[0,1,2,3].map(k=>`<div><i id="v${k}" style="height:6px;background:${cols[k]}"></i><b id="n${k}">0</b><button data-k="${k}" style="background:${cols[k]};opacity:${G.gone.includes(k)?.3:1}" ${G.gone.includes(k)?"disabled":""}>${T.letters[k]}</button></div>`).join("")}</div>
+        <button class="btn sec">${T.close}</button>`;
+      document.body.appendChild(d);
+      const end = () => { clearInterval(iv); d.remove(); G.paused=false; };
+      const iv = setInterval(()=>{ left--; const x=d.querySelector("#fl"); if(x) x.textContent=left; if(left<=0) end(); },1000);
+      d.onclick = e => { const b=e.target.closest("button"); if(!b) return; if(b.dataset.k===undefined){ end(); return; }
+        const k=+b.dataset.k; votes[k]++; const mx=Math.max(...votes); votes.forEach((v,j)=>{ d.querySelector("#v"+j).style.height=(6+v/mx*100)+"px"; d.querySelector("#n"+j).textContent=v; }); };
+    };
+    const answer = k => {
+      if(G.done) return; const q=qs[G.i], L=q[lang]||q.it;
+      if(k!==null && k!==q.correct && G.armed){
+        G.armed=false; const b=document.querySelector(`.ans[data-k="${k}"]`); b.classList.remove("sel"); b.classList.add("wrong"); b.disabled=true; G.gone.push(k);
+        G.sel=null; $("#conf").classList.add("hidden"); document.querySelectorAll(".life.armed").forEach(x=>{ x.classList.remove("armed"); x.classList.add("used"); });
+        FQSound.ko(); $("#hintBox").innerHTML = `<div class="hintbox">🔁 ${esc(T.retry)}</div>`; if(read) fqSpeak(T.retry, lang); return;
+      }
+      G.done=true; clearInterval(G.timerId); Voice.stop();
+      if(G.armed) document.querySelectorAll(".life.armed").forEach(x=>{ x.classList.remove("armed"); x.classList.add("used"); });
+      const ok = k===q.correct, took=(Date.now()-G.qStart)/1000;
+      let pts = 0; if(ok){ pts = FQ_LEVEL_PTS[q.level-1]; if(secs && took <= secs/2) pts = Math.round(pts*1.2); G.score+=pts; G.ok++; } else G.ko++;
+      G.log.push({id:q.id, ok, k, pts, t:Math.round(took)});
+      document.querySelectorAll(".ans").forEach(b=>{ b.disabled=true; const j=+b.dataset.k; b.classList.remove("sel"); if(j===q.correct) b.classList.add("right"); else if(j===k) b.classList.add("wrong"); });
+      $("#conf").classList.add("hidden"); $("#lifeWrap").classList.add("hidden");
+      ok ? FQSound.ok() : FQSound.ko(); if(ok && G.ok%3===0) confetti();
+      const title = ok ? `✅ ${T.ok}` : k===null ? `⏰ ${T.timeup}` : `❌ ${T.ko}`;
+      $("#fb").innerHTML = `<div class="fb ${ok?"ok":"ko"}"><h3>${title}</h3>${ok?`<div class="pts">+${pts} ${T.pts}</div>`:`<p><b>${T.was}</b> ${esc(L.a[q.correct])}</p>`}<p>${esc(L.exp)}</p>
+        <button class="btn big ${ok?"green":"purple"} confirm" id="nx">${G.i+1<qs.length?T.next:"🏁 "+T.end}</button></div>`;
+      $(".score").textContent = "⭐ " + G.score;
+      $("#nx").onclick = () => { G.i++; G.i<qs.length ? showQ() : finish(); window.scrollTo(0,0); };
+      if(read) fqSpeak((ok?T.ok:T.ko)+" "+L.exp, lang);
+      $("#fb").scrollIntoView({behavior:"smooth", block:"nearest"});
+    };
+    const finish = async () => {
+      stop(); const n=qs.length, perc=Math.round(G.ok/n*100), secsTot=Math.round((Date.now()-G.t0)/1000);
+      const usedList = Object.keys(G.used);
+      const msg = perc>=90?T.m4:perc>=70?T.m3:perc>=50?T.m2:T.m1;
+      await FQ.put("fq_results", {id:"r"+Date.now(), date:Date.now(), player:p.id, name:p.name, group:p.group, lang, n, ok:G.ok, ko:G.ko, score:G.score, perc, secs:secsTot, lifelines:usedList, log:G.log});
+      app.innerHTML = `<div class="play" dir="${rtl?"rtl":"ltr"}"><div class="fq-stage"><div class="stars-deco"></div><div class="fq-logo" style="font-size:30px">${T.end}</div>
+          <div class="pgBox"></div><div style="position:relative;z-index:1">${FQ.avatarHtml(p,true)}</div>
+          <div style="position:relative;z-index:1;font-family:Fredoka,'Baloo 2',sans-serif;font-size:24px;font-weight:700;margin-top:8px">${esc(p.name)}</div>
+          <div style="position:relative;z-index:1;font-size:20px;font-weight:700;color:#FFE38A">${msg}</div></div>
+        <div class="endstats">
+          <div><b style="color:#178347">${G.ok}</b><small>${T.right}</small></div><div><b style="color:var(--red)">${G.ko}</b><small>${T.wrongs}</small></div>
+          <div><b>${perc}%</b><small>${T.perc}</small></div><div><b style="color:#C77800">${G.score}</b><small>${T.score}</small></div>
+          <div><b>${Math.floor(secsTot/60)}:${String(secsTot%60).padStart(2,"0")}</b><small>${T.time}</small></div><div><b>${usedList.length}/4</b><small>${T.lifes}</small></div></div>
+        <button class="btn big green confirm" id="again">${T.again}</button><button class="btn sec confirm" id="exit">${T.exit}</button></div>`;
+      $(".pgBox").appendChild(owl(perc>=50?"happy":"")); $(".fq-stage .owl").style.width="96px";
+      if(perc>=50) confetti();
+      fqSpeak(msg, lang);
+      $("#again").onclick = () => Views["fq-gioco"](); $("#exit").onclick = () => { location.hash="fq"; };
+    };
+    showQ();
   },
   "prova-mic"(){
     setHeader("Prova del microfono", true);
@@ -1644,7 +1937,7 @@ function quizGame(g){
 function route(){
   if(currentLesson){ currentLesson.stop(); currentLesson=null; }
   Player.stop(); Rec.stop(); Voice.stop(); Mic.stop().then(()=>Mic.close());
-  { const c=document.getElementById("cele"); if(c) c.remove(); document.querySelectorAll(".crop").forEach(x=>x.remove()); }
+  { const c=document.getElementById("cele"); if(c) c.remove(); document.querySelectorAll(".crop,.family").forEach(x=>x.remove()); if(fqCleanup){ fqCleanup(); fqCleanup=null; } }
   const h = location.hash.slice(1) || "home";
   window.scrollTo(0,0);
   const sec = h.startsWith("sura-")||h==="corano" ? "corano" : h.startsWith("hadith")||h==="ahadith" ? "ahadith" : (["giochi","alfabeto","ascolta","parole","memory","fq"].includes(h) || h.startsWith("fq-")) ? "giochi" : h==="studio" ? "studio" : h==="home" ? "home" : "";

@@ -664,11 +664,11 @@ function ayahUrls(sura, ayah, globalN){
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const Rec = {
   cur:null,
-  listen({maxMs=8000, onInterim}={}){
+  listen({maxMs=8000, onInterim, lang="ar-SA"}={}){
     return new Promise(resolve=>{
       if(!SR) return resolve({error:"unsupported"});
       let r; try{ r = new SR(); }catch(e){ return resolve({error:"unsupported"}); }
-      r.lang="ar-SA"; r.interimResults=true; r.maxAlternatives=5; r.continuous=false;
+      r.lang=lang; r.interimResults=true; r.maxAlternatives=5; r.continuous=false;
       let finals=[], lastAlts=[], interim="", err=null, settled=false;
       r.onresult = e => {
         finals=[]; interim=""; lastAlts=[];
@@ -2902,7 +2902,7 @@ const FQSound = {
     let t=c.currentTime; notes.forEach(([f,d,type])=>{ const o=c.createOscillator(), g=c.createGain(); o.type=type||"sine"; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.25,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+d+.02); t+=d*.85; }); }catch(e){} },
   ok(){ this.beep([[660,.14],[880,.14],[1175,.28]]); }, ko(){ this.beep([[220,.25,"square"],[165,.4,"square"]]); }, tick(){ this.beep([[1000,.05,"triangle"]]); }
 };
-const APP_VERSION = "4.7";
+const APP_VERSION = "4.8";
 function FQS(){ S.set.fq = Object.assign({sound:true, music:false, think:true, n:20, timer:"auto", read:"auto", exclude:[], pin:null}, S.set.fq||{}); return S.set.fq; }
 FQ.custom = null; FQ.unlocked = false;
 FQ.loadCustom = async function(force){ if(this.custom && !force) return; const list = await this.all("fq_questions"); this.custom = {}; list.forEach(q=>{ this.custom[q.id]=q; }); this._merged=null; };
@@ -3031,7 +3031,7 @@ let fqCleanup = null;
 const app = $("#app");
 let currentLesson = null;
 function setHeader(title, back){ $("#title").textContent=title; $("#back").classList.toggle("show", !!back); }
-$("#back").onclick = () => { const h=location.hash.slice(1); if(h==="prova-mic"||h==="voce"){ history.back(); return; } if(h==="studio"){ location.hash="corano"; return; } if(h==="fq"){ location.hash="giochi"; return; } if(h.startsWith("fq-player-")){ location.hash="fq-giocatori"; return; } if(h.startsWith("fq-edit-")){ location.hash="fq-gestione"; return; } if(h.startsWith("fq-")){ location.hash="fq"; return; } location.hash = h.startsWith("sura-")?"corano": h.startsWith("hadith-")?"ahadith": ["alfabeto","ascolta","parole","memory"].includes(h)?"giochi":"home"; };
+$("#back").onclick = () => { const h=location.hash.slice(1); if(h==="prova-mic"||h==="voce"){ history.back(); return; } if(h==="studio"){ location.hash="corano"; return; } if(h==="fq"||h==="ruota"){ location.hash="giochi"; return; } if(h==="ruota-gioco"){ location.hash="ruota"; return; } if(h.startsWith("fq-player-")){ location.hash="fq-giocatori"; return; } if(h.startsWith("fq-edit-")){ location.hash="fq-gestione"; return; } if(h.startsWith("fq-")){ location.hash="fq"; return; } location.hash = h.startsWith("sura-")?"corano": h.startsWith("hadith-")?"ahadith": ["alfabeto","ascolta","parole","memory"].includes(h)?"giochi":"home"; };
 
 const Views = {
   home(){
@@ -3066,6 +3066,7 @@ const Views = {
       <button class="mtile g-green" onclick="location.hash='parole'"><span class="ic">🍎</span><b>Le Parole</b><small>Come si dice?</small></button>
       <button class="mtile g-pink" onclick="location.hash='memory'"><span class="ic">🃏</span><b>Memory</b><small>Trova le coppie</small></button>
       <button class="mtile g-night wide" onclick="location.hash='fq'"><span class="ic">🏆</span><span><b>Family Quiz</b><br><small>Il quiz di tutta la famiglia, fino a 4 giocatori</small></span></button>
+      <button class="mtile wide" style="background:linear-gradient(135deg,#1b3f8f,#2BB673)" onclick="location.hash='ruota'"><span class="ic">🎡</span><span><b>Gira la Ruota</b><br><small>Indovina la frase, fino a 4 concorrenti · BIP con la voce</small></span></button>
     </div>`;
   },
   alfabeto(){
@@ -3885,6 +3886,378 @@ function quizGame(g){
   next();
 }
 
+// [categoria, frase, 1 = adatta ai bambini]
+const RU_FRASI = [
+["Animale","Il gatto",1],["Animale","Il cane",1],["Animale","La giraffa",1],["Animale","L'elefante",1],["Animale","Il pinguino",1],
+["Animale","La farfalla",1],["Animale","Il coccodrillo",1],["Animale","La tartaruga",1],["Animale","Il cavallo",1],["Animale","Il coniglio",1],
+["Animale","La balena",1],["Animale","Il leone",1],["Animale","La scimmia",1],["Animale","Il delfino",1],["Animale","La coccinella",1],["Animale","Il cammello",1],
+["Frutta","La banana",1],["Frutta","La fragola",1],["Frutta","L'anguria",1],["Frutta","La mela rossa",1],["Frutta","I datteri",1],
+["Frutta","L'arancia",1],["Frutta","La ciliegia",1],["Frutta","L'ananas",1],["Frutta","Il melone",1],
+["Cibo","La pizza",1],["Cibo","Il gelato",1],["Cibo","Il couscous",1],["Cibo","Il pane caldo",1],["Cibo","La torta",1],["Cibo","Il latte",1],
+["In casa","Il letto",1],["In casa","La finestra",1],["In casa","Lo spazzolino",1],["In casa","Il frigorifero",1],["In casa","La lavatrice",1],
+["In casa","Il divano",1],["In casa","La lampada",1],["In casa","Il tappeto",1],
+["A scuola","La matita",1],["A scuola","Lo zaino",1],["A scuola","La lavagna",1],["A scuola","Il quaderno",1],["A scuola","La gomma",1],
+["A scuola","Il righello",1],["A scuola","Le forbici",1],["A scuola","Il libro",1],
+["Natura","Il sole",1],["Natura","La luna",1],["Natura","Le stelle",1],["Natura","L'arcobaleno",1],["Natura","La pioggia",1],
+["Natura","Il mare",1],["Natura","La montagna",1],["Natura","Il fiore",1],["Natura","Il cielo azzurro",1],["Natura","Il prato verde",1],
+["Islam","La moschea",1],["Islam","Il Corano",1],["Islam","Il Ramadan",1],["Islam","La preghiera",1],["Islam","La Mecca",1],
+["Mezzo di trasporto","L'aereo",1],["Mezzo di trasporto","Il treno",1],["Mezzo di trasporto","La bicicletta",1],
+["Mezzo di trasporto","La nave",1],["Mezzo di trasporto","Il razzo",1],["Mezzo di trasporto","L'autobus",1],
+["Proverbio","Chi va piano va sano e va lontano",0],["Proverbio","Chi dorme non piglia pesci",0],["Proverbio","L'unione fa la forza",0],
+["Proverbio","Il tempo è denaro",0],["Proverbio","Meglio tardi che mai",0],["Proverbio","Tra il dire e il fare c'è di mezzo il mare",0],
+["Proverbio","Chi trova un amico trova un tesoro",0],["Proverbio","Una mela al giorno toglie il medico di torno",0],
+["Proverbio","Chi semina vento raccoglie tempesta",0],["Proverbio","Non tutte le ciambelle riescono col buco",0],
+["Proverbio","Chi fa da sé fa per tre",0],["Proverbio","L'appetito vien mangiando",0],["Proverbio","Volere è potere",0],
+["Proverbio","Sbagliando si impara",0],["Proverbio","Il silenzio è d'oro",0],["Proverbio","Rosso di sera bel tempo si spera",0],
+["Proverbio","Paese che vai usanza che trovi",0],["Proverbio","Chi cerca trova",0],["Proverbio","A caval donato non si guarda in bocca",0],
+["Proverbio","Can che abbaia non morde",0],["Proverbio","La pazienza è la virtù dei forti",0],["Proverbio","Impara l'arte e mettila da parte",0],
+["Proverbio","Il mattino ha l'oro in bocca",0],["Proverbio","Chi ben comincia è a metà dell'opera",0],
+["Modo di dire","Avere la testa tra le nuvole",0],["Modo di dire","Essere al settimo cielo",0],["Modo di dire","In bocca al lupo",0],
+["Modo di dire","Acqua in bocca",0],["Modo di dire","Fare orecchie da mercante",0],["Modo di dire","Costare un occhio della testa",0],
+["Modo di dire","Prendere due piccioni con una fava",0],["Modo di dire","Non vedere l'ora",0],["Modo di dire","Essere come cane e gatto",0],
+["Modo di dire","Rompere il ghiaccio",0],["Modo di dire","Avere le mani in pasta",0],["Modo di dire","Cercare un ago in un pagliaio",0],
+["Città italiana","Roma",0],["Città italiana","Milano",0],["Città italiana","Napoli",0],["Città italiana","Firenze",0],["Città italiana","Venezia",0],
+["Città italiana","Bologna",0],["Città italiana","Palermo",0],["Città italiana","Genova",0],["Città italiana","Reggio Emilia",0],
+["Città italiana","Modena",0],["Città italiana","Verona",0],["Città italiana","Torino",0],
+["Città del mondo","Marrakech",0],["Città del mondo","Casablanca",0],["Città del mondo","Parigi",0],["Città del mondo","Londra",0],
+["Città del mondo","Il Cairo",0],["Città del mondo","Istanbul",0],["Città del mondo","New York",0],["Città del mondo","Tokyo",0],["Città del mondo","Medina",0],
+["Paese","Il Marocco",0],["Paese","L'Italia",0],["Paese","L'Egitto",0],["Paese","Il Giappone",0],["Paese","La Spagna",0],
+["Paese","L'Arabia Saudita",0],["Paese","Il Brasile",0],["Paese","La Turchia",0],
+["Cibo","Spaghetti al pomodoro",0],["Cibo","Il tajine di pollo",0],["Cibo","Tè alla menta",0],["Cibo","La pizza margherita",0],
+["Cibo","Il tiramisù",0],["Cibo","Pane e marmellata",0],["Cibo","Il parmigiano reggiano",0],["Cibo","Il risotto alla milanese",0],
+["Cibo","Couscous con verdure",0],["Cibo","Le lasagne al forno",0],["Cibo","La piadina romagnola",0],["Cibo","La zuppa di lenticchie",0],
+["Mestiere","Il vigile del fuoco",0],["Mestiere","L'astronauta",0],["Mestiere","Il pasticcere",0],["Mestiere","La maestra",0],
+["Mestiere","Il meccanico",0],["Mestiere","L'infermiera",0],["Mestiere","Il falegname",0],["Mestiere","Il pescatore",0],
+["Mestiere","L'ingegnere",0],["Mestiere","Il programmatore",0],
+["Sport","Il calcio di rigore",0],["Sport","La pallacanestro",0],["Sport","Il salto in alto",0],["Sport","La maratona",0],
+["Sport","La partita di pallavolo",0],["Sport","Il Giro d'Italia",0],["Sport","Le Olimpiadi",0],["Sport","La medaglia d'oro",0],
+["Natura","Il deserto del Sahara",0],["Natura","Il vulcano Etna",0],["Natura","La foresta pluviale",0],["Natura","Il fiume Po",0],
+["Natura","Le montagne dell'Atlante",0],["Natura","Il mar Mediterraneo",0],["Natura","L'aurora boreale",0],["Natura","Il ghiacciaio",0],
+["Spazio","La Via Lattea",0],["Spazio","Il pianeta Marte",0],["Spazio","La stazione spaziale",0],["Spazio","Il sistema solare",0],
+["Spazio","La stella cadente",0],["Spazio","Gli anelli di Saturno",0],
+["Islam","Il mese di Ramadan",0],["Islam","La preghiera del venerdì",0],["Islam","Il pellegrinaggio alla Mecca",0],
+["Islam","La festa del sacrificio",0],["Islam","I cinque pilastri",0],["Islam","La notte del destino",0],
+["Islam","La moschea di Medina",0],["Islam","L'acqua di Zamzam",0],["Islam","Il tappeto da preghiera",0],["Islam","La sura Al Fatiha",0],
+["Oggetto","L'ombrello",0],["Oggetto","Il telecomando",0],["Oggetto","La macchina fotografica",0],["Oggetto","Il computer portatile",0],
+["Oggetto","Gli occhiali da sole",0],["Oggetto","La valigia",0],["Oggetto","Il caricabatterie",0],["Oggetto","La sveglia",0],
+["Personaggio storico","Leonardo da Vinci",0],["Personaggio storico","Cristoforo Colombo",0],["Personaggio storico","Marco Polo",0],
+["Personaggio storico","Galileo Galilei",0],["Personaggio storico","Ibn Battuta",0],["Personaggio storico","Giuseppe Garibaldi",0],
+["Personaggio storico","Dante Alighieri",0],["Personaggio storico","Avicenna",0],
+["Mezzo di trasporto","La metropolitana",0],["Mezzo di trasporto","L'elicottero",0],["Mezzo di trasporto","Il sottomarino",0],
+["Mezzo di trasporto","La mongolfiera",0],["Mezzo di trasporto","Il monopattino",0],
+["In vacanza","L'ombrellone in spiaggia",0],["In vacanza","Il castello di sabbia",0],["In vacanza","La crema solare",0],
+["In vacanza","Il biglietto aereo",0],["In vacanza","La cartolina",0]
+];
+
+/* ================= GIRA LA RUOTA ================= */
+const RU_SEG = [500,"BANCAROTTA",300,200,600,"PASSA",400,250,800,300,1000,"BANCAROTTA",350,200,700,"PASSA",450,300,900,250,600,400,500,150];
+const RU_PAL = ["#E63946","#F4A261","#2A9D8F","#E9C46A","#6A4C93","#1982C4","#8AC926","#FF7AA2"];
+const RU_VOW = "AEIOU", RU_CONS = "BCDFGHJKLMNPQRSTVWXYZ", RU_VOWEL_COST = 250, RU_BONUS = 500;
+const ruBase = ch => String(ch).normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase();
+const ruNorm = s => ruBase(s).replace(/[^A-Z0-9 ]/g," ").replace(/\s+/g," ").trim();
+const ruSay = t => Voice.speak(t, "it", 1.05);
+const RU = {
+  saved(){ try{ return JSON.parse(localStorage.getItem("ruotaSaved")||"null"); }catch(e){ return null; } },
+  save(g){ try{ localStorage.setItem("ruotaSaved", JSON.stringify(g)); }catch(e){} },
+  clear(){ try{ localStorage.removeItem("ruotaSaved"); }catch(e){} },
+  pick(g){ const pool = RU_FRASI.map((f,i)=>[f,i]).filter(([f])=> g.kids ? f[2]===1 : true);
+    let av = pool.filter(([,i])=>!g.usedPz.includes(i)); if(!av.length){ g.usedPz=[]; av=pool; }
+    const [f,i] = av[Math.floor(Math.random()*av.length)]; g.usedPz.push(i); return {c:f[0], t:f[1].toUpperCase()}; },
+  letters(t){ return new Set([...t].map(ruBase).filter(c=>/^[A-Z]$/.test(c))); },
+  count(t,c){ return [...t].filter(x=>ruBase(x)===c).length; },
+  // riconosce il nome detto ad alta voce
+  matchName(cands, ps){
+    const simp = x => x.replace(/h/g,"").replace(/(.)\1/g,"$1").replace(/y/g,"i").replace(/k/g,"c");
+    const score = ps.map(p=>{ const nm = ruNorm(p.name).toLowerCase(), parts = nm.split(" ").filter(Boolean); let best=99;
+      for(const c of cands){ const full = ruNorm(c).toLowerCase(); if(!full) continue; if((" "+full+" ").includes(" "+nm+" ")) return 0;
+        for(const w of full.split(" ")) for(const n of parts){ if(n.length<2) continue;
+          const d = Math.min(lev(w,n), lev(simp(w),simp(n))); const tol = n.length<=3 ? 0 : n.length<=6 ? 1 : 2; if(d<=tol) best=Math.min(best,d); } }
+      return best; });
+    const m = Math.min(...score); if(m===99) return {i:-1, amb:[]};
+    const idx = score.map((s,i)=>s===m?i:-1).filter(i=>i>=0); return idx.length===1 ? {i:idx[0], amb:[]} : {i:-1, amb:idx};
+  },
+  solveOk(cands, t, thr=.85){ const target = ruNorm(t).replace(/ /g,"");
+    return cands.some(c=>{ const x = ruNorm(c).replace(/ /g,""); return x && (1 - lev(x,target)/Math.max(target.length,1)) >= thr; }); },
+  css(){ if(document.getElementById("ruCss")) return; const st=document.createElement("style"); st.id="ruCss"; st.textContent = `
+.ru-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;font-weight:800}
+.ru-cat{background:linear-gradient(135deg,#FFB703,#FB8500);color:#fff;border-radius:999px;padding:6px 14px;font-family:Fredoka,"Baloo 2",sans-serif;font-size:17px}
+.ru-board{background:linear-gradient(160deg,#1b3f8f,#0b1f4f);border:5px solid #2BB673;border-radius:18px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.ru-row{display:flex;gap:3px}
+.ru-t{width:var(--w);height:calc(var(--w)*1.3);border-radius:5px;display:flex;align-items:center;justify-content:center;font:800 calc(var(--w)*.72)/1 Fredoka,"Baloo 2",sans-serif;background:#fff;color:#12306e;box-shadow:inset 0 -3px 0 #c9d6ee}
+.ru-t.h{background:#2BB673;color:transparent;box-shadow:inset 0 -3px 0 #1d8a55}
+.ru-t.sp{background:transparent;box-shadow:none;width:calc(var(--w)*.5)}
+.ru-t.nw{animation:ruFlip .55s both;animation-delay:var(--d)}
+@keyframes ruFlip{0%{transform:rotateY(90deg);background:#FFE38A}60%{background:#FFE38A}100%{transform:none}}
+.ru-msg{min-height:26px;text-align:center;font-weight:800;margin:10px 4px;font-size:17px}
+.ru-pls{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:6px;margin-bottom:8px}
+.ru-pl{border-radius:16px;background:#fff;padding:6px 4px;text-align:center;border:3px solid transparent;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.ru-pl.on{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 30%,transparent)}
+.ru-pl .avatar{width:40px;height:40px;font-size:24px;margin:0 auto}
+.ru-pl b{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ru-pl .r{display:block;font:700 18px Fredoka,"Baloo 2",sans-serif;color:var(--c)}
+.ru-pl small{color:var(--muted);font-size:11px}
+.ru-wheel{position:relative;width:min(300px,82vw);margin:4px auto 0}
+.ru-wheel svg{width:100%;height:auto;display:block;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
+.ru-ptr{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:30px solid #E63946;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));z-index:2}
+.ru-val{text-align:center;font:700 26px Fredoka,"Baloo 2",sans-serif;color:#FB8500;margin-top:4px}
+.ru-acts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.ru-acts .btn{padding:12px 6px;font-size:15px}
+.ru-kb{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.ru-kb button{width:40px;height:46px;border-radius:10px;font:800 21px Fredoka,"Baloo 2",sans-serif;background:#fff;box-shadow:0 3px 0 #c9d6ee;color:#12306e}
+.ru-kb button:disabled{opacity:.25}
+.ru-bar{display:flex;align-items:center;gap:10px;margin:10px 0}.ru-bar .ru-msg{flex:1;margin:0;text-align:left}
+.ru-bip{flex:none;width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff8a8a,#d00000 70%);color:#fff;font:800 15px/1.1 Fredoka,"Baloo 2",sans-serif;box-shadow:0 6px 0 #7a0c14,0 10px 22px rgba(0,0,0,.35);z-index:40;border:3px solid #fff}
+.ru-bip:active{transform:translateY(4px);box-shadow:0 2px 0 #7a0c14}
+.ru-card{background:#fff;color:#222;border-radius:22px;padding:16px;width:min(440px,94vw);max-height:92vh;overflow:auto;text-align:center}
+.ru-card h3{font-family:Fredoka,"Baloo 2",sans-serif;margin:4px 0 10px;font-size:22px}
+.ru-mic{width:96px;height:96px;border-radius:50%;margin:8px auto;background:#E63946;color:#fff;font-size:44px;display:flex;align-items:center;justify-content:center;animation:ruPulse 1s infinite}
+@keyframes ruPulse{0%,100%{box-shadow:0 0 0 0 rgba(230,57,70,.6)}50%{box-shadow:0 0 0 18px rgba(230,57,70,0)}}
+.ru-heard{min-height:22px;color:#555;font-style:italic;margin:6px 0}
+.ru-who{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.ru-who button{background:#F3F5FA;border-radius:14px;padding:6px 8px;width:76px;font-weight:700;font-size:13px}
+.ru-who .avatar{width:44px;height:44px;font-size:26px;margin:0 auto 2px}
+.ru-in{display:flex;gap:6px;margin-top:10px}.ru-in input{flex:1;min-width:0;border:2px solid #ddd;border-radius:12px;padding:10px;font-size:17px}
+.ru-judge{margin-top:12px;padding-top:10px;border-top:1px dashed #ddd;font-size:14px;color:#666}
+.ru-judge button{margin:6px 4px 0;border-radius:12px;padding:8px 12px;font-weight:800;background:#F3F5FA}
+.ru-tmr{font:700 40px Fredoka,"Baloo 2",sans-serif;color:#FB8500}
+.ru-sel{display:flex;gap:10px;flex-wrap:wrap}
+.ru-sel button{background:#fff;border-radius:16px;padding:8px;width:84px;border:3px solid transparent;box-shadow:0 2px 8px rgba(0,0,0,.08);font-weight:700;font-size:14px}
+.ru-sel button.on{border-color:#2BB673;background:#E8F8EF}
+.ru-sel .avatar{width:50px;height:50px;font-size:30px;margin:0 auto 4px}`;
+    document.head.appendChild(st); },
+  board(t, shown, fresh){
+    const words = t.split(" "); const maxW = Math.max(...words.map(w=>w.length)); const cols = Math.max(11, maxW);
+    const rows=[]; let cur=[];
+    words.forEach(w=>{ const len = cur.length ? cur.join(" ").length + 1 + w.length : w.length; if(len>cols && cur.length){ rows.push(cur.join(" ")); cur=[w]; } else cur.push(w); });
+    if(cur.length) rows.push(cur.join(" "));
+    let d=0;
+    return `<div class="ru-board" style="--w:min(30px, calc((100vw - 70px) / ${cols + 1}))">${rows.map(r=>`<div class="ru-row">${[...r].map(ch=>{
+      if(ch===" ") return `<span class="ru-t sp"></span>`; const b=ruBase(ch);
+      if(!/^[A-Z]$/.test(b)) return `<span class="ru-t">${esc(ch)}</span>`;
+      if(!shown.includes(b)) return `<span class="ru-t h">?</span>`;
+      const nw = fresh && fresh===b; return `<span class="ru-t ${nw?"nw":""}" ${nw?`style="--d:${(d++)*.35}s"`:""}>${esc(ch)}</span>`; }).join("")}</div>`).join("")}</div>`;
+  },
+  wheel(sz){ const N=RU_SEG.length, R=146, C=150; let k=0;
+    const segs = RU_SEG.map((v,i)=>{ const a0=(i*360/N-90)*Math.PI/180, a1=((i+1)*360/N-90)*Math.PI/180;
+      const x0=C+R*Math.cos(a0), y0=C+R*Math.sin(a0), x1=C+R*Math.cos(a1), y1=C+R*Math.sin(a1);
+      const bg = v==="BANCAROTTA" ? "#1d1d1d" : v==="PASSA" ? "#ffffff" : RU_PAL[(k++)%RU_PAL.length];
+      const fg = v==="PASSA" ? "#1d1d1d" : "#fff", mid=(i+.5)*360/N, txt = typeof v==="number" ? String(v) : v;
+      return `<path d="M${C} ${C}L${x0.toFixed(2)} ${y0.toFixed(2)}A${R} ${R} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}Z" fill="${bg}" stroke="#fff" stroke-width="1.5"/>
+        <text transform="rotate(${mid} ${C} ${C}) translate(${C} 14) rotate(90)" fill="${fg}" font-family="Fredoka,'Baloo 2',sans-serif" font-weight="700" font-size="${txt.length>4?10.5:15}" dominant-baseline="middle" text-anchor="start">${txt}</text>`; }).join("");
+    const pegs = RU_SEG.map((_,i)=>{ const a=(i*360/N-90)*Math.PI/180; return `<circle cx="${(C+R*Math.cos(a)).toFixed(1)}" cy="${(C+R*Math.sin(a)).toFixed(1)}" r="3" fill="#FFD60A"/>`; }).join("");
+    return `<div class="ru-wheel" ${sz?`style="width:${sz}px"`:""}><div class="ru-ptr"></div><svg viewBox="0 0 300 300"><circle cx="150" cy="150" r="149" fill="#FFD60A"/><g id="ruW">${segs}${pegs}</g><circle cx="150" cy="150" r="30" fill="#12306e" stroke="#FFD60A" stroke-width="5"/><text x="150" y="152" text-anchor="middle" dominant-baseline="middle" font-size="26">🎡</text></svg></div>`;
+  }
+};
+
+Object.assign(Views, {
+  async ruota(){
+    RU.css(); setHeader("Gira la Ruota", true);
+    const ps = await FQ.players(); if(location.hash!=="#ruota") return;
+    const sv = RU.saved();
+    const st = S.ruNew = Object.assign({players:[], rounds:3, kids:false, tv:true}, S.ruNew||{});
+    st.players = st.players.filter(id=>ps.some(p=>p.id===id));
+    app.innerHTML = `<div class="fq-stage" style="background:linear-gradient(160deg,#1b3f8f,#6A45F0)"><div class="stars-deco"></div>
+        <div class="fq-logo" style="font-size:34px">🎡 Gira la Ruota</div><div style="position:relative;z-index:1;opacity:.9">Indovina la frase lettera dopo lettera · fino a 4 concorrenti</div></div>
+      ${sv ? `<button class="btn big green confirm mt" id="ruRes">▶ Riprendi la partita (manche ${sv.round}/${sv.rounds})</button>` : ""}
+      <div class="card mt"><div class="field"><label>Chi gioca? (da 1 a 4)</label>
+        ${ps.length ? `<div class="ru-sel" id="ruP">${ps.map(p=>`<button data-p="${p.id}">${FQ.avatarHtml(p)}${esc(p.name)}</button>`).join("")}</div>`
+          : `<p>Non ci sono ancora concorrenti.</p>`}
+        <button class="btn sec mt" onclick="location.hash='fq-giocatori'">➕ Aggiungi o modifica concorrenti</button>
+        <small style="display:block;color:var(--muted);margin-top:6px">I concorrenti sono gli stessi del Family Quiz. Il nome serve per il BIP: va detto ad alta voce.</small></div>
+      <div class="field"><label>Quante manche?</label><div class="chips" id="ruR"><button class="chip" data-r="3">3</button><button class="chip" data-r="5">5</button><button class="chip" data-r="7">7</button></div></div>
+      <div class="field"><label>Frasi</label><div class="chips" id="ruK"><button class="chip" data-k="0">👨‍👩‍👧 Per tutti</button><button class="chip" data-k="1">🧒 Facili per bambini</button></div></div>
+      <div class="field"><label>Punti di chi non indovina la frase</label><div class="chips" id="ruT"><button class="chip" data-t="1">📺 Si perdono (come in TV)</button><button class="chip" data-t="0">🤝 Si tengono</button></div></div>
+      <div class="field"><label>🎤 Prova il BIP</label><button class="btn sec" id="ruTest">🔔 Premi e di' il tuo nome</button><div class="ru-heard" id="ruTestOut"></div></div>
+      </div>
+      <button class="btn big green confirm" id="ruGo">🎡 Inizia</button>
+      <div class="note mt">📏 <b>Regole:</b> gira la ruota e scegli una consonante: guadagni il valore per ogni lettera trovata. Le vocali si comprano (${RU_VOWEL_COST} punti). «Bancarotta» azzera i punti della manche, «Passa» fa perdere il turno. Chi pensa di sapere la frase preme <b>🔔 BIP</b> e dice il suo nome: se indovina vince la manche e ${RU_BONUS} punti di bonus.</div>`;
+    const sync = () => {
+      document.querySelectorAll("#ruP [data-p]").forEach(b=>b.classList.toggle("on", st.players.includes(b.dataset.p)));
+      document.querySelectorAll("#ruR [data-r]").forEach(b=>b.classList.toggle("on", +b.dataset.r===st.rounds));
+      document.querySelectorAll("#ruK [data-k]").forEach(b=>b.classList.toggle("on", !!+b.dataset.k===st.kids));
+      document.querySelectorAll("#ruT [data-t]").forEach(b=>b.classList.toggle("on", !!+b.dataset.t===st.tv));
+      $("#ruGo").disabled = !st.players.length; Store.save(); };
+    app.onclick = e => { const b=e.target.closest("button"); if(!b) return;
+      if(b.dataset.p){ const i=st.players.indexOf(b.dataset.p); if(i>=0) st.players.splice(i,1); else if(st.players.length<4) st.players.push(b.dataset.p); else toast("Massimo 4 concorrenti"); }
+      if(b.dataset.r) st.rounds=+b.dataset.r; if(b.dataset.k!==undefined && b.closest("#ruK")) st.kids=!!+b.dataset.k; if(b.dataset.t!==undefined) st.tv=!!+b.dataset.t; sync(); };
+    if(sv) $("#ruRes").onclick = () => location.hash="ruota-gioco";
+    $("#ruTest").onclick = async () => { const out=$("#ruTestOut"); const sel = ps.filter(p=>st.players.includes(p.id)); const list = sel.length?sel:ps;
+      if(!SR){ out.textContent = "⚠️ Questo browser non riconosce la voce: durante il gioco si potrà toccare il proprio nome."; return; }
+      FQSound.beep([[880,.12,"square"],[660,.2,"square"]]); out.textContent = "🎙️ Ti ascolto…";
+      const r = await Rec.listen({lang:"it-IT", maxMs:5000, onInterim:t=>out.textContent="🎙️ "+t});
+      if(r.error){ out.textContent = r.error==="not-allowed" ? "⚠️ Il microfono è bloccato: permetti l'accesso al microfono per questo sito." : "🤷 Non ho sentito niente. Riprova parlando vicino al telefono."; return; }
+      const m = RU.matchName(r.cands, list);
+      out.innerHTML = m.i>=0 ? `✅ Ho sentito «${esc(r.text)}»: è <b>${esc(list[m.i].name)}</b>!` : `❓ Ho sentito «${esc(r.text)}», ma non è il nome di nessun concorrente.`; };
+    $("#ruGo").onclick = () => {
+      const pl = st.players.map(id=>ps.find(p=>p.id===id)).filter(Boolean); if(!pl.length) return;
+      if(sv && !confirm("C'è una partita in corso: vuoi iniziarne una nuova?")) return;
+      const g = {players: pl.map(p=>({id:p.id, name:p.name, avatar:p.avatar, color:p.color})), tot: pl.map(()=>0), rnd: pl.map(()=>0),
+        rounds: st.rounds, round:1, kids: st.kids, tv: st.tv, usedPz:[], cur:0, phase:"spin", value:0, used:[], angle:0, msg:""};
+      g.pz = RU.pick(g); g.msg = `Tocca a ${g.players[0].name}: gira la ruota!`;
+      RU.save(g); location.hash = "ruota-gioco"; };
+    sync();
+  },
+
+  async "ruota-gioco"(){
+    const g = RU.saved(); if(!g){ location.hash="ruota"; return; }
+    RU.css(); setHeader("Gira la Ruota", true);
+    const all = await FQ.players(); if(location.hash!=="#ruota-gioco") return;
+    const prof = p => all.find(x=>x.id===p.id) || p;
+    const P = g.players.length, N = RU_SEG.length;
+    let anim=0, busy=false, angle=g.angle||0, timers=[];
+    const later = (f,ms) => timers.push(setTimeout(f,ms));
+    const stop = () => { cancelAnimationFrame(anim); timers.forEach(clearTimeout); timers=[]; Rec.stop(); Voice.stop(); document.querySelectorAll(".ru-ov").forEach(x=>x.remove()); const b=document.getElementById("ruBip"); if(b) b.remove(); };
+    fqCleanup = stop;
+    const save = () => { g.angle = angle % 360; RU.save(g); };
+    const name = i => g.players[i].name;
+    const letters = () => RU.letters(g.pz.t);
+    const leftCons = () => [...letters()].filter(c=>RU_CONS.includes(c) && !g.used.includes(c));
+    const leftVow = () => [...letters()].filter(c=>RU_VOW.includes(c) && !g.used.includes(c));
+    const solvedAll = () => [...letters()].every(c=>g.used.includes(c));
+    const ding = n => { for(let k=0;k<n;k++) later(()=>FQSound.beep([[1319,.09],[1760,.16]]), k*350); };
+
+    const render = (fresh) => {
+      const cons = leftCons().length, canVow = leftVow().length && g.rnd[g.cur]>=RU_VOWEL_COST;
+      let zone = "";
+      if(g.phase==="spin") zone = `${RU.wheel()}
+        <div class="ru-acts"><button class="btn big green" id="aSpin" ${cons?"":"disabled"}>🎡 Gira</button>
+          <button class="btn big purple" id="aVow" ${canVow?"":"disabled"}>🅰️ Vocale<br><small>−${RU_VOWEL_COST}</small></button>
+          <button class="btn big" style="background:#FB8500;color:#fff" id="aSol">💡 Risolvi</button></div>
+        ${!cons && !canVow ? `<button class="btn sec mt" id="aPass">⏭️ Passa il turno</button>` : ""}`;
+      else if(g.phase==="cons") zone = `<div class="ru-val">${g.value} punti a lettera</div>
+        <div class="ru-kb">${[...RU_CONS].map(c=>`<button data-c="${c}" ${g.used.includes(c)?"disabled":""}>${c}</button>`).join("")}</div><div style="margin-top:12px">${RU.wheel(190)}</div>`;
+      else if(g.phase==="vow") zone = `<div class="ru-val">Scegli una vocale</div><div class="ru-kb">${[...RU_VOW].map(c=>`<button data-v="${c}" ${g.used.includes(c)?"disabled":""}>${c}</button>`).join("")}</div>
+        <button class="btn sec mt" id="aBack">↩️ Annulla</button>`;
+      else if(g.phase==="end") zone = `<div class="card mt" style="text-align:center"><div style="font-size:44px">🏆</div><b style="font-size:19px">${esc(name(g.win))} vince la manche!</b>
+        <p style="margin:6px 0">+${g.winPts} punti (bonus ${RU_BONUS} compreso)</p></div>
+        <button class="btn big green confirm" id="aNext">${g.round>=g.rounds ? "🏁 Classifica finale" : "▶ Prossima manche"}</button>`;
+      app.innerHTML = `<div class="ru-head"><span class="ru-cat">${esc(g.pz.c)}</span><span>Manche ${g.round}/${g.rounds}</span></div>
+        ${RU.board(g.pz.t, g.used, fresh)}
+        <div class="ru-bar"><div class="ru-msg" id="ruMsg">${esc(g.msg||"")}</div>${g.phase==="end"?"":`<button class="ru-bip" id="ruBip">🔔<br>BIP!</button>`}</div>
+        <div class="ru-pls" style="--n:${P}">${g.players.map((p,i)=>`<div class="ru-pl ${i===g.cur && g.phase!=="end"?"on":""}" style="--c:${p.color||"#6A45F0"}">${FQ.avatarHtml(prof(p))}<b>${esc(p.name)}</b><span class="r">${g.rnd[i]}</span><small>Totale ${g.tot[i]}</small></div>`).join("")}</div>
+        <div id="ruZone">${zone}</div><div style="height:90px"></div>`;
+      const w = $("#ruW"); if(w) w.setAttribute("transform", `rotate(${angle} 150 150)`);
+      const bip = $("#ruBip"); if(bip) bip.onclick = buzz;
+      const on = (id,f) => { const el=$("#"+id); if(el) el.onclick=f; };
+      on("aSpin", spin); on("aVow", ()=>{ if(busy) return; g.phase="vow"; g.msg=`${name(g.cur)}, quale vocale compri?`; save(); render(); });
+      on("aSol", ()=>{ if(!busy) openSolve(g.cur); }); on("aPass", ()=>next()); on("aBack", ()=>{ g.phase="spin"; g.msg=""; save(); render(); });
+      on("aNext", nextRound);
+      const kb = document.querySelector(".ru-kb"); if(kb) kb.onclick = e => { const b=e.target.closest("button"); if(!b||b.disabled||busy) return; if(b.dataset.c) guess(b.dataset.c, false); if(b.dataset.v) guess(b.dataset.v, true); };
+    };
+    const msg = t => { g.msg=t; const m=$("#ruMsg"); if(m) m.textContent=t; };
+
+    const next = () => { g.cur=(g.cur+1)%P; g.phase="spin"; g.value=0; g.msg=`Tocca a ${name(g.cur)}: gira la ruota!`; save(); render(); ruSay(`Tocca a ${name(g.cur)}`); };
+
+    const spin = () => {
+      if(busy) return; busy=true; ["aSpin","aVow","aSol"].forEach(id=>{ const b=$("#"+id); if(b) b.disabled=true; });
+      let target = angle + 1080 + Math.random()*720; target = target - (target % (360/N)) + (360/N)*(.5 + (Math.random()-.5)*.6);
+      const el=$("#ruW"), start=angle, dur=4300, t0=performance.now(); let last=Math.floor(start/(360/N));
+      msg(`${name(g.cur)} gira la ruota…`);
+      const step = now => { const k=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-k,3); angle = start+(target-start)*e;
+        el.setAttribute("transform", `rotate(${angle} 150 150)`); const s=Math.floor(angle/(360/N)); if(s!==last){ last=s; FQSound.beep([[1700,.03,"square"]]); }
+        if(k<1) anim=requestAnimationFrame(step); else landed(); };
+      anim=requestAnimationFrame(step);
+    };
+    const landed = () => {
+      const idx = Math.floor(((360 - (angle % 360)) % 360) / (360/N)) % N, v = RU_SEG[idx]; save();
+      if(v==="BANCAROTTA"){ g.rnd[g.cur]=0; FQSound.beep([[392,.25,"sawtooth"],[311,.25,"sawtooth"],[233,.6,"sawtooth"]]); msg(`💥 Bancarotta! ${name(g.cur)} perde i punti della manche.`); ruSay("Bancarotta!"); save(); later(()=>{ busy=false; next(); }, 2200); return; }
+      if(v==="PASSA"){ FQSound.ko(); msg(`⏭️ Passa! ${name(g.cur)} perde il turno.`); ruSay("Passa il turno!"); later(()=>{ busy=false; next(); }, 1900); return; }
+      g.value=v; g.phase="cons"; g.msg=`${v} punti! ${name(g.cur)}, scegli una consonante.`; busy=false; save(); render(); ruSay(`${v} punti. Scegli una consonante`);
+    };
+    const guess = (c, vowel) => {
+      if(g.used.includes(c)) return; busy=true;
+      if(vowel) g.rnd[g.cur] -= RU_VOWEL_COST;
+      g.used.push(c); const n = RU.count(g.pz.t, c);
+      if(n>0){ if(!vowel) g.rnd[g.cur] += n*g.value; g.phase="spin";
+        g.msg = n===1 ? `✅ C'è una ${c}!${vowel?"":` +${g.value}`}` : `✅ Ci sono ${n} ${c}!${vowel?"":` +${n*g.value}`}`; save(); render(c); ding(n);
+        ruSay(n===1?`C'è una ${c}`:`Ci sono ${n} ${c}`);
+        later(()=>{ busy=false; if(solvedAll()) win(g.cur, true); }, n*350+500);
+      } else { g.phase="spin"; save(); render(); FQSound.beep([[180,.35,"square"],[140,.45,"square"]]); msg(`❌ Nessuna ${c}.`); ruSay(`Nessuna ${c}`); later(()=>{ busy=false; next(); }, 1800); }
+    };
+    const win = (i, auto) => {
+      document.querySelectorAll(".ru-ov").forEach(x=>x.remove());
+      const pts = Math.max(0, g.rnd[i]) + RU_BONUS; g.tot[i] += pts;
+      if(!g.tv) g.players.forEach((_,j)=>{ if(j!==i) g.tot[j] += Math.max(0, g.rnd[j]); });
+      g.used = [...new Set([...g.used, ...letters()])]; g.win=i; g.winPts=pts; g.phase="end";
+      g.msg = `🎉 La frase era: ${g.pz.t}`; save(); render(); confetti();
+      FQSound.beep([[523,.14],[659,.14],[784,.14],[1047,.4]]); ruSay(`Bravo ${name(i)}! ${auto?"":"Risposta esatta!"}`);
+    };
+    const nextRound = () => {
+      if(g.round>=g.rounds) return final();
+      g.round++; g.rnd=g.players.map(()=>0); g.used=[]; g.pz=RU.pick(g); g.cur=(g.round-1)%P; g.phase="spin"; g.value=0;
+      g.msg=`Manche ${g.round}: tocca a ${name(g.cur)}!`; save(); render(); ruSay(`Manche ${g.round}. Tocca a ${name(g.cur)}`);
+    };
+    const final = () => {
+      stop(); RU.clear(); const order = g.players.map((p,i)=>({p, t:g.tot[i]})).sort((a,b)=>b.t-a.t);
+      order.forEach((r,k)=>{ r.pos = k && r.t===order[k-1].t ? order[k-1].pos : k+1; });
+      app.innerHTML = `<div class="fq-stage" style="background:linear-gradient(160deg,#1b3f8f,#6A45F0)"><div class="stars-deco"></div><div class="fq-logo">🏁 Fine partita!</div>
+          <div style="position:relative;z-index:1;margin:12px 0">${FQ.avatarHtml(prof(order[0].p), true)}</div>
+          <div style="position:relative;z-index:1;font-size:22px;font-weight:800;color:#FFE38A">${order.filter(r=>r.pos===1).map(r=>esc(r.p.name)).join(" e ")} ${order.filter(r=>r.pos===1).length>1?"vincono":"vince"}!</div></div>
+        <div class="card mt">${order.map(r=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee"><b style="width:28px;font-size:20px">${["🥇","🥈","🥉"][r.pos-1]||r.pos}</b>${FQ.avatarHtml(prof(r.p))}<b style="flex:1">${esc(r.p.name)}</b><b style="font-size:20px;color:#FB8500">${r.t}</b></div>`).join("")}</div>
+        <button class="btn big green confirm" id="fAgain">🔄 Gioca ancora</button><button class="btn sec mt" onclick="location.hash='giochi'" style="width:100%">Esci</button>`;
+      confetti(); ruSay(`Vince ${order[0].p.name}! Complimenti!`);
+      $("#fAgain").onclick = () => { const ng = Object.assign({}, g, {tot:g.players.map(()=>0), rnd:g.players.map(()=>0), round:1, cur:0, phase:"spin", used:[], value:0}); ng.pz=RU.pick(ng); ng.msg=`Tocca a ${ng.players[0].name}: gira la ruota!`; RU.save(ng); route(); };
+    };
+
+    // 🔔 BIP: chi vuole risolvere dice il suo nome
+    const overlay = html => { document.querySelectorAll(".ru-ov").forEach(x=>x.remove()); const d=document.createElement("div"); d.className="family ru-ov"; d.innerHTML=`<div class="ru-card">${html}</div>`; document.body.appendChild(d); return d; };
+    const buzz = async () => {
+      if(busy || g.phase==="end" || document.querySelector(".ru-ov")) return;
+      Voice.stop(); FQSound.beep([[880,.14,"square"],[660,.14,"square"],[880,.25,"square"]]);
+      const d = overlay(`<h3>🔔 BIP! Chi vuole risolvere?</h3><p>Di' il tuo nome ad alta voce</p><div class="ru-mic">🎤</div><div class="ru-heard" id="bH"></div>
+        <div style="font-size:14px;color:#666;margin-top:6px">…oppure tocca il tuo nome</div>
+        <div class="ru-who">${g.players.map((p,i)=>`<button data-i="${i}">${FQ.avatarHtml(prof(p))}${esc(p.name)}</button>`).join("")}</div>
+        <div class="ru-judge"><button data-x="1">✖ Annulla</button></div>`);
+      let done=false;
+      const choose = i => { if(done) return; done=true; Rec.stop(); FQSound.beep([[988,.12],[1319,.2]]); const h=d.querySelector("#bH"); if(h) h.innerHTML=`✅ <b>${esc(name(i))}</b>!`; later(()=>openSolve(i), 700); };
+      d.onclick = e => { const b=e.target.closest("button"); if(!b) return; if(b.dataset.x){ done=true; Rec.stop(); d.remove(); return; } if(b.dataset.i!==undefined) choose(+b.dataset.i); };
+      if(!SR){ d.querySelector(".ru-mic").style.display="none"; d.querySelector("#bH").textContent="Questo telefono non riconosce la voce: tocca il tuo nome."; return; }
+      for(let tryN=0; tryN<2 && !done; tryN++){
+        const r = await Rec.listen({lang:"it-IT", maxMs:5000, onInterim:t=>{ const h=d.querySelector("#bH"); if(h) h.textContent="«"+t+"»"; const m=RU.matchName([t], g.players); if(m.i>=0) choose(m.i); }});
+        if(done || !document.body.contains(d)) return;
+        if(!r.error){ const m = RU.matchName(r.cands, g.players); if(m.i>=0) return choose(m.i);
+          d.querySelector("#bH").textContent = m.amb.length ? `«${r.text}»: siete in più con un nome simile, toccate il vostro nome.` : `Ho sentito «${r.text}»: non riconosco il nome. ${tryN?"Tocca il tuo nome.":"Ripeti!"}`; }
+        else if(r.error==="not-allowed"){ d.querySelector("#bH").textContent="⚠️ Microfono bloccato: tocca il tuo nome."; break; }
+        else d.querySelector("#bH").textContent = tryN ? "Non ho sentito: tocca il tuo nome." : "Non ho sentito… ripeti il tuo nome!";
+      }
+      const mic=d.querySelector(".ru-mic"); if(mic && !done) mic.style.animation="none";
+    };
+
+    // 💡 Risolvi: la frase si dice a voce (o si scrive)
+    const openSolve = i => {
+      if(g.phase==="end") return; busy=true; Rec.stop();
+      let left=30, tries=0, closed=false;
+      const d = overlay(`<div style="display:flex;align-items:center;justify-content:center;gap:10px">${FQ.avatarHtml(prof(g.players[i]))}<h3 style="margin:0">${esc(name(i))}, risolvi!</h3></div>
+        <div class="ru-tmr" id="sT">30</div>${RU.board(g.pz.t, g.used)}
+        <button class="btn big green mt" id="sMic" style="width:100%">🎤 Di' la frase</button><div class="ru-heard" id="sH"></div>
+        <div class="ru-in"><input id="sTx" placeholder="…oppure scrivila qui" autocomplete="off"><button class="btn green" id="sOk" style="padding:10px 14px">OK</button></div>
+        <div class="ru-judge">Decide il genitore:<br><button id="sY">✅ Giusta</button><button id="sN">❌ Sbagliata</button></div>`);
+      const close = () => { closed=true; clearInterval(iv); Rec.stop(); d.remove(); busy=false; };
+      const right = () => { if(closed) return; close(); win(i, false); };
+      const wrong = why => { if(closed) return; close(); FQSound.ko(); msg(`❌ ${why||"Non è la frase giusta"}, ${name(i)}.`); ruSay("Non è giusto!"); save();
+        if(i===g.cur) later(()=>next(), 1500); else render(); };
+      const iv = setInterval(()=>{ left--; const t=d.querySelector("#sT"); if(t) t.textContent=left; if(left<=5 && left>0) FQSound.tick(); if(left<=0) wrong("Tempo scaduto"); }, 1000);
+      const listen = async () => {
+        if(!SR){ d.querySelector("#sH").textContent="Questo telefono non riconosce la voce: scrivi la frase o fai decidere il genitore."; return; }
+        tries++; const b=d.querySelector("#sMic"); b.disabled=true; b.textContent="🎙️ Ti ascolto…";
+        const r = await Rec.listen({lang:"it-IT", maxMs:9000, onInterim:t=>{ const h=d.querySelector("#sH"); if(h) h.textContent="«"+t+"»"; }});
+        if(closed) return;
+        if(!r.error && RU.solveOk(r.cands, g.pz.t)) return right();
+        b.disabled=false; b.textContent = tries<2 ? "🎤 Riprova" : "🎤 Ultimo tentativo";
+        d.querySelector("#sH").textContent = r.error ? "Non ho sentito bene. Riprova o scrivi la frase." : `Ho capito «${r.text}»: non è giusta. ${tries<2?"Puoi riprovare.":""}`;
+        if(!r.error && tries>=3) wrong();
+      };
+      d.querySelector("#sMic").onclick = listen;
+      d.querySelector("#sOk").onclick = () => { const v=d.querySelector("#sTx").value; if(!v.trim()) return; RU.solveOk([v], g.pz.t, .9) ? right() : wrong(); };
+      d.querySelector("#sTx").onkeydown = e => { if(e.key==="Enter") d.querySelector("#sOk").click(); };
+      d.querySelector("#sY").onclick = right; d.querySelector("#sN").onclick = () => wrong();
+      FQSound.beep([[660,.1],[880,.15]]); later(()=>{ if(!closed) listen(); }, 500);
+    };
+
+    render(); if(g.phase==="spin" && g.msg) ruSay(g.msg.replace(/[^\p{L}\p{N} ,.!']/gu,""));
+  }
+});
+
 function route(){
   if(currentLesson){ currentLesson.stop(); currentLesson=null; }
   Player.stop(); Rec.stop(); Voice.stop(); Mic.stop().then(()=>Mic.close());
@@ -3892,7 +4265,7 @@ function route(){
   { const c=document.getElementById("cele"); if(c) c.remove(); document.querySelectorAll(".crop,.family").forEach(x=>x.remove()); if(fqCleanup){ fqCleanup(); fqCleanup=null; } if(typeof FQThink!=="undefined") FQThink.stop(); }
   const h = location.hash.slice(1) || "home";
   window.scrollTo(0,0);
-  const sec = h.startsWith("sura-")||h==="corano" ? "corano" : h.startsWith("hadith")||h==="ahadith" ? "ahadith" : (["giochi","alfabeto","ascolta","parole","memory","fq"].includes(h) || h.startsWith("fq-")) ? "giochi" : h==="studio" ? "studio" : h==="home" ? "home" : "";
+  const sec = h.startsWith("sura-")||h==="corano" ? "corano" : h.startsWith("hadith")||h==="ahadith" ? "ahadith" : (["giochi","alfabeto","ascolta","parole","memory","fq","ruota","ruota-gioco"].includes(h) || h.startsWith("fq-")) ? "giochi" : h==="studio" ? "studio" : h==="home" ? "home" : "";
   document.querySelectorAll("#tabbar a").forEach(a=>a.classList.toggle("on", a.dataset.t===sec));
   if(h.startsWith("sura-")) return Views.sura(+h.slice(5));
   if(h.startsWith("hadith-")) return Views.hadith(+h.slice(7));

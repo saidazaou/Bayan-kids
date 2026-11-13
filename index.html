@@ -2902,7 +2902,7 @@ const FQSound = {
     let t=c.currentTime; notes.forEach(([f,d,type])=>{ const o=c.createOscillator(), g=c.createGain(); o.type=type||"sine"; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.25,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+d+.02); t+=d*.85; }); }catch(e){} },
   ok(){ this.beep([[660,.14],[880,.14],[1175,.28]]); }, ko(){ this.beep([[220,.25,"square"],[165,.4,"square"]]); }, tick(){ this.beep([[1000,.05,"triangle"]]); }
 };
-const APP_VERSION = "4.8";
+const APP_VERSION = "4.9";
 function FQS(){ S.set.fq = Object.assign({sound:true, music:false, think:true, n:20, timer:"auto", read:"auto", exclude:[], pin:null}, S.set.fq||{}); return S.set.fq; }
 FQ.custom = null; FQ.unlocked = false;
 FQ.loadCustom = async function(force){ if(this.custom && !force) return; const list = await this.all("fq_questions"); this.custom = {}; list.forEach(q=>{ this.custom[q.id]=q; }); this._merged=null; };
@@ -3031,7 +3031,7 @@ let fqCleanup = null;
 const app = $("#app");
 let currentLesson = null;
 function setHeader(title, back){ $("#title").textContent=title; $("#back").classList.toggle("show", !!back); }
-$("#back").onclick = () => { const h=location.hash.slice(1); if(h==="prova-mic"||h==="voce"){ history.back(); return; } if(h==="studio"){ location.hash="corano"; return; } if(h==="fq"||h==="ruota"){ location.hash="giochi"; return; } if(h==="ruota-gioco"){ location.hash="ruota"; return; } if(h.startsWith("fq-player-")){ location.hash="fq-giocatori"; return; } if(h.startsWith("fq-edit-")){ location.hash="fq-gestione"; return; } if(h.startsWith("fq-")){ location.hash="fq"; return; } location.hash = h.startsWith("sura-")?"corano": h.startsWith("hadith-")?"ahadith": ["alfabeto","ascolta","parole","memory"].includes(h)?"giochi":"home"; };
+$("#back").onclick = () => { const h=location.hash.slice(1); if(h==="prova-mic"||h==="voce"){ history.back(); return; } if(h==="studio"){ location.hash="corano"; return; } if(h==="fq"||h==="ruota"){ location.hash="giochi"; return; } if(h==="ruota-gioco"||h==="ruota-voce"){ location.hash="ruota"; return; } if(h.startsWith("fq-player-")){ location.hash="fq-giocatori"; return; } if(h.startsWith("fq-edit-")){ location.hash="fq-gestione"; return; } if(h.startsWith("fq-")){ location.hash="fq"; return; } location.hash = h.startsWith("sura-")?"corano": h.startsWith("hadith-")?"ahadith": ["alfabeto","ascolta","parole","memory"].includes(h)?"giochi":"home"; };
 
 const Views = {
   home(){
@@ -3956,6 +3956,26 @@ const RU_VOW = "AEIOU", RU_CONS = "BCDFGHJKLMNPQRSTVWXYZ", RU_VOWEL_COST = 250, 
 const ruBase = ch => String(ch).normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase();
 const ruNorm = s => ruBase(s).replace(/[^A-Z0-9 ]/g," ").replace(/\s+/g," ").trim();
 const ruSay = t => Voice.speak(t, "it", 1.05);
+// Voce della conduttrice: frasi registrate dal genitore (stesso archivio della voce di Bayan)
+const RU_NUM = {150:"Centocinquanta",200:"Duecento",250:"Duecentocinquanta",300:"Trecento",350:"Trecentocinquanta",400:"Quattrocento",450:"Quattrocentocinquanta",500:"Cinquecento",600:"Seicento",700:"Settecento",800:"Ottocento",900:"Novecento",1000:"Mille"};
+const RU_VOICE = [
+  ["ru_benvenuti","Benvenuti a Gira la Ruota!","🎉"],["ru_tocca","Tocca a…","👉"],["ru_gira","Gira la ruota!","🎡"],
+  ["ru_cons","Scegli una consonante!","🔤"],["ru_vocale","Quale vocale compri?","🅰️"],["ru_si1","Sì! C'è!","✅"],
+  ["ru_si2","Bravo! Ce n'è più di una!","🌟"],["ru_no","Mi dispiace, non c'è.","❌"],["ru_banca","Oh no… bancarotta!","💥"],
+  ["ru_passa","Peccato, passi il turno!","⏭️"],["ru_bip","Bip! Chi vuole risolvere? Dimmi il tuo nome!","🔔"],["ru_risolvi","Dimmi la frase!","💡"],
+  ["ru_esatto","Esatto! Bravissimo!","🏆"],["ru_sbagliato","No, non è giusta!","🙈"],["ru_tempo","Tempo scaduto!","⏰"],
+  ["ru_manche","Nuova manche!","🔄"],["ru_vince","E il vincitore è…","🥁"],["ru_fine","Grazie per aver giocato, alla prossima!","👋"]
+];
+const RUV = { tok:0,
+  has(k){ return S.set.ruVoice!==false && !!Phr.urls[k]; },
+  async say(parts){ const my=++this.tok; Player.stop(); Voice.stop(); let buf=[];
+    const flush = async () => { if(!buf.length) return; const t=buf.join(" "); buf=[]; if(my===this.tok) await Voice.speak(t,"it",1.05); };
+    for(const [k,t] of parts){ if(my!==this.tok) return; if(this.has(k)){ await flush(); if(my!==this.tok) return; await Player.play([Phr.urls[k]],1); } else if(t) buf.push(t); }
+    await flush(); },
+  async only(k){ if(this.has(k)){ const my=++this.tok; Voice.stop(); await Player.play([Phr.urls[k]],1); } },
+  stop(){ this.tok++; Player.stop(); Voice.stop(); },
+  nameP(p){ return ["ru_name_"+p.id, p.name]; }
+};
 const RU = {
   saved(){ try{ return JSON.parse(localStorage.getItem("ruotaSaved")||"null"); }catch(e){ return null; } },
   save(g){ try{ localStorage.setItem("ruotaSaved", JSON.stringify(g)); }catch(e){} },
@@ -4067,6 +4087,7 @@ Object.assign(Views, {
       <div class="field"><label>Quante manche?</label><div class="chips" id="ruR"><button class="chip" data-r="3">3</button><button class="chip" data-r="5">5</button><button class="chip" data-r="7">7</button></div></div>
       <div class="field"><label>Frasi</label><div class="chips" id="ruK"><button class="chip" data-k="0">👨‍👩‍👧 Per tutti</button><button class="chip" data-k="1">🧒 Facili per bambini</button></div></div>
       <div class="field"><label>Punti di chi non indovina la frase</label><div class="chips" id="ruT"><button class="chip" data-t="1">📺 Si perdono (come in TV)</button><button class="chip" data-t="0">🤝 Si tengono</button></div></div>
+      <div class="field"><label>🎙️ La voce della conduttrice</label><button class="btn sec" onclick="location.hash='ruota-voce'" id="ruVoc">🎙️ Registra la tua voce</button></div>
       <div class="field"><label>🎤 Prova il BIP</label><button class="btn sec" id="ruTest">🔔 Premi e di' il tuo nome</button><div class="ru-heard" id="ruTestOut"></div></div>
       </div>
       <button class="btn big green confirm" id="ruGo">🎡 Inizia</button>
@@ -4095,7 +4116,55 @@ Object.assign(Views, {
         rounds: st.rounds, round:1, kids: st.kids, tv: st.tv, usedPz:[], cur:0, phase:"spin", value:0, used:[], angle:0, msg:""};
       g.pz = RU.pick(g); g.msg = `Tocca a ${g.players[0].name}: gira la ruota!`;
       RU.save(g); location.hash = "ruota-gioco"; };
+    (Phr.loaded ? Promise.resolve() : Phr.load()).then(()=>{ const keys=[...RU_VOICE.map(x=>x[0]), ...Object.keys(RU_NUM).map(v=>"ru_v"+v)]; const n=keys.filter(k=>Phr.urls[k]).length; const b=$("#ruVoc"); if(b) b.textContent = n ? `🎙️ Voce della conduttrice: ${n} di ${keys.length} frasi registrate` : "🎙️ Registra la tua voce da conduttrice"; });
     sync();
+  },
+
+  async "ruota-voce"(){
+    RU.css(); setHeader("Voce della conduttrice", true);
+    await (Phr.loaded ? Promise.resolve() : Phr.load()); const ps = await FQ.players(); if(location.hash!=="#ruota-voce") return;
+    const groups = [
+      ["🎤 Frasi della conduttrice", RU_VOICE],
+      ["🎡 I punti della ruota", Object.entries(RU_NUM).map(([v,t])=>["ru_v"+v, t+" punti!", "💰"])],
+      ["👤 I nomi dei concorrenti", ps.map(p=>["ru_name_"+p.id, p.name, p.avatar||"🙂"])]
+    ];
+    const items = groups.flatMap(g=>g[1]);
+    app.innerHTML = `<div class="banner g-green"><span class="ic">🎙️</span><span><b>La voce della conduttrice</b><small>Registra le frasi: in Gira la Ruota parlerai tu!</small></span></div>
+      ${typeof envNote==="function" ? envNote() : ""}
+      <div class="card"><label class="switch" style="font-size:18px">🎙️ Usa la mia voce nel gioco <input type="checkbox" id="vOn"></label>
+        <div class="note" style="margin-bottom:0">💡 Premi ● e parla con entusiasmo, come una vera conduttrice! Premi ⏹ quando hai finito (al massimo 6 secondi). I nomi dei concorrenti si registrano una volta sola: il gioco li unisce alle frasi («Tocca a…» + «Imran»). Le frasi che non registri le dice la voce del telefono.</div></div>
+      <div class="center hidden mt" id="vRec"><span class="rec-badge">Registrazione…</span><div class="lvl"><i id="vL"></i></div></div>
+      <div id="vList" class="mt"></div>`;
+    $("#vOn").checked = S.set.ruVoice!==false; $("#vOn").onchange = e => { S.set.ruVoice = e.target.checked; Store.save(); };
+    let recKey=null;
+    const render = () => {
+      const n = items.filter(([k])=>Phr.urls[k]).length;
+      $("#vList").innerHTML = `<div class="progress-txt">Registrate: ${n} di ${items.length}</div>` + groups.map(([title, list])=>`<h3 style="font-family:Fredoka,'Baloo 2';margin:16px 4px 8px">${title}</h3>` +
+        (list.length ? list.map(([k,t,ic])=>`<div class="card recitem" style="border:0;padding:12px 14px;margin-bottom:8px"><span style="font-size:28px">${ic}</span>
+          <span class="t">“${esc(t)}”<small>${Phr.urls[k]?"✅ Registrata con la tua voce":"Voce del telefono"}</small></span>
+          <button data-a="rec" data-k="${k}" style="background:${recKey===k?"#E63946":"#FFE1E4"};color:${recKey===k?"#fff":"#E63946"};font-size:${recKey===k?"20px":"24px"}">${recKey===k?"⏹":"●"}</button>
+          ${Phr.urls[k]?`<button data-a="play" data-k="${k}">▶</button><button data-a="del" data-k="${k}">🗑</button>`:`<button data-a="tts" data-k="${k}">🔈</button>`}</div>`).join("")
+          : `<div class="note">Non ci sono ancora concorrenti. <a href="#fq-giocatori">Aggiungili</a> e poi registra i loro nomi.</div>`)).join("");
+    };
+    const stopRec = async () => {
+      const k=recKey; recKey=null; const url = await Mic.stop(); Mic.close(); Mic.onLevel=null; $("#vRec").classList.add("hidden");
+      if(url){ const blob = await (await fetch(url)).blob(); await Phr.save(k, blob); render(); Player.play([Phr.urls[k]]); } else render();
+    };
+    $("#vList").onclick = async e => {
+      const b=e.target.closest("button"); if(!b) return; const k=b.dataset.k, a=b.dataset.a;
+      if(a==="rec"){
+        if(recKey===k) return stopRec();
+        if(recKey) await stopRec();
+        Player.stop(); Voice.stop();
+        if(!Mic.supported() || !(await Mic.open()) || !Mic.start()){ $("#vList").insertAdjacentHTML("beforebegin", `<div class="note err">${typeof micHelp==="function"?micHelp(Mic.err||"NotAllowedError"):"Microfono non disponibile"}</div>`); return; }
+        recKey=k; $("#vRec").classList.remove("hidden"); Mic.onLevel = v => { $("#vL").style.width=Math.round(v*100)+"%"; };
+        render(); setTimeout(()=>{ if(recKey===k) stopRec(); }, 6000);
+      }
+      if(a==="play") Player.play([Phr.urls[k]]);
+      if(a==="tts"){ const it=items.find(x=>x[0]===k); Voice.speak(it[1].replace(/…/g,""),"it",1.05); }
+      if(a==="del"){ if(b.dataset.sure){ await Phr.del(k); render(); } else { b.dataset.sure=1; b.textContent="❓"; setTimeout(()=>{ if(b.isConnected){ b.textContent="🗑"; delete b.dataset.sure; } },2500); } }
+    };
+    render();
   },
 
   async "ruota-gioco"(){
@@ -4106,7 +4175,7 @@ Object.assign(Views, {
     const P = g.players.length, N = RU_SEG.length;
     let anim=0, busy=false, angle=g.angle||0, timers=[];
     const later = (f,ms) => timers.push(setTimeout(f,ms));
-    const stop = () => { cancelAnimationFrame(anim); timers.forEach(clearTimeout); timers=[]; Rec.stop(); Voice.stop(); document.querySelectorAll(".ru-ov").forEach(x=>x.remove()); const b=document.getElementById("ruBip"); if(b) b.remove(); };
+    const stop = () => { cancelAnimationFrame(anim); timers.forEach(clearTimeout); timers=[]; Rec.stop(); RUV.stop(); document.querySelectorAll(".ru-ov").forEach(x=>x.remove()); const b=document.getElementById("ruBip"); if(b) b.remove(); };
     fqCleanup = stop;
     const save = () => { g.angle = angle % 360; RU.save(g); };
     const name = i => g.players[i].name;
@@ -4146,7 +4215,7 @@ Object.assign(Views, {
     };
     const msg = t => { g.msg=t; const m=$("#ruMsg"); if(m) m.textContent=t; };
 
-    const next = () => { g.cur=(g.cur+1)%P; g.phase="spin"; g.value=0; g.msg=`Tocca a ${name(g.cur)}: gira la ruota!`; save(); render(); ruSay(`Tocca a ${name(g.cur)}`); };
+    const next = () => { g.cur=(g.cur+1)%P; g.phase="spin"; g.value=0; g.msg=`Tocca a ${name(g.cur)}: gira la ruota!`; save(); render(); RUV.say([["ru_tocca","Tocca a"], RUV.nameP(g.players[g.cur]), ["ru_gira","Gira la ruota!"]]); };
 
     const spin = () => {
       if(busy) return; busy=true; ["aSpin","aVow","aSol"].forEach(id=>{ const b=$("#"+id); if(b) b.disabled=true; });
@@ -4160,9 +4229,9 @@ Object.assign(Views, {
     };
     const landed = () => {
       const idx = Math.floor(((360 - (angle % 360)) % 360) / (360/N)) % N, v = RU_SEG[idx]; save();
-      if(v==="BANCAROTTA"){ g.rnd[g.cur]=0; FQSound.beep([[392,.25,"sawtooth"],[311,.25,"sawtooth"],[233,.6,"sawtooth"]]); msg(`💥 Bancarotta! ${name(g.cur)} perde i punti della manche.`); ruSay("Bancarotta!"); save(); later(()=>{ busy=false; next(); }, 2200); return; }
-      if(v==="PASSA"){ FQSound.ko(); msg(`⏭️ Passa! ${name(g.cur)} perde il turno.`); ruSay("Passa il turno!"); later(()=>{ busy=false; next(); }, 1900); return; }
-      g.value=v; g.phase="cons"; g.msg=`${v} punti! ${name(g.cur)}, scegli una consonante.`; busy=false; save(); render(); ruSay(`${v} punti. Scegli una consonante`);
+      if(v==="BANCAROTTA"){ g.rnd[g.cur]=0; FQSound.beep([[392,.25,"sawtooth"],[311,.25,"sawtooth"],[233,.6,"sawtooth"]]); msg(`💥 Bancarotta! ${name(g.cur)} perde i punti della manche.`); RUV.say([["ru_banca","Bancarotta!"]]); save(); later(()=>{ busy=false; next(); }, 2200); return; }
+      if(v==="PASSA"){ FQSound.ko(); msg(`⏭️ Passa! ${name(g.cur)} perde il turno.`); RUV.say([["ru_passa","Passa il turno!"]]); later(()=>{ busy=false; next(); }, 1900); return; }
+      g.value=v; g.phase="cons"; g.msg=`${v} punti! ${name(g.cur)}, scegli una consonante.`; busy=false; save(); render(); RUV.say([["ru_v"+v, v+" punti!"], ["ru_cons","Scegli una consonante!"]]);
     };
     const guess = (c, vowel) => {
       if(g.used.includes(c)) return; busy=true;
@@ -4170,9 +4239,9 @@ Object.assign(Views, {
       g.used.push(c); const n = RU.count(g.pz.t, c);
       if(n>0){ if(!vowel) g.rnd[g.cur] += n*g.value; g.phase="spin";
         g.msg = n===1 ? `✅ C'è una ${c}!${vowel?"":` +${g.value}`}` : `✅ Ci sono ${n} ${c}!${vowel?"":` +${n*g.value}`}`; save(); render(c); ding(n);
-        ruSay(n===1?`C'è una ${c}`:`Ci sono ${n} ${c}`);
+        RUV.say(n===1 ? [["ru_si1",`C'è una ${c}!`]] : [["ru_si2",`Ci sono ${n} ${c}!`]]);
         later(()=>{ busy=false; if(solvedAll()) win(g.cur, true); }, n*350+500);
-      } else { g.phase="spin"; save(); render(); FQSound.beep([[180,.35,"square"],[140,.45,"square"]]); msg(`❌ Nessuna ${c}.`); ruSay(`Nessuna ${c}`); later(()=>{ busy=false; next(); }, 1800); }
+      } else { g.phase="spin"; save(); render(); FQSound.beep([[180,.35,"square"],[140,.45,"square"]]); msg(`❌ Nessuna ${c}.`); RUV.say([["ru_no",`Mi dispiace, nessuna ${c}.`]]); later(()=>{ busy=false; next(); }, 1800); }
     };
     const win = (i, auto) => {
       document.querySelectorAll(".ru-ov").forEach(x=>x.remove());
@@ -4180,12 +4249,12 @@ Object.assign(Views, {
       if(!g.tv) g.players.forEach((_,j)=>{ if(j!==i) g.tot[j] += Math.max(0, g.rnd[j]); });
       g.used = [...new Set([...g.used, ...letters()])]; g.win=i; g.winPts=pts; g.phase="end";
       g.msg = `🎉 La frase era: ${g.pz.t}`; save(); render(); confetti();
-      FQSound.beep([[523,.14],[659,.14],[784,.14],[1047,.4]]); ruSay(`Bravo ${name(i)}! ${auto?"":"Risposta esatta!"}`);
+      FQSound.beep([[523,.14],[659,.14],[784,.14],[1047,.4]]); RUV.say([["ru_esatto","Esatto! Bravissimo"], RUV.nameP(g.players[i])]);
     };
     const nextRound = () => {
       if(g.round>=g.rounds) return final();
       g.round++; g.rnd=g.players.map(()=>0); g.used=[]; g.pz=RU.pick(g); g.cur=(g.round-1)%P; g.phase="spin"; g.value=0;
-      g.msg=`Manche ${g.round}: tocca a ${name(g.cur)}!`; save(); render(); ruSay(`Manche ${g.round}. Tocca a ${name(g.cur)}`);
+      g.msg=`Manche ${g.round}: tocca a ${name(g.cur)}!`; save(); render(); RUV.say([["ru_manche",`Manche ${g.round}!`], ["ru_tocca","Tocca a"], RUV.nameP(g.players[g.cur])]);
     };
     const final = () => {
       stop(); RU.clear(); const order = g.players.map((p,i)=>({p, t:g.tot[i]})).sort((a,b)=>b.t-a.t);
@@ -4195,7 +4264,7 @@ Object.assign(Views, {
           <div style="position:relative;z-index:1;font-size:22px;font-weight:800;color:#FFE38A">${order.filter(r=>r.pos===1).map(r=>esc(r.p.name)).join(" e ")} ${order.filter(r=>r.pos===1).length>1?"vincono":"vince"}!</div></div>
         <div class="card mt">${order.map(r=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee"><b style="width:28px;font-size:20px">${["🥇","🥈","🥉"][r.pos-1]||r.pos}</b>${FQ.avatarHtml(prof(r.p))}<b style="flex:1">${esc(r.p.name)}</b><b style="font-size:20px;color:#FB8500">${r.t}</b></div>`).join("")}</div>
         <button class="btn big green confirm" id="fAgain">🔄 Gioca ancora</button><button class="btn sec mt" onclick="location.hash='giochi'" style="width:100%">Esci</button>`;
-      confetti(); ruSay(`Vince ${order[0].p.name}! Complimenti!`);
+      confetti(); RUV.say([["ru_vince","E il vincitore è"], RUV.nameP(order[0].p), ["ru_fine","Grazie per aver giocato, alla prossima!"]]);
       $("#fAgain").onclick = () => { const ng = Object.assign({}, g, {tot:g.players.map(()=>0), rnd:g.players.map(()=>0), round:1, cur:0, phase:"spin", used:[], value:0}); ng.pz=RU.pick(ng); ng.msg=`Tocca a ${ng.players[0].name}: gira la ruota!`; RU.save(ng); route(); };
     };
 
@@ -4203,7 +4272,7 @@ Object.assign(Views, {
     const overlay = html => { document.querySelectorAll(".ru-ov").forEach(x=>x.remove()); const d=document.createElement("div"); d.className="family ru-ov"; d.innerHTML=`<div class="ru-card">${html}</div>`; document.body.appendChild(d); return d; };
     const buzz = async () => {
       if(busy || g.phase==="end" || document.querySelector(".ru-ov")) return;
-      Voice.stop(); FQSound.beep([[880,.14,"square"],[660,.14,"square"],[880,.25,"square"]]);
+      RUV.stop(); FQSound.beep([[880,.14,"square"],[660,.14,"square"],[880,.25,"square"]]);
       const d = overlay(`<h3>🔔 BIP! Chi vuole risolvere?</h3><p>Di' il tuo nome ad alta voce</p><div class="ru-mic">🎤</div><div class="ru-heard" id="bH"></div>
         <div style="font-size:14px;color:#666;margin-top:6px">…oppure tocca il tuo nome</div>
         <div class="ru-who">${g.players.map((p,i)=>`<button data-i="${i}">${FQ.avatarHtml(prof(p))}${esc(p.name)}</button>`).join("")}</div>
@@ -4211,6 +4280,7 @@ Object.assign(Views, {
       let done=false;
       const choose = i => { if(done) return; done=true; Rec.stop(); FQSound.beep([[988,.12],[1319,.2]]); const h=d.querySelector("#bH"); if(h) h.innerHTML=`✅ <b>${esc(name(i))}</b>!`; later(()=>openSolve(i), 700); };
       d.onclick = e => { const b=e.target.closest("button"); if(!b) return; if(b.dataset.x){ done=true; Rec.stop(); d.remove(); return; } if(b.dataset.i!==undefined) choose(+b.dataset.i); };
+      await RUV.only("ru_bip"); if(done || !document.body.contains(d)) return;
       if(!SR){ d.querySelector(".ru-mic").style.display="none"; d.querySelector("#bH").textContent="Questo telefono non riconosce la voce: tocca il tuo nome."; return; }
       for(let tryN=0; tryN<2 && !done; tryN++){
         const r = await Rec.listen({lang:"it-IT", maxMs:5000, onInterim:t=>{ const h=d.querySelector("#bH"); if(h) h.textContent="«"+t+"»"; const m=RU.matchName([t], g.players); if(m.i>=0) choose(m.i); }});
@@ -4234,7 +4304,7 @@ Object.assign(Views, {
         <div class="ru-judge">Decide il genitore:<br><button id="sY">✅ Giusta</button><button id="sN">❌ Sbagliata</button></div>`);
       const close = () => { closed=true; clearInterval(iv); Rec.stop(); d.remove(); busy=false; };
       const right = () => { if(closed) return; close(); win(i, false); };
-      const wrong = why => { if(closed) return; close(); FQSound.ko(); msg(`❌ ${why||"Non è la frase giusta"}, ${name(i)}.`); ruSay("Non è giusto!"); save();
+      const wrong = why => { if(closed) return; close(); FQSound.ko(); msg(`❌ ${why||"Non è la frase giusta"}, ${name(i)}.`); RUV.say(why==="Tempo scaduto" ? [["ru_tempo","Tempo scaduto!"]] : [["ru_sbagliato","No, non è giusta!"]]); save();
         if(i===g.cur) later(()=>next(), 1500); else render(); };
       const iv = setInterval(()=>{ left--; const t=d.querySelector("#sT"); if(t) t.textContent=left; if(left<=5 && left>0) FQSound.tick(); if(left<=0) wrong("Tempo scaduto"); }, 1000);
       const listen = async () => {
@@ -4251,10 +4321,12 @@ Object.assign(Views, {
       d.querySelector("#sOk").onclick = () => { const v=d.querySelector("#sTx").value; if(!v.trim()) return; RU.solveOk([v], g.pz.t, .9) ? right() : wrong(); };
       d.querySelector("#sTx").onkeydown = e => { if(e.key==="Enter") d.querySelector("#sOk").click(); };
       d.querySelector("#sY").onclick = right; d.querySelector("#sN").onclick = () => wrong();
-      FQSound.beep([[660,.1],[880,.15]]); later(()=>{ if(!closed) listen(); }, 500);
+      FQSound.beep([[660,.1],[880,.15]]); later(async ()=>{ await RUV.only("ru_risolvi"); if(!closed) listen(); }, 400);
     };
 
-    render(); if(g.phase==="spin" && g.msg) ruSay(g.msg.replace(/[^\p{L}\p{N} ,.!']/gu,""));
+    render();
+    if(g.phase==="spin"){ const first = !g.greeted && g.round===1; g.greeted=true; save();
+      RUV.say([...(first?[["ru_benvenuti","Benvenuti a Gira la Ruota!"]]:[]), ["ru_tocca","Tocca a"], RUV.nameP(g.players[g.cur]), ["ru_gira","Gira la ruota!"]]); }
   }
 });
 
@@ -4265,7 +4337,7 @@ function route(){
   { const c=document.getElementById("cele"); if(c) c.remove(); document.querySelectorAll(".crop,.family").forEach(x=>x.remove()); if(fqCleanup){ fqCleanup(); fqCleanup=null; } if(typeof FQThink!=="undefined") FQThink.stop(); }
   const h = location.hash.slice(1) || "home";
   window.scrollTo(0,0);
-  const sec = h.startsWith("sura-")||h==="corano" ? "corano" : h.startsWith("hadith")||h==="ahadith" ? "ahadith" : (["giochi","alfabeto","ascolta","parole","memory","fq","ruota","ruota-gioco"].includes(h) || h.startsWith("fq-")) ? "giochi" : h==="studio" ? "studio" : h==="home" ? "home" : "";
+  const sec = h.startsWith("sura-")||h==="corano" ? "corano" : h.startsWith("hadith")||h==="ahadith" ? "ahadith" : (["giochi","alfabeto","ascolta","parole","memory","fq","ruota","ruota-gioco","ruota-voce"].includes(h) || h.startsWith("fq-")) ? "giochi" : h==="studio" ? "studio" : h==="home" ? "home" : "";
   document.querySelectorAll("#tabbar a").forEach(a=>a.classList.toggle("on", a.dataset.t===sec));
   if(h.startsWith("sura-")) return Views.sura(+h.slice(5));
   if(h.startsWith("hadith-")) return Views.hadith(+h.slice(7));

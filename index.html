@@ -2902,8 +2902,8 @@ const FQSound = {
     let t=c.currentTime; notes.forEach(([f,d,type])=>{ const o=c.createOscillator(), g=c.createGain(); o.type=type||"sine"; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.25,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+d+.02); t+=d*.85; }); }catch(e){} },
   ok(){ this.beep([[660,.14],[880,.14],[1175,.28]]); }, ko(){ this.beep([[220,.25,"square"],[165,.4,"square"]]); }, tick(){ this.beep([[1000,.05,"triangle"]]); }
 };
-const APP_VERSION = "4.6";
-function FQS(){ S.set.fq = Object.assign({sound:true, music:false, n:20, timer:"auto", read:"auto", exclude:[], pin:null}, S.set.fq||{}); return S.set.fq; }
+const APP_VERSION = "4.7";
+function FQS(){ S.set.fq = Object.assign({sound:true, music:false, think:true, n:20, timer:"auto", read:"auto", exclude:[], pin:null}, S.set.fq||{}); return S.set.fq; }
 FQ.custom = null; FQ.unlocked = false;
 FQ.loadCustom = async function(force){ if(this.custom && !force) return; const list = await this.all("fq_questions"); this.custom = {}; list.forEach(q=>{ this.custom[q.id]=q; }); this._merged=null; };
 FQ.all_q = function(){ if(this._merged) return this._merged; const m=new Map(); FQ_BANK.forEach(q=>m.set(q.id, q)); Object.values(this.custom||{}).forEach(q=>{ if(q.deleted) m.delete(q.id); else m.set(q.id, Object.assign({}, q, {custom:true})); }); this._merged=[...m.values()]; return this._merged; };
@@ -3001,6 +3001,28 @@ const FQMusic = { iv:null, start(){ if(this.iv) return; const notes=[262,294,330
     this.iv=setInterval(()=>{ try{ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; FQSound.ctx=FQSound.ctx||new AC(); const c=FQSound.ctx, t=c.currentTime; const f=notes[(i*3+(i>>2))%notes.length]*(i%8<4?1:.5); i++;
       const o=c.createOscillator(), g=c.createGain(); o.type="triangle"; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.035,t+.05); g.gain.exponentialRampToValueAtTime(.0001,t+.9); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+1); }catch(e){} }, 480); },
   stop(){ clearInterval(this.iv); this.iv=null; } };
+// Musica di suspense originale mentre si pensa alla risposta (stile quiz televisivo)
+const FQThink = { iv:null, g:null, step:0, next:0, urgent:false,
+  start(force){ if(this.iv || (!force && !FQS().think)) return; try{ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+      const c = FQSound.ctx = FQSound.ctx || new AC(); if(c.state==="suspended") c.resume();
+      this.g=c.createGain(); this.g.gain.setValueAtTime(.0001,c.currentTime); this.g.gain.exponentialRampToValueAtTime(.9,c.currentTime+.8); this.g.connect(c.destination);
+      this.step=0; this.urgent=false; this.next=c.currentTime+.08; this.iv=setInterval(()=>this.sched(),40); }catch(e){} },
+  sched(){ const c=FQSound.ctx; if(!c||!this.g) return; while(this.next < c.currentTime+.25){ this.play(this.step, this.next); this.step++; this.next += this.urgent ? .11 : .15; } },
+  note(f,t,d,type,vol,att,filt){ const c=FQSound.ctx, o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.setValueAtTime(f,t);
+    g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+(att||.01)); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    let n=o; if(filt){ const lp=c.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=filt; o.connect(lp); n=lp; } n.connect(g); g.connect(this.g); o.start(t); o.stop(t+d+.05); },
+  play(s,t){ const bar=Math.floor(s/16), st=s%16, len=this.urgent?.11:.15;
+    const ch=[[110,130.81,164.81],[87.31,110,130.81],[73.42,87.31,110],[82.41,103.83,123.47]][Math.floor(bar/2)%4];
+    if(st===0) ch.forEach(f=>{ this.note(f,t,16*len,"sawtooth",.016,.7,700); this.note(f*1.006,t,16*len,"sawtooth",.011,.9,500); });
+    if(st===0||st===3||st===8||st===11) this.note(st%8===0?55:52,t,.32,"sine",st%8===0?.30:.18,.008);
+    if(st%4===2) this.note(st===10?1568:1319,t,.05,"triangle",this.urgent?.05:.03,.004);
+    if(st===14 && bar%2===1) this.note(ch[2]*4,t,.6,"sine",.025,.02);
+    if(this.urgent && st%2===1) this.note(2637,t,.03,"square",.008,.003); },
+  stop(){ clearInterval(this.iv); this.iv=null; const g=this.g; this.g=null; if(!g) return;
+    try{ const c=FQSound.ctx; g.gain.cancelScheduledValues(c.currentTime); g.gain.setValueAtTime(Math.max(g.gain.value,.0002),c.currentTime); g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.25); }catch(e){}
+    setTimeout(()=>{ try{ g.disconnect(); }catch(e){} }, 400); },
+  lock(){ if(!FQS().think) return; FQSound.beep([[196,.18,"sawtooth"],[147,.5,"sine"]]); }
+};
 const fqPlain = t => String(t).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu,"").trim();
 function fqSpeak(text, lang){ return Voice.speak(fqPlain(text), lang==="it"?"it":"ar", lang==="it"?1:.85); }
 let fqCleanup = null;
@@ -3346,7 +3368,7 @@ const Views = {
     const save = () => { try{ localStorage.setItem("fqSaved", JSON.stringify(GM)); }catch(e){} };
     let timerId=null, segStart=Date.now();
     setHeader("Family Quiz", true);
-    const stop = () => { clearInterval(timerId); timerId=null; Voice.stop(); FQMusic.stop(); document.querySelectorAll(".family").forEach(x=>x.remove()); GM.elapsed += Date.now()-segStart; segStart=Date.now(); save(); };
+    const stop = () => { clearInterval(timerId); timerId=null; Voice.stop(); FQMusic.stop(); FQThink.stop(); document.querySelectorAll(".family").forEach(x=>x.remove()); GM.elapsed += Date.now()-segStart; segStart=Date.now(); save(); };
     fqCleanup = stop;
     if(FQS().music) FQMusic.start();
     const cur = () => { const pi = GM.t % P; return {pi, pl: GM.players[pi], p: prof(GM.players[pi].id)}; };
@@ -3398,11 +3420,12 @@ const Views = {
           <button class="life ${pl.used.family?"used":""}" data-l="family"><span class="ic">👨‍👩‍👧</span></button></div>
           <div class="lifes" style="margin-top:0"><span class="lifelbl" style="width:62px">${T.l50}</span><span class="lifelbl" style="width:62px">${T.lhint}</span><span class="lifelbl" style="width:62px">${T.lsecond}</span><span class="lifelbl" style="width:62px">${T.lfam}</span></div></div>
       </div>`;
+      FQMusic.stop(); FQThink.start();
       const readQ = async () => { await fqSpeak(L.q, lang); for(let k=0;k<4;k++){ if(G.done) return; if(G.gone.includes(k)) continue; await fqSpeak(`${T.letters[k]}. ${L.a[k]}`, lang); } };
       $("#say").onclick = () => readQ();
       $("#ans").onclick = e => { const b=e.target.closest(".ans"); if(!b||G.done||b.classList.contains("gone")||b.disabled) return;
         document.querySelectorAll(".ans").forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); G.sel=+b.dataset.k; $("#conf").classList.remove("hidden"); };
-      $("#conf").onclick = () => { if(G.sel!==null && !G.done) answer(G.sel); };
+      $("#conf").onclick = () => { if(G.sel!==null && !G.done){ FQThink.lock(); answer(G.sel); } };
       $("#lifes").onclick = e => { const b=e.target.closest(".life"); if(!b||G.done) return; useLife(b.dataset.l, b); };
       const useLife = (l, b) => {
         if(pl.used[l]) return;
@@ -3413,13 +3436,13 @@ const Views = {
         pl.used[l]=qi+1; if(l!=="second") b.classList.add("used"); save();
       };
       const family = () => {
-        G.paused=true; let left=30; const votes=[0,0,0,0], cols=["#2196F3","#FF8A00","#2BB673","#6A45F0"];
+        G.paused=true; FQThink.stop(); let left=30; const votes=[0,0,0,0], cols=["#2196F3","#FF8A00","#2BB673","#6A45F0"];
         const d=document.createElement("div"); d.className="family"; d.dir=rtl?"rtl":"ltr";
         d.innerHTML = `<div style="font-family:Fredoka,'Baloo 2',sans-serif;font-size:28px;font-weight:700">👨‍👩‍👧 ${T.fam}</div><div>${T.famSub}</div><div class="big" id="fl">30</div>
           <div class="votes">${[0,1,2,3].map(k=>`<div><i id="v${k}" style="height:6px;background:${cols[k]}"></i><b id="n${k}">0</b><button data-k="${k}" style="background:${cols[k]};opacity:${G.gone.includes(k)?.3:1}" ${G.gone.includes(k)?"disabled":""}>${T.letters[k]}</button></div>`).join("")}</div>
           <button class="btn sec">${T.close}</button>`;
         document.body.appendChild(d);
-        const end = () => { clearInterval(iv); d.remove(); G.paused=false; };
+        const end = () => { clearInterval(iv); d.remove(); G.paused=false; if(!G.done) FQThink.start(); };
         const iv = setInterval(()=>{ left--; const x=d.querySelector("#fl"); if(x) x.textContent=left; if(left<=0) end(); },1000);
         d.onclick = e => { const b=e.target.closest("button"); if(!b) return; if(b.dataset.k===undefined){ end(); return; }
           const k=+b.dataset.k; votes[k]++; const mx=Math.max(...votes); votes.forEach((v,j)=>{ d.querySelector("#v"+j).style.height=(6+v/mx*100)+"px"; d.querySelector("#n"+j).textContent=v; }); };
@@ -3431,7 +3454,7 @@ const Views = {
           G.sel=null; $("#conf").classList.add("hidden"); document.querySelectorAll(".life.armed").forEach(x=>{ x.classList.remove("armed"); x.classList.add("used"); });
           FQSound.ko(); $("#hintBox").innerHTML = `<div class="hintbox">🔁 ${esc(T.retry)}</div>`; if(read) fqSpeak(T.retry, lang); return;
         }
-        G.done=true; clearInterval(timerId); Voice.stop();
+        G.done=true; clearInterval(timerId); Voice.stop(); FQThink.stop(); if(FQS().music) setTimeout(()=>{ if(location.hash==="#fq-gioco" && G.done) FQMusic.start(); }, 1500);
         if(G.armed) document.querySelectorAll(".life.armed").forEach(x=>{ x.classList.remove("armed"); x.classList.add("used"); });
         const ok = k===q.correct, took=(Date.now()-G.qStart)/1000;
         let pts=0; if(ok){ pts=FQ_PTS; pl.score+=pts; pl.ok++; } else pl.ko++;
@@ -3449,7 +3472,7 @@ const Views = {
         if(read) fqSpeak((ok?T.ok:T.ko)+" "+L.exp, lang);
         $("#fb").scrollIntoView({behavior:"smooth", block:"nearest"});
       };
-      if(secs){ clearInterval(timerId); timerId = setInterval(()=>{ if(G.paused||G.done) return; G.left--; const t=$("#tmr"); if(t) t.innerHTML=timerSvg(); if(G.left>0 && G.left<=5) FQSound.tick(); if(G.left<=0) answer(null); }, 1000); }
+      if(secs){ clearInterval(timerId); timerId = setInterval(()=>{ if(G.paused||G.done) return; G.left--; const t=$("#tmr"); if(t) t.innerHTML=timerSvg(); if(G.left<=10) FQThink.urgent=true; if(G.left>0 && G.left<=5) FQSound.tick(); if(G.left<=0) answer(null); }, 1000); }
       if(read) readQ();
     };
     const finish = async () => {
@@ -3497,6 +3520,8 @@ const Views = {
     app.innerHTML = `<div class="banner g-orange"><span class="ic">⚙️</span><span><b>Impostazioni</b><small>Valgono per tutte le nuove partite</small></span></div>
       <div class="card">
         <label class="switch">🔊 Effetti sonori <input type="checkbox" data-k="sound"></label>
+        <label class="switch">🤔 Musica di suspense mentre si pensa <input type="checkbox" data-k="think"></label>
+        <button class="btn sec" id="sThink" style="margin:-4px 0 10px">▶️ Ascolta la musica di suspense</button>
         <label class="switch">🎵 Musica di sottofondo durante il gioco <input type="checkbox" data-k="music"></label>
         <div class="field"><label>Domande a testa (predefinito)</label><div class="chips" id="sN"><button class="chip" data-n="20">20</button><button class="chip" data-n="10">10</button></div></div>
         <div class="field"><label>Timer (predefinito)</label><div class="chips" id="sT">${["auto","0","15","30","45","60"].map(v=>`<button class="chip" data-t="${v}">${v==="auto"?"Automatico":v==="0"?"Senza timer":v+" s"}</button>`).join("")}</div></div>
@@ -3506,6 +3531,7 @@ const Views = {
         <div class="field"><label>💾 Backup</label><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sec" id="sBk">📤 Salva backup</button><label class="btn sec">📥 Ripristina<input type="file" accept=".json,application/json" hidden id="sRs"></label></div>
           <small style="color:var(--muted)">Il backup contiene giocatori con foto, risultati, impostazioni e domande aggiunte.</small></div>
       </div>`;
+    $("#sThink").onclick = e => { const b=e.currentTarget; if(FQThink.iv){ FQThink.stop(); b.textContent="▶️ Ascolta la musica di suspense"; } else { FQThink.start(true); b.textContent="⏹️ Ferma"; setTimeout(()=>{ if(FQThink.iv){ FQThink.stop(); b.textContent="▶️ Ascolta la musica di suspense"; } }, 12000); } };
     const sync = () => {
       document.querySelectorAll("[data-k]").forEach(i=>i.checked=!!c[i.dataset.k]);
       document.querySelectorAll("#sN [data-n]").forEach(b=>b.classList.toggle("on", +b.dataset.n===c.n));
@@ -3863,7 +3889,7 @@ function route(){
   if(currentLesson){ currentLesson.stop(); currentLesson=null; }
   Player.stop(); Rec.stop(); Voice.stop(); Mic.stop().then(()=>Mic.close());
   app.onclick = null;
-  { const c=document.getElementById("cele"); if(c) c.remove(); document.querySelectorAll(".crop,.family").forEach(x=>x.remove()); if(fqCleanup){ fqCleanup(); fqCleanup=null; } }
+  { const c=document.getElementById("cele"); if(c) c.remove(); document.querySelectorAll(".crop,.family").forEach(x=>x.remove()); if(fqCleanup){ fqCleanup(); fqCleanup=null; } if(typeof FQThink!=="undefined") FQThink.stop(); }
   const h = location.hash.slice(1) || "home";
   window.scrollTo(0,0);
   const sec = h.startsWith("sura-")||h==="corano" ? "corano" : h.startsWith("hadith")||h==="ahadith" ? "ahadith" : (["giochi","alfabeto","ascolta","parole","memory","fq"].includes(h) || h.startsWith("fq-")) ? "giochi" : h==="studio" ? "studio" : h==="home" ? "home" : "";

@@ -2902,7 +2902,7 @@ const FQSound = {
     let t=c.currentTime; notes.forEach(([f,d,type])=>{ const o=c.createOscillator(), g=c.createGain(); o.type=type||"sine"; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.25,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+d+.02); t+=d*.85; }); }catch(e){} },
   ok(){ this.beep([[660,.14],[880,.14],[1175,.28]]); }, ko(){ this.beep([[220,.25,"square"],[165,.4,"square"]]); }, tick(){ this.beep([[1000,.05,"triangle"]]); }
 };
-const APP_VERSION = "5.0";
+const APP_VERSION = "5.1";
 function FQS(){ S.set.fq = Object.assign({sound:true, music:false, think:true, n:20, timer:"auto", read:"auto", exclude:[], pin:null}, S.set.fq||{}); return S.set.fq; }
 FQ.custom = null; FQ.unlocked = false;
 FQ.loadCustom = async function(force){ if(this.custom && !force) return; const list = await this.all("fq_questions"); this.custom = {}; list.forEach(q=>{ this.custom[q.id]=q; }); this._merged=null; };
@@ -4995,6 +4995,8 @@ const RU_FRASI = [
 /* ================= GIRA LA RUOTA ================= */
 const RU_SEG = [500,"BANCAROTTA",300,200,600,"PASSA",400,250,800,300,1000,"BANCAROTTA",350,200,700,"PASSA",450,300,900,250,600,400,500,150];
 const RU_PAL = ["#E63946","#F4A261","#2A9D8F","#E9C46A","#6A4C93","#1982C4","#8AC926","#FF7AA2"];
+const RU_FA = 0.0001, RU_FC = 0.00025, RU_WMAX = 2.2; // attrito della ruota (gradi/ms²) e velocità massima
+const ruTravel = w => { let a=0; w=Math.min(w,RU_WMAX); while(w>0.0005){ a+=w*16; w-=(RU_FA+RU_FC*w)*16; } return a; };
 const RU_VOW = "AEIOU", RU_CONS = "BCDFGHJKLMNPQRSTVWXYZ", RU_VOWEL_COST = 250, RU_BONUS = 500;
 const ruBase = ch => String(ch).normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase();
 const ruNorm = s => ruBase(s).replace(/[^A-Z0-9 ]/g," ").replace(/\s+/g," ").trim();
@@ -5072,10 +5074,12 @@ const RU = {
 .ru-wheel svg{width:100%;height:auto;display:block;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
 .ru-ptr{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:30px solid #E63946;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));z-index:2}
 .ru-val{text-align:center;font:700 26px Fredoka,"Baloo 2",sans-serif;color:#FB8500;margin-top:4px}
-.ru-spin{display:flex;align-items:center;gap:8px;margin-top:4px}
-.ru-spin .ru-wheel{margin:0 auto;flex:none}
-.ru-acts{display:flex;flex-direction:column;gap:8px;width:104px;flex:none}
-.ru-acts .btn{padding:10px 4px;font-size:15px;min-height:0;width:100%}
+.ru-spin{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:2px}
+.ru-spin .ru-wheel{margin:0 auto;flex:none;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.ru-spin .ru-wheel.drag{cursor:grabbing}
+.ru-hint{font-size:13px;font-weight:700;color:var(--muted);text-align:center;margin-top:-2px}
+.ru-acts{display:grid;grid-template-columns:repeat(var(--k,3),1fr);gap:8px;width:100%}
+.ru-acts .btn{padding:8px 4px;font-size:14.5px;min-height:0;width:100%;line-height:1.15}
 .ru-kb{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
 .ru-kb button{width:42px;height:48px;border-radius:10px;font:800 21px Fredoka,"Baloo 2",sans-serif;background:#fff;box-shadow:0 3px 0 #c9d6ee;color:#12306e}
 .ru-kb button:disabled{opacity:.25}
@@ -5244,9 +5248,10 @@ Object.assign(Views, {
       const cons = leftCons().length, canVow = leftVow().length && g.rnd[g.cur]>=RU_VOWEL_COST;
       let zone = "";
       if(g.phase==="spin") zone = `<div class="ru-spin">${RU.wheel()}
-        <div class="ru-acts"><button class="btn big green" id="aSpin" ${cons?"":"disabled"}>🎡<br>Gira</button>
+        <div class="ru-hint" id="ruHint">${cons ? "👆 Trascina la ruota col dito in senso orario ↻ — più forte giri, più gira!" : "Le consonanti sono finite: compra una vocale o risolvi!"}</div>
+        <div class="ru-acts" style="--k:${!cons && !canVow ? 4 : 3}"><button class="btn big green" id="aSpin" ${cons?"":"disabled"}>🎡 Gira<br><small>automatico</small></button>
           <button class="btn big purple" id="aVow" ${canVow?"":"disabled"}>🅰️ Vocale<br><small>−${RU_VOWEL_COST}</small></button>
-          <button class="btn big" style="background:#FB8500;color:#fff" id="aSol">💡<br>Risolvi</button>
+          <button class="btn big" style="background:#FB8500;color:#fff" id="aSol">💡 Risolvi<br><small>la frase</small></button>
           ${!cons && !canVow ? `<button class="btn sec" id="aPass">⏭️ Passa</button>` : ""}</div></div>`;
       else if(g.phase==="cons") zone = `<div class="ru-val">${g.value} punti a lettera</div>
         <div class="ru-kb">${[...RU_CONS].map(c=>`<button data-c="${c}" ${g.used.includes(c)?"disabled":""}>${c}</button>`).join("")}</div>`;
@@ -5266,29 +5271,51 @@ Object.assign(Views, {
       const on = (id,f) => { const el=$("#"+id); if(el) el.onclick=f; };
       on("aSpin", spin); on("aVow", ()=>{ if(busy) return; g.phase="vow"; g.msg=`${name(g.cur)}, quale vocale compri?`; save(); render(); });
       on("aSol", ()=>{ if(!busy) openSolve(g.cur); }); on("aPass", ()=>next()); on("aBack", ()=>{ g.phase="spin"; g.msg=""; save(); render(); });
-      on("aNext", nextRound);
+      on("aNext", nextRound); if(g.phase==="spin") dragWheel();
       const kb = document.querySelector(".ru-kb"); if(kb) kb.onclick = e => { const b=e.target.closest("button"); if(!b||b.disabled||busy) return; if(b.dataset.c) guess(b.dataset.c, false); if(b.dataset.v) guess(b.dataset.v, true); };
     };
     // la ruota si adatta allo spazio libero: tutto resta visibile senza scorrere
     const fit = () => { const w=document.querySelector("#ruZone .ru-wheel"); if(!w || w.dataset.fixed) return;
       const tb=document.getElementById("tabbar")||document.querySelector(".tabbar"); const bottom = tb ? tb.getBoundingClientRect().top : innerHeight;
-      const zone=document.getElementById("ruZone"), acts=document.querySelector(".ru-acts");
-      const availH = bottom - zone.getBoundingClientRect().top - 12, availW = zone.offsetWidth - (acts?acts.offsetWidth+8:0);
-      w.style.width = Math.round(Math.max(130, Math.min(availH, availW, 380)))+"px"; };
+      const zone=document.getElementById("ruZone"), acts=document.querySelector(".ru-acts"), hint=document.getElementById("ruHint");
+      const availH = bottom - w.getBoundingClientRect().top - (acts?acts.offsetHeight:0) - (hint?hint.offsetHeight:0) - 22, availW = zone.offsetWidth;
+      w.style.width = Math.round(Math.max(130, Math.min(availH, availW, 440)))+"px"; };
     window.onresize = () => fit();
     const msg = t => { g.msg=t; const m=$("#ruMsg"); if(m) m.textContent=t; };
 
     const next = () => { g.cur=(g.cur+1)%P; g.phase="spin"; g.value=0; g.msg=`Tocca a ${name(g.cur)}: gira la ruota!`; save(); render(); RUV.say([["ru_tocca","Tocca a"], RUV.nameP(g.players[g.cur]), ["ru_gira","Gira la ruota!"]]); };
 
-    const spin = () => {
-      if(busy) return; busy=true; ["aSpin","aVow","aSol"].forEach(id=>{ const b=$("#"+id); if(b) b.disabled=true; });
-      let target = angle + 1080 + Math.random()*720; target = target - (target % (360/N)) + (360/N)*(.5 + (Math.random()-.5)*.6);
-      const el=$("#ruW"), start=angle, dur=4300, t0=performance.now(); let last=Math.floor(start/(360/N));
-      msg(`${name(g.cur)} gira la ruota…`);
-      const step = now => { const k=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-k,3); angle = start+(target-start)*e;
-        el.setAttribute("transform", `rotate(${angle} 150 150)`); const s=Math.floor(angle/(360/N)); if(s!==last){ last=s; FQSound.beep([[1700,.03,"square"]]); }
-        if(k<1) anim=requestAnimationFrame(step); else landed(); };
+    // ruota con la fisica: velocità iniziale data dal dito, poi rallenta per attrito
+    let lastSeg = Math.floor(angle/(360/N));
+    const tickIf = () => { const s=Math.floor(angle/(360/N)); if(s!==lastSeg){ lastSeg=s; FQSound.beep([[1700,.03,"square"]]); } };
+    const lockBtns = () => ["aSpin","aVow","aSol","aPass"].forEach(id=>{ const b=$("#"+id); if(b) b.disabled=true; });
+    const physics = (w0, counts) => {
+      busy=true; lockBtns(); let w=Math.min(w0, RU_WMAX), prev=performance.now(); const el=$("#ruW");
+      if(counts) msg(`${name(g.cur)} gira la ruota…`);
+      const step = now => { const dt=Math.min(40, now-prev); prev=now; angle += w*dt; w -= (RU_FA + RU_FC*w)*dt;
+        el.setAttribute("transform", `rotate(${angle} 150 150)`); tickIf();
+        if(w>0.0005) anim=requestAnimationFrame(step);
+        else if(counts) landed();
+        else { busy=false; save(); render(); msg("🐢 Troppo piano! La ruota deve fare almeno un giro: gira più forte."); } };
       anim=requestAnimationFrame(step);
+    };
+    const spin = () => { if(busy || !leftCons().length) return; physics(0.7 + Math.random()*0.9, true); };
+    const dragWheel = () => {
+      const wrap = document.querySelector("#ruZone .ru-spin .ru-wheel"); if(!wrap || !leftCons().length) return;
+      const svg = wrap.querySelector("svg"), el=$("#ruW"); let drag=false, prevA=0, samples=[];
+      const ang = e => { const r=svg.getBoundingClientRect(); return Math.atan2(e.clientY-(r.top+r.height/2), e.clientX-(r.left+r.width/2))*180/Math.PI; };
+      wrap.onpointerdown = e => { if(busy || g.phase!=="spin") return; e.preventDefault(); drag=true; wrap.classList.add("drag"); try{ wrap.setPointerCapture(e.pointerId); }catch(x){}
+        prevA=ang(e); samples=[{t:performance.now(), a:angle}]; FQSound.ctx && FQSound.ctx.state==="suspended" && FQSound.ctx.resume(); };
+      wrap.onpointermove = e => { if(!drag) return; e.preventDefault(); const a=ang(e); let d=a-prevA; if(d>180) d-=360; if(d<-180) d+=360; prevA=a;
+        angle += d; el.setAttribute("transform", `rotate(${angle} 150 150)`); tickIf();
+        const now=performance.now(); samples.push({t:now, a:angle}); while(samples.length>2 && now-samples[0].t>90) samples.shift(); };
+      const up = e => { if(!drag) return; drag=false; wrap.classList.remove("drag");
+        const now=performance.now(); while(samples.length>2 && now-samples[0].t>90) samples.shift();
+        const f=samples[0], l=samples[samples.length-1]; const stale = now - l.t > 120; const w = (!stale && l.t>f.t) ? (l.a-f.a)/(l.t-f.t) : 0;
+        if(w < -0.05){ msg("↻ Gira in senso orario, come le lancette dell'orologio!"); save(); return; }
+        if(w < 0.03){ save(); return; }
+        if(ruTravel(w) < 360) physics(w, false); else physics(w, true); };
+      wrap.onpointerup = up; wrap.onpointercancel = up;
     };
     const landed = () => {
       const idx = Math.floor(((360 - (angle % 360)) % 360) / (360/N)) % N, v = RU_SEG[idx]; save();

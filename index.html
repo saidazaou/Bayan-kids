@@ -2902,7 +2902,7 @@ const FQSound = {
     let t=c.currentTime; notes.forEach(([f,d,type])=>{ const o=c.createOscillator(), g=c.createGain(); o.type=type||"sine"; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.25,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+d+.02); t+=d*.85; }); }catch(e){} },
   ok(){ this.beep([[660,.14],[880,.14],[1175,.28]]); }, ko(){ this.beep([[220,.25,"square"],[165,.4,"square"]]); }, tick(){ this.beep([[1000,.05,"triangle"]]); }
 };
-const APP_VERSION = "5.3";
+const APP_VERSION = "5.4";
 function FQS(){ S.set.fq = Object.assign({sound:true, music:false, think:true, n:20, timer:"auto", read:"auto", exclude:[], pin:null}, S.set.fq||{}); return S.set.fq; }
 FQ.custom = null; FQ.unlocked = false;
 FQ.loadCustom = async function(force){ if(this.custom && !force) return; const list = await this.all("fq_questions"); this.custom = {}; list.forEach(q=>{ this.custom[q.id]=q; }); this._merged=null; };
@@ -3031,7 +3031,7 @@ let fqCleanup = null;
 const app = $("#app");
 let currentLesson = null;
 function setHeader(title, back){ $("#title").textContent=title; $("#back").classList.toggle("show", !!back); }
-$("#back").onclick = () => { const h=location.hash.slice(1); if(h==="prova-mic"||h==="voce"){ history.back(); return; } if(h==="studio"){ location.hash="corano"; return; } if(h==="fq"||h==="ruota"){ location.hash="giochi"; return; } if(h==="ruota-gioco"||h==="ruota-voce"){ location.hash="ruota"; return; } if(h.startsWith("fq-player-")){ location.hash="fq-giocatori"; return; } if(h.startsWith("fq-edit-")){ location.hash="fq-gestione"; return; } if(h.startsWith("fq-")){ location.hash="fq"; return; } location.hash = h.startsWith("sura-")?"corano": h.startsWith("hadith-")?"ahadith": ["alfabeto","ascolta","parole","memory"].includes(h)?"giochi":"home"; };
+$("#back").onclick = () => { const h=location.hash.slice(1); if(h==="prova-mic"||h==="voce"){ history.back(); return; } if(h==="studio"){ location.hash="corano"; return; } if(h==="fq"||h==="ruota"||h==="impiccato"){ location.hash="giochi"; return; } if(h==="impiccato-gioco"){ location.hash="impiccato"; return; } if(h==="ruota-gioco"||h==="ruota-voce"){ location.hash="ruota"; return; } if(h.startsWith("fq-player-")){ location.hash="fq-giocatori"; return; } if(h.startsWith("fq-edit-")){ location.hash="fq-gestione"; return; } if(h.startsWith("fq-")){ location.hash="fq"; return; } location.hash = h.startsWith("sura-")?"corano": h.startsWith("hadith-")?"ahadith": ["alfabeto","ascolta","parole","memory"].includes(h)?"giochi":"home"; };
 
 const Views = {
   home(){
@@ -3067,6 +3067,7 @@ const Views = {
       <button class="mtile g-pink" onclick="location.hash='memory'"><span class="ic">🃏</span><b>Memory</b><small>Trova le coppie</small></button>
       <button class="mtile g-night wide" onclick="location.hash='fq'"><span class="ic">🏆</span><span><b>Family Quiz</b><br><small>Il quiz di tutta la famiglia, fino a 4 giocatori</small></span></button>
       <button class="mtile wide" style="background:linear-gradient(135deg,#1b3f8f,#2BB673)" onclick="location.hash='ruota'"><span class="ic">🎡</span><span><b>Gira la Ruota</b><br><small>Indovina la frase, fino a 4 concorrenti · BIP con la voce</small></span></button>
+      <button class="mtile wide" style="background:linear-gradient(135deg,#3b2a1a,#B5793A)" onclick="location.hash='impiccato'"><span class="ic">🪢</span><span><b>L'impiccato</b><br><small>Indovina la parola lettera per lettera, fino a 4 giocatori</small></span></button>
     </div>`;
   },
   alfabeto(){
@@ -5422,6 +5423,215 @@ Object.assign(Views, {
   }
 });
 
+/* ================= L'IMPICCATO ================= */
+const IMP_LV = { facile:{max:9, lab:"🟢 Facile"}, normale:{max:7, lab:"🟡 Normale"}, difficile:{max:6, lab:"🔴 Difficile"} };
+const IMP_ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const IMP = {
+  saved(){ try{ return JSON.parse(localStorage.getItem("impSaved")||"null"); }catch(e){ return null; } },
+  save(g){ try{ localStorage.setItem("impSaved", JSON.stringify(g)); }catch(e){} },
+  clear(){ try{ localStorage.removeItem("impSaved"); }catch(e){} },
+  hist(){ try{ return JSON.parse(localStorage.getItem("impHist")||"[]"); }catch(e){ return []; } },
+  setHist(h){ try{ localStorage.setItem("impHist", JSON.stringify(h.slice(-3000))); }catch(e){} },
+  strip(t){ return t.replace(/^(il|lo|la|i|gli|le)\s+/i,"").replace(/^l'/i,""); },
+  pool(lv){
+    return RU_FRASI.map(([c,t,k])=>{ const w = t.split(" ").length; return {c, t:(w<=2 ? IMP.strip(t) : t), k, w}; })
+      .filter(f => lv==="facile" ? f.k===1 : lv==="normale" ? (f.w<=2 && !/Proverbio|Modo di dire/.test(f.c)) : (f.w>=3 || /Proverbio|Modo di dire/.test(f.c)));
+  },
+  left(lv){ const h=new Set(this.hist()); return this.pool(lv).filter(f=>!h.has(f.t)).length; },
+  pick(g){ const h=new Set(this.hist()), pool=this.pool(g.lv); let av=pool.filter(f=>!h.has(f.t));
+    if(!av.length){ this.setHist([]); av=pool; }
+    const lastC = g.word && g.word.c, other=av.filter(f=>f.c!==lastC), src=other.length?other:av;
+    const f=src[Math.floor(Math.random()*src.length)]; this.setHist([...this.hist(), f.t]); return {c:f.c, t:f.t.toUpperCase()}; },
+  draw(g, lost){
+    const e=g.err, M=g.max;
+    if(g.style==="pal"){ // palloncini: ogni errore ne scoppia uno
+      const n=M, cols=["#E63946","#FFB703","#2BB673","#1982C4","#6A4C93","#FF7AA2","#F4A261","#8AC926","#00B4D8"]; let s="";
+      for(let k=0;k<n;k++){ const x=100+(k-(n-1)/2)*20, y=48+((k%2)?14:0), alive=k>=e;
+        if(alive) s+=`<line x1="100" y1="150" x2="${x}" y2="${y+15}" stroke="#888" stroke-width="1"/><ellipse cx="${x}" cy="${y}" rx="11" ry="14" fill="${cols[k%cols.length]}"/><path d="M${x-2} ${y+14}l2 4l2-4z" fill="${cols[k%cols.length]}"/>`;
+        else s+=`<text x="${x}" y="${y+5}" text-anchor="middle" font-size="13">💥</text>`; }
+      const fall = lost ? 30 : 0;
+      return `<svg viewBox="0 0 200 200" class="imp-svg">${s}<text x="100" y="${178+fall*0}" text-anchor="middle" font-size="44" style="transform:translateY(${fall}px);transition:transform .6s">${lost?"😵":"🐧"}</text></svg>`;
+    }
+    const parts = [
+      `<line x1="15" y1="190" x2="115" y2="190"/>`, `<line x1="45" y1="190" x2="45" y2="14"/>`, `<line x1="45" y1="14" x2="140" y2="14"/><line x1="45" y1="44" x2="75" y2="14"/>`,
+      `<line x1="140" y1="14" x2="140" y2="40"/>`, `<circle cx="140" cy="57" r="17" fill="#fff"/>`, `<line x1="140" y1="74" x2="140" y2="126"/>`,
+      `<line x1="140" y1="88" x2="117" y2="110"/>`, `<line x1="140" y1="88" x2="163" y2="110"/>`, `<line x1="140" y1="126" x2="121" y2="160"/>`, `<line x1="140" y1="126" x2="159" y2="160"/>`
+    ];
+    const shown = Math.min(10, Math.round(e*10/M));
+    const face = shown>=5 ? (lost ? `<text x="140" y="62" text-anchor="middle" font-size="13" font-weight="800">x x</text>` : `<circle cx="134" cy="54" r="2"/><circle cx="146" cy="54" r="2"/><path d="M133 64q7 ${e>=M-1?-4:4} 14 0" fill="none"/>`) : "";
+    return `<svg viewBox="0 0 200 200" class="imp-svg"><g stroke="#3b2a1a" stroke-width="5" stroke-linecap="round" fill="none">${parts.slice(0,shown).join("")}</g><g stroke="#222" stroke-width="2" fill="#222">${face}</g></svg>`;
+  },
+  css(){ if(document.getElementById("impCss")) return; const st=document.createElement("style"); st.id="impCss"; st.textContent=`
+.imp-top{display:flex;gap:8px;align-items:center}
+.imp-pic{flex:none;background:#fff;border-radius:18px;box-shadow:0 2px 10px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;position:relative}
+.imp-svg{width:100%;height:100%}
+.imp-err{position:absolute;right:8px;bottom:6px;font:700 13px Fredoka,"Baloo 2",sans-serif;color:#E63946}
+.imp-side{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.imp-wrong{font:700 16px Fredoka,"Baloo 2",sans-serif;color:#E63946;letter-spacing:2px;min-height:20px;word-break:break-all}
+.imp-kb{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
+.imp-kb button{width:calc((100% - 40px)/9);max-width:44px;height:44px;border-radius:10px;font:800 20px Fredoka,"Baloo 2",sans-serif;background:#fff;box-shadow:0 3px 0 #c9d6ee;color:#12306e}
+.imp-kb button.ok{background:#2BB673;color:#fff;box-shadow:0 3px 0 #1d8a55}
+.imp-kb button.no{background:#ffd9dc;color:#E63946;box-shadow:none;opacity:.7}
+.imp-kb button:disabled{cursor:default}
+.imp-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.imp-acts .btn{padding:9px 4px;font-size:15px;min-height:0}
+@media (max-height:720px){.imp-kb button{height:38px;font-size:18px}}`; document.head.appendChild(st); }
+};
+
+Object.assign(Views, {
+  async impiccato(){
+    RU.css(); IMP.css(); setHeader("L'impiccato", true);
+    const ps = await FQ.players(); if(location.hash!=="#impiccato") return;
+    const sv = IMP.saved();
+    const st = S.impNew = Object.assign({players:[], rounds:5, lv:"facile", style:"classico", src:"tel"}, S.impNew||{});
+    st.players = st.players.filter(id=>ps.some(p=>p.id===id));
+    app.innerHTML = `<div class="fq-stage" style="background:linear-gradient(160deg,#3b2a1a,#8a5a2b)"><div class="stars-deco"></div>
+        <div class="fq-logo" style="font-size:34px">🪢 L'impiccato</div><div style="position:relative;z-index:1;opacity:.9">Indovina la parola prima che il disegno sia finito!</div></div>
+      ${sv ? `<button class="btn big green confirm mt" id="imRes">▶ Riprendi la partita (manche ${sv.round}/${sv.rounds})</button>` : ""}
+      <div class="card mt"><div class="field"><label>Chi gioca? (da 1 a 4, a turno)</label>
+        ${ps.length ? `<div class="ru-sel" id="imP">${ps.map(p=>`<button data-p="${p.id}">${FQ.avatarHtml(p)}${esc(p.name)}</button>`).join("")}</div>` : `<p>Non ci sono ancora concorrenti.</p>`}
+        <button class="btn sec mt" onclick="location.hash='fq-giocatori'">➕ Aggiungi o modifica concorrenti</button></div>
+      <div class="field"><label>Chi sceglie la parola?</label><div class="chips" id="imS"><button class="chip" data-s="tel">📚 Il telefono</button><button class="chip" data-s="man">✍️ La scrive una persona</button></div>
+        <small style="color:var(--muted)" id="imSn"></small></div>
+      <div class="field" id="imLvF"><label>Difficoltà <small id="imLeft" style="font-weight:600;color:var(--muted)"></small></label><div class="chips" id="imL">${Object.entries(IMP_LV).map(([k,v])=>`<button class="chip" data-l="${k}">${v.lab}</button>`).join("")}</div>
+        <small style="color:var(--muted)">Facile: parole per bambini, 9 errori · Normale: parole e nomi, 7 errori · Difficile: proverbi e modi di dire, 6 errori</small></div>
+      <div class="field"><label>Disegno</label><div class="chips" id="imD"><button class="chip" data-d="classico">🪢 Classico</button><button class="chip" data-d="pal">🎈 Palloncini (per i più piccoli)</button></div></div>
+      <div class="field"><label>Quante manche?</label><div class="chips" id="imR"><button class="chip" data-r="3">3</button><button class="chip" data-r="5">5</button><button class="chip" data-r="7">7</button></div></div>
+      </div>
+      <button class="btn big green confirm" id="imGo">🪢 Inizia</button>
+      <div class="note mt">📏 <b>Regole:</b> a turno si sceglie una lettera. Se c'è, +10 punti per ogni volta che compare e si continua; se non c'è, il disegno va avanti e tocca al prossimo. Chi completa la parola, o la indovina tutta con «💡 Indovina», prende 50 punti di bonus. Se il disegno si completa, la manche è persa per tutti.</div>`;
+    const sync = () => {
+      document.querySelectorAll("#imP [data-p]").forEach(b=>b.classList.toggle("on", st.players.includes(b.dataset.p)));
+      document.querySelectorAll("#imS [data-s]").forEach(b=>b.classList.toggle("on", b.dataset.s===st.src));
+      document.querySelectorAll("#imL [data-l]").forEach(b=>b.classList.toggle("on", b.dataset.l===st.lv));
+      document.querySelectorAll("#imD [data-d]").forEach(b=>b.classList.toggle("on", b.dataset.d===st.style));
+      document.querySelectorAll("#imR [data-r]").forEach(b=>b.classList.toggle("on", +b.dataset.r===st.rounds));
+      $("#imSn").textContent = st.src==="man" ? "A ogni manche una persona scrive la parola di nascosto e passa il telefono a chi indovina. Gli errori consentiti dipendono dalla difficoltà." : "";
+      const n=IMP.left(st.lv); $("#imLeft").textContent = st.src==="tel" ? `· ${n} parole nuove (${Math.floor(n/st.rounds)} partite)` : "";
+      $("#imGo").disabled = !st.players.length; Store.save(); };
+    app.onclick = e => { const b=e.target.closest("button"); if(!b) return;
+      if(b.dataset.p){ const i=st.players.indexOf(b.dataset.p); if(i>=0) st.players.splice(i,1); else if(st.players.length<4) st.players.push(b.dataset.p); else toast("Massimo 4 concorrenti"); }
+      if(b.dataset.s) st.src=b.dataset.s; if(b.dataset.l) st.lv=b.dataset.l; if(b.dataset.d) st.style=b.dataset.d; if(b.dataset.r) st.rounds=+b.dataset.r; sync(); };
+    if(sv) $("#imRes").onclick = () => location.hash="impiccato-gioco";
+    $("#imGo").onclick = () => {
+      const pl = st.players.map(id=>ps.find(p=>p.id===id)).filter(Boolean); if(!pl.length) return;
+      if(sv && !confirm("C'è una partita in corso: vuoi iniziarne una nuova?")) return;
+      const g = {players: pl.map(p=>({id:p.id, name:p.name, avatar:p.avatar, color:p.color})), tot:pl.map(()=>0), rounds:st.rounds, round:1,
+        lv:st.lv, style:st.style, src:st.src, max:IMP_LV[st.lv].max, cur:0, used:[], err:0, phase: st.src==="man" ? "secret" : "play", msg:""};
+      if(g.phase==="play"){ g.word=IMP.pick(g); g.msg=`Tocca a ${g.players[0].name}: scegli una lettera!`; }
+      IMP.save(g); location.hash="impiccato-gioco"; };
+    sync();
+  },
+
+  async "impiccato-gioco"(){
+    const g = IMP.saved(); if(!g){ location.hash="impiccato"; return; }
+    RU.css(); IMP.css(); setHeader("L'impiccato", true);
+    const all = await FQ.players(); if(location.hash!=="#impiccato-gioco") return;
+    const prof = p => all.find(x=>x.id===p.id) || p;
+    const P = g.players.length; let busy=false, timers=[];
+    const later = (f,ms) => timers.push(setTimeout(f,ms));
+    const stop = () => { window.onresize=null; timers.forEach(clearTimeout); timers=[]; Voice.stop(); document.querySelectorAll(".ru-ov").forEach(x=>x.remove()); };
+    fqCleanup = stop;
+    const save = () => IMP.save(g);
+    const name = i => g.players[i].name;
+    const letters = () => RU.letters(g.word.t);
+    const solved = () => [...letters()].every(c=>g.used.includes(c));
+    const say = t => Voice.speak(t, "it", 1.05);
+    const fit = () => { const pic=document.querySelector(".imp-pic"); if(!pic) return;
+      const tb=document.getElementById("tabbar"); const bottom = tb ? tb.getBoundingClientRect().top : innerHeight;
+      const below = document.getElementById("imBelow"); const free = bottom - (below ? below.getBoundingClientRect().bottom : bottom) - 8;
+      const cur = pic.offsetHeight; const h = Math.max(110, Math.min(cur + free, innerWidth*0.62, 280)); pic.style.width=h+"px"; pic.style.height=h+"px"; };
+    window.onresize = () => fit();
+
+    const render = (fresh) => {
+      if(g.phase==="secret") return secret();
+      const lost = g.phase==="end" && g.win<0;
+      const wrong = g.used.filter(c=>!letters().has(c));
+      const kb = `<div class="imp-kb">${[...IMP_ABC].map(c=>{ const u=g.used.includes(c), ok=u&&letters().has(c); return `<button data-c="${c}" class="${u?(ok?"ok":"no"):""}" ${u||g.phase!=="play"?"disabled":""}>${c}</button>`; }).join("")}</div>`;
+      let tail = "";
+      if(g.phase==="play") tail = `${kb}<div class="imp-acts"><button class="btn big" style="background:#FB8500;color:#fff" id="iSol">💡 Indovina la parola</button><button class="btn big purple" id="iHint" ${g.err>=g.max-1?"disabled":""}>🔎 Svela una lettera<br><small>costa 1 errore</small></button></div>`;
+      else tail = `<div class="card mt" style="text-align:center">${g.win>=0 ? `<div style="font-size:40px">🏆</div><b style="font-size:19px">${esc(name(g.win))} ha indovinato!</b>` : `<div style="font-size:40px">${g.style==="pal"?"🎈":"🪢"}</div><b style="font-size:19px">Peccato! Nessuno ha indovinato.</b>`}
+          <p style="margin:6px 0">La parola era: <b>${esc(g.word.t)}</b></p></div>
+        <button class="btn big green confirm" id="iNext">${g.round>=g.rounds ? "🏁 Classifica finale" : "▶ Prossima manche"}</button>`;
+      app.innerHTML = `<div class="ru-head"><span class="ru-cat">${esc(g.word.c)}</span><span>Manche ${g.round}/${g.rounds}</span></div>
+        <div class="imp-top"><div class="imp-pic" style="width:150px;height:150px">${IMP.draw(g, lost)}<span class="imp-err">${g.err}/${g.max}</span></div>
+          <div class="imp-side"><div class="ru-msg" id="imMsg" style="text-align:left;margin:0;font-size:15.5px">${esc(g.msg||"")}</div>
+            <div class="imp-wrong">${wrong.length ? "✖ "+wrong.join(" ") : ""}</div></div></div>
+        <div style="margin-top:8px">${RU.board(g.word.t, g.phase==="end" ? [...letters()] : g.used, fresh)}</div>
+        <div class="ru-pls" style="--n:${P};margin-top:8px">${g.players.map((p,i)=>`<div class="ru-pl ${i===g.cur && g.phase==="play"?"on":""}" style="--c:${p.color||"#6A45F0"}"><b>${esc(p.name)}</b><div class="rw">${FQ.avatarHtml(prof(p))}<span class="r">${g.tot[i]}</span></div></div>`).join("")}</div>
+        <div id="imBelow">${tail}</div>`;
+      window.scrollTo(0,0); fit();
+      const k=document.querySelector(".imp-kb"); if(k) k.onclick = e => { const b=e.target.closest("button"); if(!b||b.disabled||busy) return; guess(b.dataset.c); };
+      const on=(id,f)=>{ const el=$("#"+id); if(el) el.onclick=f; };
+      on("iSol", solve); on("iHint", hint); on("iNext", nextRound);
+    };
+    const msg = t => { g.msg=t; const m=$("#imMsg"); if(m) m.textContent=t; };
+    const next = () => { if(P>1){ g.cur=(g.cur+1)%P; } g.msg = P>1 ? `Tocca a ${name(g.cur)}!` : "Scegli un'altra lettera!"; save(); render(); };
+    const lose = () => { g.phase="end"; g.win=-1; g.msg = g.style==="pal" ? "💥 Sono scoppiati tutti i palloncini!" : "😢 Il disegno è completo!"; save(); render(); FQSound.beep([[392,.25,"sawtooth"],[311,.25,"sawtooth"],[233,.6,"sawtooth"]]); say(`Peccato! La parola era ${g.word.t}`); };
+    const won = (i, bonus) => { g.phase="end"; g.win=i; g.tot[i]+=bonus; g.msg = `🎉 Bravo ${name(i)}! +${bonus}`; save(); render(); confetti(); FQSound.beep([[523,.14],[659,.14],[784,.14],[1047,.4]]); say(`Bravo ${name(i)}! Era ${g.word.t}`); };
+    const guess = c => {
+      if(g.used.includes(c)) return; busy=true; g.used.push(c); const n=RU.count(g.word.t, c);
+      if(n>0){ g.tot[g.cur]+=10*n; g.msg = n===1 ? `✅ C'è una ${c}! +10` : `✅ Ci sono ${n} ${c}! +${10*n}`; save(); render(c);
+        for(let k=0;k<n;k++) later(()=>FQSound.beep([[1319,.09],[1760,.16]]), k*300);
+        later(()=>{ busy=false; if(solved()) won(g.cur, 50); }, n*300+300);
+      } else { g.err++; FQSound.beep([[180,.35,"square"],[140,.45,"square"]]);
+        if(g.err>=g.max){ busy=false; return lose(); }
+        g.msg=`❌ Nessuna ${c}.`; save(); render(); later(()=>{ busy=false; next(); }, 1300); }
+    };
+    const hint = () => { if(busy || g.err>=g.max-1) return; const hid=[...letters()].filter(c=>!g.used.includes(c)); if(!hid.length) return;
+      const c=hid[Math.floor(Math.random()*hid.length)]; g.used.push(c); g.err++; g.msg=`🔎 Ecco la ${c}! (costa un errore)`; save(); render(c); FQSound.beep([[988,.1],[1319,.15]]);
+      if(solved()) later(()=>won(g.cur, 0), 900); };
+    const overlay = html => { document.querySelectorAll(".ru-ov").forEach(x=>x.remove()); const d=document.createElement("div"); d.className="family ru-ov"; d.innerHTML=`<div class="ru-card">${html}</div>`; document.body.appendChild(d); return d; };
+    const solve = () => {
+      if(busy) return;
+      const d = overlay(`<h3>💡 ${esc(name(g.cur))}, indovina la parola!</h3>${RU.board(g.word.t, g.used)}
+        <div class="ru-in"><input id="iTx" placeholder="Scrivi qui la parola intera" autocomplete="off"><button class="btn green" id="iOk" style="padding:10px 14px">✔ Conferma</button></div>
+        <small style="display:block;color:#666;margin-top:6px">Se è sbagliata costa un errore e passa il turno.</small>
+        <div class="ru-judge"><button id="iNo">✖ Annulla</button></div>`);
+      const x=d.querySelector("#iTx"); setTimeout(()=>x.focus(),100);
+      d.querySelector("#iNo").onclick = () => d.remove();
+      d.querySelector("#iOk").onclick = () => { const v=x.value; if(!v.trim()) return; d.remove();
+        if(RU.solveOk([v], g.word.t, .9)){ const hid=[...letters()].filter(c=>!g.used.includes(c)); let pts=50; hid.forEach(c=>pts+=10*RU.count(g.word.t,c)); won(g.cur, pts); }
+        else { g.err++; FQSound.ko(); if(g.err>=g.max) return lose(); g.msg=`❌ «${v.toUpperCase()}» non è giusta.`; save(); render(); later(()=>next(), 1400); } };
+      x.onkeydown = e => { if(e.key==="Enter") d.querySelector("#iOk").click(); };
+    };
+    const secret = () => {
+      app.innerHTML = `<div class="ru-head"><span class="ru-cat">✍️ Parola segreta</span><span>Manche ${g.round}/${g.rounds}</span></div>
+        <div class="card" style="text-align:center"><div style="font-size:44px">🤫</div><b style="font-size:18px">Chi sceglie la parola prende il telefono</b>
+          <p style="color:var(--muted);margin:6px 0">Gli altri non guardano! Scrivi la parola (anche più parole) e un aiuto facoltativo.</p>
+          <div class="ru-in"><input id="sW" type="password" placeholder="Parola segreta" autocomplete="off" style="text-transform:uppercase"><button class="btn sec" id="sEye" style="padding:10px">👁️</button></div>
+          <div class="ru-in"><input id="sC" placeholder="Aiuto (es. Animale) — facoltativo" autocomplete="off"></div>
+          <div class="ru-heard" id="sE"></div>
+          <button class="btn big green confirm" id="sGo">✔ Pronto! Passa il telefono</button></div>`;
+      $("#sEye").onclick = () => { const w=$("#sW"); w.type = w.type==="password" ? "text" : "password"; };
+      $("#sGo").onclick = () => { const raw=$("#sW").value.trim().replace(/\s+/g," "); const lettersN = RU.letters(raw.toUpperCase()).size;
+        if(!raw || !lettersN){ $("#sE").textContent="Scrivi una parola con almeno una lettera."; return; }
+        if(raw.split(" ").some(w=>w.length>16)){ $("#sE").textContent="Una parola è troppo lunga (massimo 16 lettere)."; return; }
+        g.word={c: $("#sC").value.trim() || "Parola segreta", t: raw.toUpperCase()}; g.phase="play"; g.msg=`Tocca a ${name(g.cur)}: scegli una lettera!`; save(); render(); say(`Tocca a ${name(g.cur)}`); };
+    };
+    const nextRound = () => {
+      if(g.round>=g.rounds) return final();
+      g.round++; g.used=[]; g.err=0; g.win=undefined; g.cur=(g.round-1)%P;
+      if(g.src==="man"){ g.phase="secret"; g.word=null; save(); return render(); }
+      g.word=IMP.pick(g); g.phase="play"; g.msg=`Manche ${g.round}: tocca a ${name(g.cur)}!`; save(); render(); say(`Tocca a ${name(g.cur)}`);
+    };
+    const final = () => {
+      stop(); IMP.clear(); const order=g.players.map((p,i)=>({p,t:g.tot[i]})).sort((a,b)=>b.t-a.t);
+      order.forEach((r,k)=>{ r.pos = k && r.t===order[k-1].t ? order[k-1].pos : k+1; });
+      app.innerHTML = `<div class="fq-stage" style="background:linear-gradient(160deg,#3b2a1a,#8a5a2b)"><div class="stars-deco"></div><div class="fq-logo">🏁 Fine partita!</div>
+          <div style="position:relative;z-index:1;margin:12px 0">${FQ.avatarHtml(prof(order[0].p), true)}</div>
+          <div style="position:relative;z-index:1;font-size:22px;font-weight:800;color:#FFE38A">${order.filter(r=>r.pos===1).map(r=>esc(r.p.name)).join(" e ")} ${order.filter(r=>r.pos===1).length>1?"vincono":"vince"}!</div></div>
+        <div class="card mt">${order.map(r=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee"><b style="width:28px;font-size:20px">${["🥇","🥈","🥉"][r.pos-1]||r.pos}</b>${FQ.avatarHtml(prof(r.p))}<b style="flex:1">${esc(r.p.name)}</b><b style="font-size:20px;color:#FB8500">${r.t}</b></div>`).join("")}</div>
+        <button class="btn big green confirm" id="fAgain">🔄 Gioca ancora</button><button class="btn sec mt" onclick="location.hash='giochi'" style="width:100%">Esci</button>`;
+      confetti(); say(`Vince ${order[0].p.name}! Complimenti!`);
+      $("#fAgain").onclick = () => { const ng=Object.assign({}, g, {tot:g.players.map(()=>0), round:1, cur:0, used:[], err:0, win:undefined});
+        if(ng.src==="man"){ ng.phase="secret"; ng.word=null; } else { ng.phase="play"; ng.word=IMP.pick(ng); ng.msg=`Tocca a ${ng.players[0].name}: scegli una lettera!`; }
+        IMP.save(ng); route(); };
+    };
+    render(); if(g.phase==="play" && !g.used.length) say(g.msg.replace(/[^\p{L}\p{N} ,.!']/gu,""));
+  }
+});
+
 function route(){
   if(currentLesson){ currentLesson.stop(); currentLesson=null; }
   Player.stop(); Rec.stop(); Voice.stop(); Mic.stop().then(()=>Mic.close());
@@ -5429,7 +5639,7 @@ function route(){
   { const c=document.getElementById("cele"); if(c) c.remove(); document.querySelectorAll(".crop,.family").forEach(x=>x.remove()); if(fqCleanup){ fqCleanup(); fqCleanup=null; } if(typeof FQThink!=="undefined") FQThink.stop(); }
   const h = location.hash.slice(1) || "home";
   window.scrollTo(0,0);
-  const sec = h.startsWith("sura-")||h==="corano" ? "corano" : h.startsWith("hadith")||h==="ahadith" ? "ahadith" : (["giochi","alfabeto","ascolta","parole","memory","fq","ruota","ruota-gioco","ruota-voce"].includes(h) || h.startsWith("fq-")) ? "giochi" : h==="studio" ? "studio" : h==="home" ? "home" : "";
+  const sec = h.startsWith("sura-")||h==="corano" ? "corano" : h.startsWith("hadith")||h==="ahadith" ? "ahadith" : (["giochi","alfabeto","ascolta","parole","memory","fq","ruota","ruota-gioco","ruota-voce","impiccato","impiccato-gioco"].includes(h) || h.startsWith("fq-")) ? "giochi" : h==="studio" ? "studio" : h==="home" ? "home" : "";
   document.querySelectorAll("#tabbar a").forEach(a=>a.classList.toggle("on", a.dataset.t===sec));
   if(h.startsWith("sura-")) return Views.sura(+h.slice(5));
   if(h.startsWith("hadith-")) return Views.hadith(+h.slice(7));

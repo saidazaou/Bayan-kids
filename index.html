@@ -2902,7 +2902,7 @@ const FQSound = {
     let t=c.currentTime; notes.forEach(([f,d,type])=>{ const o=c.createOscillator(), g=c.createGain(); o.type=type||"sine"; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.25,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+d+.02); t+=d*.85; }); }catch(e){} },
   ok(){ this.beep([[660,.14],[880,.14],[1175,.28]]); }, ko(){ this.beep([[220,.25,"square"],[165,.4,"square"]]); }, tick(){ this.beep([[1000,.05,"triangle"]]); }
 };
-const APP_VERSION = "5.2";
+const APP_VERSION = "5.3";
 function FQS(){ S.set.fq = Object.assign({sound:true, music:false, think:true, n:20, timer:"auto", read:"auto", exclude:[], pin:null}, S.set.fq||{}); return S.set.fq; }
 FQ.custom = null; FQ.unlocked = false;
 FQ.loadCustom = async function(force){ if(this.custom && !force) return; const list = await this.all("fq_questions"); this.custom = {}; list.forEach(q=>{ this.custom[q.id]=q; }); this._merged=null; };
@@ -5386,38 +5386,33 @@ Object.assign(Views, {
     // 💡 Risolvi: la frase si dice a voce (o si scrive)
     const openSolve = i => {
       if(g.phase==="end") return; busy=true; Rec.stop();
-      let left=30, tries=0, closed=false;
+      let left=45, tries=0, closed=false;
       const d = overlay(`<div style="display:flex;align-items:center;justify-content:center;gap:10px">${FQ.avatarHtml(prof(g.players[i]))}<h3 style="margin:0">${esc(name(i))}, risolvi!</h3></div>
-        <div class="ru-tmr" id="sT">30</div>${RU.board(g.pz.t, g.used)}
+        <div class="ru-tmr" id="sT">45</div>${RU.board(g.pz.t, g.used)}
         <button class="btn green mt" id="sMic" style="width:100%;font-size:19px;padding:14px">🎤 Di' la frase</button><div class="ru-heard" id="sH"></div>
-        <div class="ru-in"><input id="sTx" placeholder="…oppure scrivila qui" autocomplete="off"><button class="btn green" id="sOk" style="padding:10px 14px">OK</button></div>
-        <div class="ru-judge hidden" id="sJ">Decide il genitore, dopo aver sentito la risposta:<br><button id="sY">✅ Giusta</button><button id="sN">❌ Sbagliata</button></div>`);
-      let heard = "";
-      // i pulsanti del genitore compaiono solo dopo che il concorrente ha provato a rispondere
-      const showJudge = () => { const j=d.querySelector("#sJ"); if(j) j.classList.remove("hidden"); };
+        <div class="ru-in"><input id="sTx" placeholder="…oppure scrivila qui" autocomplete="off"><button class="btn green" id="sOk" style="padding:10px 14px">✔ Conferma</button></div>
+        <small style="display:block;color:#666;margin-top:6px">La risposta vale solo se la frase scritta qui sopra è quella giusta.</small>`);
+      // la frase detta a voce viene scritta nella casella: si controlla (o si corregge) e si conferma
+      const fill = t => { const x=d.querySelector("#sTx"); if(x){ x.value=t; x.focus(); } };
       const close = () => { closed=true; clearInterval(iv); Rec.stop(); d.remove(); busy=false; };
       const right = () => { if(closed) return; close(); win(i, false); };
       const wrong = why => { if(closed) return; close(); FQSound.ko(); msg(`❌ ${why||"Non è la frase giusta"}, ${name(i)}.`); RUV.say(why==="Tempo scaduto" ? [["ru_tempo","Tempo scaduto!"]] : [["ru_sbagliato","No, non è giusta!"]]); save();
         if(i===g.cur) later(()=>next(), 1500); else render(); };
       const iv = setInterval(()=>{ left--; const t=d.querySelector("#sT"); if(t) t.textContent=left; if(left<=5 && left>0) FQSound.tick(); if(left<=0) wrong("Tempo scaduto"); }, 1000);
       const listen = async () => {
-        if(!SR){ d.querySelector("#sH").textContent="Questo telefono non riconosce la voce: scrivi la frase, oppure dilla ad alta voce e fai decidere il genitore."; showJudge(); return; }
+        if(!SR){ d.querySelector("#sH").textContent="Questo telefono non riconosce la voce: scrivi la frase nella casella e premi Conferma."; return; }
         tries++; const b=d.querySelector("#sMic"); b.disabled=true; b.textContent="🎙️ Ti ascolto…";
-        const r = await Rec.listen({lang:"it-IT", maxMs:9000, onInterim:t=>{ const h=d.querySelector("#sH"); if(h) h.textContent="«"+t+"»"; }});
+        const r = await Rec.listen({lang:"it-IT", maxMs:9000, onInterim:t=>{ fill(t); }});
         if(closed) return;
-        if(!r.error && RU.solveOk(r.cands, g.pz.t)) return right();
-        if(!r.error) heard = r.text; showJudge();
-        b.disabled=false; b.textContent = tries<2 ? "🎤 Riprova" : "🎤 Ultimo tentativo";
-        d.querySelector("#sH").textContent = r.error ? "Non ho sentito bene. Riprova o scrivi la frase." : `Ho capito «${r.text}»: non è giusta. ${tries<2?"Puoi riprovare.":""}`;
-        if(!r.error && tries>=3) wrong();
+        b.disabled=false; b.textContent = "🎤 Ridilla";
+        if(r.error){ d.querySelector("#sH").textContent = "Non ho sentito bene: ridilla oppure scrivila nella casella."; return; }
+        const best = r.cands.find(c=>RU.solveOk([c], g.pz.t)) || r.text; fill(best.toUpperCase());
+        d.querySelector("#sH").textContent = "Ho scritto quello che ho sentito: controlla e premi ✔ Conferma.";
       };
       d.querySelector("#sMic").onclick = listen;
-      d.querySelector("#sOk").onclick = () => { const v=d.querySelector("#sTx").value; if(!v.trim()) return; RU.solveOk([v], g.pz.t, .9) ? right() : wrong(); };
+      d.querySelector("#sOk").onclick = () => { const v=d.querySelector("#sTx").value; if(!v.trim()){ d.querySelector("#sH").textContent="La casella è vuota: di' la frase o scrivila."; return; } Rec.stop(); RU.solveOk([v], g.pz.t, .88) ? right() : wrong(); };
       d.querySelector("#sTx").onkeydown = e => { if(e.key==="Enter") d.querySelector("#sOk").click(); };
-      d.querySelector("#sY").onclick = e => { const b=e.currentTarget;
-        if(!b.dataset.sure){ b.dataset.sure=1; b.textContent = heard ? `✅ Confermo: «${heard}» è giusta` : "✅ Confermo: l'ha detta giusta"; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.sure; b.textContent="✅ Giusta"; } }, 4000); return; }
-        right(); };
-      d.querySelector("#sN").onclick = () => wrong();
+
       FQSound.beep([[660,.1],[880,.15]]); later(async ()=>{ await RUV.only("ru_risolvi"); if(!closed) listen(); }, 400);
     };
 
